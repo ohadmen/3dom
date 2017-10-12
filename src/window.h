@@ -93,7 +93,7 @@ public:
 		txtureMapping_texture(new QAction("texture", this))
 
 	{
-		setWindowTitle("fstl");
+		setWindowTitle("3Dom");
 		setAcceptDrops(true);
 		
 
@@ -249,6 +249,8 @@ protected:
 		load_stl(event->mimeData()->urls().front().toLocalFile());
 	}
 
+	
+
 
 	public slots:
 
@@ -266,13 +268,7 @@ protected:
 	void on_about()
 	{
 		QMessageBox::about(this, "",
-			"<p align=\"center\"><b>fstl</b></p>"
-			"<p>A fast viewer for <code>.stl</code> files.<br>"
-			"<a href=\"https://github.com/mkeeter/fstl\""
-			"   style=\"color: #93a1a1;\">https://github.com/mkeeter/fstl</a></p>"
-			"<p>© 2014-2017 Matthew Keeter<br>"
-			"<a href=\"mailto:matt.j.keeter@gmail.com\""
-			"   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");
+			"<p align=\"center\"><b>3Dom</b></p>"
 	}
 
 	void on_bad_stl()
@@ -295,7 +291,7 @@ protected:
 		QMessageBox::warning(this, "Warning",
 			"<b>Warning:</b><br>"
 			"This <code>.stl</code> file begins with <code>solid </code>but appears to be a binary file.<br>"
-			"<code>fstl</code> loaded it, but other programs may be confused by this file.");
+			"<code>3dom</code> loaded it, but other programs may be confused by this file.");
 	}
 
 	void on_missing_file()
@@ -314,8 +310,6 @@ protected:
 	{
 		open_action->setEnabled(false);
 	}
-
-
 
 
 

@@ -27,10 +27,11 @@ public:
 		m_scale(1), m_zoom(1), m_tilt(90), m_yaw(0),
 		perspective(0.25), anim(this, "perspective"), status(" ")
 	{
-		QFile styleFile(":/qt/style.qss");
+		QFile styleFile("style.qss");
 		styleFile.open(QFile::ReadOnly);
 		setStyleSheet(styleFile.readAll());
-
+		setFocusPolicy(Qt::StrongFocus);//catching keyboard events
+		setMouseTracking(true);
 		anim.setDuration(100);
 	}
 
@@ -136,21 +137,24 @@ public:
 
 protected:
 
-	void mouseDoubleClickEvent(QMouseEvent* event)
-	{
-		
-		QVector3D r = privMousePos2ray(m_mousePos);
-		r.normalize();
-		QVector3D p = m_meshDataP->closest2ray(r);
-
-	}
+//	void mouseDoubleClickEvent(QMouseEvent* event)
+//	{
+//		
+//		QVector3D r = privMousePos2ray(m_mousePos);
+//		r.normalize();
+//		QVector3D p = m_meshDataP->closest2ray(r);
+//
+//	}
 	void keyPressEvent(QKeyEvent * event)
 	{
 		if (event->key() == Qt::Key_C)
 		{
+
 			QVector3D r = privMousePos2ray(m_mousePos);
 			r.normalize();
-			m_meshDataP->closest2ray(r);
+			QVector3D p= m_meshDataP->closest2ray(r);
+
+			set_status(QString::number(p.x()) + "," + QString::number(p.y()) + "," + QString::number(p.z()));
 		}
 	}
 
