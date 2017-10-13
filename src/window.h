@@ -268,7 +268,7 @@ protected:
 	void on_about()
 	{
 		QMessageBox::about(this, "",
-			"<p align=\"center\"><b>3Dom</b></p>"
+			"<p align=\"center\"><b>3Dom</b></p>");
 	}
 
 	void on_bad_stl()

@@ -130,4 +130,12 @@
   <ItemGroup>
     <ResourceCompile Include="..\exe\3dom.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Line3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Circle3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

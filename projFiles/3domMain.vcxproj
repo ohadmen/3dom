@@ -141,6 +141,8 @@
     <ClCompile Include="..\src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Circle3d.h" />
+    <ClInclude Include="Line3d.h" />
     <CustomBuild Include="..\src\app.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DNDEBUG "-I." "-I.\..\..\..\QT\QT5.7.1\5.7\MSVC2015_64\include" "-I.\..\..\..\QT\QT5.7.1\5.7\MSVC2015_64\include\QtOpenGL" "-I.\..\..\..\QT\QT5.7.1\5.7\MSVC2015_64\include\QtWidgets" "-I.\..\..\..\QT\QT5.7.1\5.7\MSVC2015_64\include\QtGui" "-I.\..\..\..\QT\QT5.7.1\5.7\MSVC2015_64\include\QtANGLE" "-I.\..\..\..\QT\QT5.7.1\5.7\MSVC2015_64\include\QtCore" "-I.\release" "-I.\..\..\..\QT\QT5.7.1\5.7\MSVC2015_64\mkspecs\win32-msvc2015"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing app.h...</Message>

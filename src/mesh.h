@@ -18,11 +18,11 @@ public:
 
 	}
 
-	QVector3D closest2ray(const QVector3D& ray) const
+	QVector3D closest2ray(const QVector3D& c,const QVector3D& ray) const
 	{
 		std::vector<float> dist(m_vertices.size());
 		for (int i = 0; i != m_vertices.size(); ++i)
-			dist[i] = m_vertices[i].distanceToLine(QVector3D(), ray);
+			dist[i] = m_vertices[i].distanceToLine(c, ray);
 		int ind =  (std::min_element(dist.begin(), dist.end())- dist.begin());
 		return m_vertices[ind];
 	}

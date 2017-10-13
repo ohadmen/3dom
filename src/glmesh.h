@@ -36,8 +36,11 @@ public:
 		m_indices.bind();
 
 		glVertexAttribPointer(vp, 3, GL_FLOAT, false, 3 * sizeof(float), NULL);
-		glDrawElements(GL_TRIANGLES, m_indices.size() / sizeof(uint32_t),
-			GL_UNSIGNED_INT, NULL);
+		glDrawElements(GL_TRIANGLES, m_indices.size() / sizeof(uint32_t),	GL_UNSIGNED_INT, NULL);
+		
+
+
+
 
 		m_vertices.release();
 		m_indices.release();
