@@ -138,7 +138,7 @@ public:
 			QVector3D lower(m_meshDataP->xmin(), m_meshDataP->ymin(), m_meshDataP->zmin());
 			QVector3D upper(m_meshDataP->xmax(), m_meshDataP->ymax(), m_meshDataP->zmax());
 			m_center = (lower + upper) / 2;
-			m_camRotCenter = m_center;
+			
 			m_scale = 2 / (upper - lower).length();
 
 			// Reset other camera parameters
@@ -233,42 +233,42 @@ protected:
 
 	void wheelEvent(QWheelEvent *event)
 	{
-		QVector3D d = transform_matrix().inverted() * view_matrix().inverted()*QVector3D(0, 0, 1);//cam center
-		
-		d.normalize();
-		if (event->delta() < 0)
-		{
-
-			m_center += (m_camRotCenter + d)*.1;
-			//	d.norm
-		}
-		else
-		{
-			m_center -= d;
-		}
-
-
-		//auto p = event->pos();
-		//QVector3D v(1 - p.x() / (0.5*width()),
-		//	p.y() / (0.5*height()) - 1, 0);
-		//QVector3D a = transform_matrix().inverted() *
-		//	view_matrix().inverted() * v;
+		//QVector3D d = transform_matrix().inverted() * view_matrix().inverted()*QVector3D(0, 0, 1);//cam center
 		//
+		//d.normalize();
 		//if (event->delta() < 0)
 		//{
-		//	for (int i = 0; i > event->delta(); --i)
-		//		m_zoom *= 1.001f;
+
+		//	m_center += (m_camRotCenter + d)*.1;
+		//	//	d.norm
 		//}
-		//else if (event->delta() > 0)
+		//else
 		//{
-		//	for (int i = 0; i < event->delta(); ++i)
-		//		m_zoom /= 1.001f;
+		//	m_center -= d;
 		//}
-		//
-		//// Then find the cursor's GL position post-zoom and adjust m_center.
-		//QVector3D b = transform_matrix().inverted() *
-		//	view_matrix().inverted() * v;
-		//m_center += b - a;
+
+
+		auto p = event->pos();
+		QVector3D v(1 - p.x() / (0.5*width()),
+			p.y() / (0.5*height()) - 1, 0);
+		QVector3D a = transform_matrix().inverted() *
+			view_matrix().inverted() * v;
+		
+		if (event->delta() < 0)
+		{
+			for (int i = 0; i > event->delta(); --i)
+				m_zoom *= 1.001f;
+		}
+		else if (event->delta() > 0)
+		{
+			for (int i = 0; i < event->delta(); ++i)
+				m_zoom /= 1.001f;
+		}
+		
+		// Then find the cursor's GL position post-zoom and adjust m_center.
+		QVector3D b = transform_matrix().inverted() *
+			view_matrix().inverted() * v;
+		m_center += b - a;
 		update();
 	}
 
@@ -408,7 +408,7 @@ private:
 	Backdrop* m_backdrop;
 
 	QVector3D m_center;
-	QVector3D m_camRotCenter;
+
 	float m_scale;
 	float m_zoom;
 	float m_tilt;

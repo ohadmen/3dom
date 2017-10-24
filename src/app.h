@@ -16,7 +16,7 @@ public:
     explicit App(int& argc, char *argv[]) :
 		QApplication(argc, argv), window(new Window())
 	{
-		QCoreApplication::setOrganizationName("mkeeter");
+		QCoreApplication::setOrganizationName("Ohad");
 		QCoreApplication::setOrganizationDomain("https://github.com/ohadmen/3dom");
 		QCoreApplication::setApplicationName("3Dom");
 
