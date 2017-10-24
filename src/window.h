@@ -10,7 +10,7 @@
 #include <QStatusBar>
 #include "loader.h"
 #include "canvas.h"
-class Canvas;
+
 
 class Window : public QMainWindow
 {
