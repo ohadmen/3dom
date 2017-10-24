@@ -9,7 +9,17 @@ class GLMesh : protected QGLFunctions
 {
 public:
 	GLMesh() : m_vertices(QGLBuffer::VertexBuffer), m_indices(QGLBuffer::IndexBuffer)
-	{}
+	{
+
+	}
+	void init()
+	{
+		
+
+		m_meshShader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/mesh.vert");
+		m_meshShader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/mesh.frag");
+		m_meshShader.link();
+	}
 	void set(const Mesh&  mesh)
 		
 	{
@@ -30,8 +40,18 @@ public:
 		m_indices.release();
 		
 	}
-    void draw(GLuint vp)
+    void draw(const QMatrix4x4& transformMatrix, const QMatrix4x4& viewMatrix)
 	{
+		m_meshShader.bind();
+		glUniformMatrix4fv(
+			m_meshShader.uniformLocation("transform_matrix"),
+			1, GL_FALSE, transformMatrix.data());
+		glUniformMatrix4fv(
+			m_meshShader.uniformLocation("view_matrix"),
+			1, GL_FALSE, viewMatrix.data());
+		const GLuint vp = m_meshShader.attributeLocation("vertex_position");
+		glEnableVertexAttribArray(vp);
+
 		m_vertices.bind();
 		m_indices.bind();
 
@@ -44,10 +64,15 @@ public:
 
 		m_vertices.release();
 		m_indices.release();
+
+		// Clean up state machine
+		glDisableVertexAttribArray(vp);
+		m_meshShader.release();
 	}
 
 
 private:
+	QGLShaderProgram m_meshShader;
     QGLBuffer m_vertices;
     QGLBuffer m_indices;
 	

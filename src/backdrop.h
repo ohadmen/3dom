@@ -10,8 +10,13 @@ class Backdrop : protected QGLFunctions
 public:
 	Backdrop()
 	{
-		initializeGLFunctions();
 
+
+		
+	}
+	void init()
+	{
+		initializeGLFunctions();
 		shader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/quad.vert");
 		shader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/quad.frag");
 		shader.link();
@@ -19,15 +24,14 @@ public:
 		float vbuf[] = {
 			-1.0f, -1.0f, 0.00f, 0.10f, 0.15f,
 			-1.0f,  1.0f, 0.03f, 0.21f, 0.26f,
-			 1.0f, -1.0f, 0.00f, 0.12f, 0.18f,
-			 1.0f,  1.0f, 0.06f, 0.26f, 0.30f };
+			1.0f, -1.0f, 0.00f, 0.12f, 0.18f,
+			1.0f,  1.0f, 0.06f, 0.26f, 0.30f };
 
 		vertices.create();
 		vertices.bind();
 		vertices.allocate(vbuf, sizeof(vbuf));
 		vertices.release();
 	}
-
 	void draw()
 	{
 		shader.bind();

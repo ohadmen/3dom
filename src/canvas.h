@@ -42,7 +42,7 @@ public:
 
 	~Canvas()
 	{
-		delete m_backdrop;
+		
 
 	}
 
@@ -51,12 +51,10 @@ public:
 
 	void initializeGL()
 	{
-		initializeGLFunctions();
 
-		m_meshShader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/mesh.vert");
-		m_meshShader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/mesh.frag");
-		m_meshShader.link();
-		m_backdrop = new Backdrop();
+		initializeGLFunctions();
+		m_mesh.init();
+		m_backdrop.init();
 
 
 	}
@@ -68,8 +66,7 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
-		m_backdrop->draw();
-		
+		m_backdrop.draw();
 		draw_mesh();
 
 
@@ -90,16 +87,6 @@ public:
 		painter.setRenderHint(QPainter::Antialiasing);
 		painter.drawText(10, height() - 10, m_status);
 	}
-
-
-
-
-	//~Canvas()
-	//{
-	//	delete m_mesh;
-	//}
-
-
 
 
 
@@ -339,34 +326,26 @@ private:
 
 	void draw_mesh()
 	{
-		m_meshShader.bind();
+		//m_meshShader.bind();
 	
 		// Load the transform and view matrices into the shader
-		glUniformMatrix4fv(
-			m_meshShader.uniformLocation("transform_matrix"),
-			1, GL_FALSE, transform_matrix().data());
-		glUniformMatrix4fv(
-			m_meshShader.uniformLocation("view_matrix"),
-			1, GL_FALSE, view_matrix().data());
+
 
 		// Compensate for z-flattening when zooming
 		//glUniform1f(m_meshShader.uniformLocation("zoom"), 1 / m_zoom);
 
 		// Find and enable the attribute location for vertex position
-		const GLuint vp = m_meshShader.attributeLocation("vertex_position");
-		glEnableVertexAttribArray(vp);
 		
 		// Then draw the m_mesh with that vertex position
-		m_mesh.draw(vp);
+		m_mesh.draw(transform_matrix(),view_matrix());
 
 
-		// Clean up state machine
-		glDisableVertexAttribArray(vp);
+		
 
-		m_circles[0].draw();
-		m_lines[0].draw();
+		//m_circles[0].draw();
+		//m_lines[0].draw();
 
-		m_meshShader.release();
+		
 
 
 		
@@ -405,7 +384,7 @@ private:
 
 	const Mesh* m_meshDataP;
 	GLMesh m_mesh;
-	Backdrop* m_backdrop;
+	Backdrop m_backdrop;
 
 	QVector3D m_center;
 
