@@ -14,12 +14,12 @@ public:
 
 		
 	}
-	void init()
+	void glinit()
 	{
 		initializeGLFunctions();
-		shader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/quad.vert");
-		shader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/quad.frag");
-		shader.link();
+		m_shader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/quad.vert");
+		m_shader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/quad.frag");
+		m_shader.link();
 
 		float vbuf[] = {
 			-1.0f, -1.0f, 0.00f, 0.10f, 0.15f,
@@ -27,18 +27,18 @@ public:
 			1.0f, -1.0f, 0.00f, 0.12f, 0.18f,
 			1.0f,  1.0f, 0.06f, 0.26f, 0.30f };
 
-		vertices.create();
-		vertices.bind();
-		vertices.allocate(vbuf, sizeof(vbuf));
-		vertices.release();
+		m_vertices.create();
+		m_vertices.bind();
+		m_vertices.allocate(vbuf, sizeof(vbuf));
+		m_vertices.release();
 	}
 	void draw()
 	{
-		shader.bind();
-		vertices.bind();
+		m_shader.bind();
+		m_vertices.bind();
 
-		const GLuint vp = shader.attributeLocation("vertex_position");
-		const GLuint vc = shader.attributeLocation("vertex_color");
+		const GLuint vp = m_shader.attributeLocation("vertex_position");
+		const GLuint vc = m_shader.attributeLocation("vertex_color");
 
 		glEnableVertexAttribArray(vp);
 		glEnableVertexAttribArray(vc);
@@ -51,14 +51,14 @@ public:
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 8);
 
-		vertices.release();
-		shader.release();
+		m_vertices.release();
+		m_shader.release();
 	}
 
     
 private:
-    QGLShaderProgram shader;
-    QGLBuffer vertices;
+    QGLShaderProgram m_shader;
+    QGLBuffer m_vertices;
 };
 
 #endif // BACKDROP_H

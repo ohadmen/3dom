@@ -36,8 +36,8 @@ public:
 		setMouseTracking(true);
 		anim.setDuration(100);
 
-		m_circles.resize(3);
-		m_lines.resize(3);
+		m_circles.resize(1);
+		m_lines.resize(1);
 	}
 
 	~Canvas()
@@ -52,9 +52,18 @@ public:
 	void initializeGL()
 	{
 
-		initializeGLFunctions();
-		m_mesh.init();
-		m_backdrop.init();
+		
+		m_mesh.glinit();
+		m_backdrop.glinit();
+
+		
+		m_circles[0].setColor(1, 0, 0, .1);
+		m_circles[0].setLineWidth(1);
+		
+
+		m_lines[0].setColor(0, 1, 0, 1);
+		m_lines[0].setLineWidth(1);
+
 
 
 	}
@@ -67,7 +76,11 @@ public:
 		glEnable(GL_DEPTH_TEST);
 
 		m_backdrop.draw();
-		draw_mesh();
+		m_mesh.draw(transform_matrix(), view_matrix());
+		for (int i = 0; i != m_circles.size(); ++i)
+			m_circles[i].draw(transform_matrix(), view_matrix());
+		for (int i = 0; i != m_lines.size(); ++i)
+			m_lines[i].draw(transform_matrix(), view_matrix());
 
 
 
@@ -142,14 +155,16 @@ public:
 
 protected:
 
-//	void mouseDoubleClickEvent(QMouseEvent* event)
-//	{
-//		
-//		QVector3D r = privMousePos2ray(m_mousePos);
-//		r.normalize();
-//		QVector3D p = m_meshDataP->closest2ray(r);
-//
-//	}
+	void mouseDoubleClickEvent(QMouseEvent* event)
+	{
+		std::array<QVector3D, 2> r = privMousePos2ray();
+
+		std::array<QVector3D, 2> p = m_meshDataP->closest2ray(r[0], r[1]);
+		m_center = p[0];
+		update();
+		
+
+	}
 	void keyPressEvent(QKeyEvent * event)
 	{
 		static const float rad2deg = 90.0 / std::acos(0);
@@ -157,20 +172,23 @@ protected:
 		{
 
 			std::array<QVector3D,2> r = privMousePos2ray();
-			r[1].normalize();
-			QVector3D p= m_meshDataP->closest2ray(r[0],r[1]);
+			
+			std::array<QVector3D,2> p= m_meshDataP->closest2ray(r[0],r[1]);
+			
 			QMatrix4x4 t;
-
-	
+			
+			
 			//m_mousePos.x() / (0.5*width()), m_mousePos.y() / (0.5*height())
-			t.translate(p);
-			//t.rotate(std::acos(r[1][2])*rad2deg, QVector3D(r[1][1], -r[1][0], 0.0f));
-			t.scale(0.1f);
+			t.translate(p[0]);
+			t.rotate(-std::acos(p[1].z())*rad2deg, QVector3D(p[1].y(), -p[1].x(), 0.0f));
+			t.scale(0.05f);
 			m_circles[0].set(t);
-			//m_lines[0].set(p0, p1);
+			m_lines[0].set(p[0], p[0]+p[1]);
+			//m_lines[0].set(r[0], r[0] + r[1]);
 
-			set_status(QString::number(p.x()) + "," + QString::number(p.y()) + "," + QString::number(p.z()));
+			set_status(QString::number(p[0].x()) + "," + QString::number(p[0].y()) + "," + QString::number(p[0].z()));
 		}
+		
 	}
 
 	void mousePressEvent(QMouseEvent* event)
@@ -241,16 +259,16 @@ protected:
 		QVector3D a = transform_matrix().inverted() *
 			view_matrix().inverted() * v;
 		
-		if (event->delta() < 0)
-		{
-			for (int i = 0; i > event->delta(); --i)
-				m_zoom *= 1.001f;
-		}
-		else if (event->delta() > 0)
-		{
-			for (int i = 0; i < event->delta(); ++i)
-				m_zoom /= 1.001f;
-		}
+		//if (event->delta() < 0)
+		//{
+		//	for (int i = 0; i > event->delta(); --i)
+		//		m_zoom *= 1.001f;
+		//}
+		//else if (event->delta() > 0)
+		//{
+		//	for (int i = 0; i < event->delta(); ++i)
+		//		m_zoom /= 1.001f;
+		//}
 		
 		// Then find the cursor's GL position post-zoom and adjust m_center.
 		QVector3D b = transform_matrix().inverted() *
@@ -280,6 +298,7 @@ protected:
 
 
 
+
 private:
 
 
@@ -303,18 +322,18 @@ private:
 	//	
 	//}
 
+	
 
 	std::array<QVector3D,2> privMousePos2ray() const
 	{
-		//QVector3D p0 = transform_matrix().inverted() * view_matrix().inverted()*QVector3D(0, 0, -1);//cam center
-		//QVector3D p1 = transform_matrix().inverted() * view_matrix().inverted()*QVector3D(m_mousePos.x() * 2 / float(width()) - 1.0f, -(m_mousePos.y() * 2 / float(height()) - 1.0f), 0);//look point
 
 		std::array<QVector3D, 2> res =
 		{
-			transform_matrix().inverted() * view_matrix().inverted()*QVector3D(0, 0, -1),
-			transform_matrix().inverted() * view_matrix().inverted()*QVector3D(m_mousePos.x() * 2 / float(width()) - 1.0f, -(m_mousePos.y() * 2 / float(height()) - 1.0f), 1)
+			transform_matrix().inverted() * view_matrix().inverted()*QVector3D(0,0,-1),
+			transform_matrix().inverted() * view_matrix().inverted()*QVector3D(m_mousePos.x() * 2.0 / float(width()) - 1.0f, -(m_mousePos.y() * 2.0 / float(height()) - 1.0f),0)
 		};
-
+		res[1] = res[1] - res[0];
+		res[1].normalize();
 		return res;
 	}
 
@@ -324,33 +343,7 @@ private:
 		return value*qw->devicePixelRatio();
 	}
 
-	void draw_mesh()
-	{
-		//m_meshShader.bind();
 	
-		// Load the transform and view matrices into the shader
-
-
-		// Compensate for z-flattening when zooming
-		//glUniform1f(m_meshShader.uniformLocation("zoom"), 1 / m_zoom);
-
-		// Find and enable the attribute location for vertex position
-		
-		// Then draw the m_mesh with that vertex position
-		m_mesh.draw(transform_matrix(),view_matrix());
-
-
-		
-
-		//m_circles[0].draw();
-		//m_lines[0].draw();
-
-		
-
-
-		
-
-	}
 
 
 	QMatrix4x4 transform_matrix() const

@@ -12,10 +12,10 @@ public:
 	{
 
 	}
-	void init()
+	void glinit()
 	{
 		
-
+		initializeGLFunctions();
 		m_meshShader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/mesh.vert");
 		m_meshShader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/mesh.frag");
 		m_meshShader.link();

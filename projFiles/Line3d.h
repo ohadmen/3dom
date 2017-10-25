@@ -12,7 +12,7 @@ class Line3d
 	QVector3D m_p0;
 	QVector3D m_p1;
 	float m_linWidth;
-	std::array<float, 3> m_color;
+	std::array<float, 4> m_color;
 	bool m_active;
 
 
@@ -25,6 +25,7 @@ public:
 		m_color[0] = 0;
 		m_color[1] = 0;
 		m_color[2] = 0;
+		m_color[3] = 0;
 	}
 
 
@@ -43,23 +44,32 @@ public:
 		return m_active;
 	}
 
-	void draw()
+	void setLineWidth(float v)
+	{
+		m_linWidth = v;
+	}
+	void setColor(float r, float g, float b, float a)
+	{
+		m_color = { r,g,b,a };
+	}
+	void draw(const QMatrix4x4& transformMatrix, const QMatrix4x4& viewMatrix)
 	{
 		if (!m_active)
 			return;
 
-
-		// Save matrix state and do the custom rotation
-		glPushMatrix();
+		QMatrix4x4 m = viewMatrix*transformMatrix;
+		QVector3D p0 = m*m_p0;
+		QVector3D p1 = m*m_p1;
+		
+		
 		glColor3f(m_color[0], m_color[1], m_color[2]);
 		glLineWidth(m_linWidth);
 		glBegin(GL_LINE_STRIP);
-		glVertex3f(m_p0.x(), m_p0.y(), m_p0.z());
-		glVertex3f(m_p1.x(), m_p1.y(), m_p1.z());
+		glVertex3f(p0.x(), p0.y(), p0.z());
+		glVertex3f(p1.x(), p1.y(), p1.z());
 		glEnd();
 
-		// Restore the matrix state
-		glPopMatrix();
+	
 	}
 
 
