@@ -138,7 +138,7 @@ public:
 			QVector3D lower(m_meshDataP->xmin(), m_meshDataP->ymin(), m_meshDataP->zmin());
 			QVector3D upper(m_meshDataP->xmax(), m_meshDataP->ymax(), m_meshDataP->zmax());
 			m_center = (lower + upper) / 2;
-			
+
 			m_scale = 2 / (upper - lower).length();
 
 			// Reset other camera parameters
@@ -183,8 +183,8 @@ protected:
 			t.rotate(-std::acos(p[1].z())*rad2deg, QVector3D(p[1].y(), -p[1].x(), 0.0f));
 			t.scale(0.05f);
 			m_circles[0].set(t);
-			m_lines[0].set(p[0], p[0]+p[1]);
-			//m_lines[0].set(r[0], r[0] + r[1]);
+			//m_lines[0].set(p[0], p[0]+p[1]);
+			m_lines[0].set(r[0], r[0] + r[1]);
 
 			set_status(QString::number(p[0].x()) + "," + QString::number(p[0].y()) + "," + QString::number(p[0].z()));
 		}
@@ -238,19 +238,6 @@ protected:
 
 	void wheelEvent(QWheelEvent *event)
 	{
-		//QVector3D d = transform_matrix().inverted() * view_matrix().inverted()*QVector3D(0, 0, 1);//cam center
-		//
-		//d.normalize();
-		//if (event->delta() < 0)
-		//{
-
-		//	m_center += (m_camRotCenter + d)*.1;
-		//	//	d.norm
-		//}
-		//else
-		//{
-		//	m_center -= d;
-		//}
 
 
 		auto p = event->pos();
@@ -259,18 +246,6 @@ protected:
 		QVector3D a = transform_matrix().inverted() *
 			view_matrix().inverted() * v;
 		
-		//if (event->delta() < 0)
-		//{
-		//	for (int i = 0; i > event->delta(); --i)
-		//		m_zoom *= 1.001f;
-		//}
-		//else if (event->delta() > 0)
-		//{
-		//	for (int i = 0; i < event->delta(); ++i)
-		//		m_zoom /= 1.001f;
-		//}
-		
-		// Then find the cursor's GL position post-zoom and adjust m_center.
 		QVector3D b = transform_matrix().inverted() *
 			view_matrix().inverted() * v;
 		m_center += b - a;
@@ -351,7 +326,7 @@ private:
 		QMatrix4x4 m;
 		m.rotate(m_tilt, QVector3D(1, 0, 0));
 		m.rotate(m_yaw, QVector3D(0, 0, 1));
-		m.scale(-m_scale, m_scale, -m_scale);
+		m.scale(-m_scale, -m_scale, -m_scale);
 		m.translate(-m_center);
 		return m;
 	}

@@ -23,7 +23,7 @@ public:
 		if (argc > 1)
 			window->load_stl(argv[1]);
 		else
-			window->load_stl(":gl/horse.stl");
+			window->load_stl(":gl/sphere.stl");
 		window->show();
 	}
 
