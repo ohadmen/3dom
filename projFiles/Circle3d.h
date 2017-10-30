@@ -45,7 +45,7 @@ public:
 	{
 		m_linWidth = v;
 	}
-	void setColor(float r, float g, float b, float a)
+	void setColor(float r, float g, float b, float a=1)
 	{
 		m_color = { r,g,b,a };
 	}
