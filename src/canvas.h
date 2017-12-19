@@ -26,8 +26,7 @@ class Canvas : public QGLWidget, protected QGLFunctions
 public:
 	Canvas(const QGLFormat& format, QWidget *parent = 0)
 		: QGLWidget(format, parent), m_mesh(),
-		m_scale(1), m_zoom(1), m_tilt(90), m_yaw(0),
-		perspective(0.25), anim(this, "perspective"), m_status(" ")
+		 anim(this, "perspective"), m_status(" ")
 	{
 		QFile styleFile("style.qss");
 		styleFile.open(QFile::ReadOnly);
@@ -36,13 +35,13 @@ public:
 		setMouseTracking(true);
 		anim.setDuration(100);
 
-		m_circles.resize(1);
+		m_circles.resize(2);
 		m_lines.resize(1);
 	}
 
 	~Canvas()
 	{
-		
+
 
 	}
 
@@ -52,17 +51,23 @@ public:
 	void initializeGL()
 	{
 
-		
 		m_mesh.glinit();
-		m_backdrop.glinit();
+		//m_backdrop.glinit();
 
-		
-		m_circles[0].setColor(1, 0, 0, .1);
+		QMatrix4x4 s1; s1.scale(1);
+		QMatrix4x4 s2; s1.scale(.5);
+
+		m_circles[0].setColor(1, 0, 0);
 		m_circles[0].setLineWidth(1);
-		
+		m_circles[0].set(s1);
+
+		m_circles[1].setColor(0, 1, 0);
+		m_circles[1].setLineWidth(1);
+		m_circles[1].set(s2);
 
 		m_lines[0].setColor(0, 1, 0, 1);
 		m_lines[0].setLineWidth(1);
+
 
 
 
@@ -75,21 +80,28 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
-		m_backdrop.draw();
-		m_mesh.draw(transform_matrix(), view_matrix());
+
+		//m_backdrop.draw();
+
+
+		m_mesh.draw(privTmat(), privVmat());
 		for (int i = 0; i != m_circles.size(); ++i)
-			m_circles[i].draw(transform_matrix(), view_matrix());
+			m_circles[i].draw(privTmat(), privVmat());
 		for (int i = 0; i != m_lines.size(); ++i)
-			m_lines[i].draw(transform_matrix(), view_matrix());
+			m_lines[i].draw(privTmat(), privVmat());
 
 
 
 
-		
 
-		
 
-	
+		//glPointSize(10);
+		//glColor3f(1, 1, .5);
+		//glBegin(GL_POINTS);
+		//glVertex3f(.5, 0, 0);
+		//glEnd();
+
+
 
 
 		//DrawCircle(0.1, 0.5, 0, 0.1);
@@ -128,28 +140,29 @@ public:
 	}
 	void load_mesh(int token, bool is_reload)
 	{
-		
-		m_meshDataP  = MeshArray::i().getToken(token);
-		
+
+		m_meshDataP = MeshArray::i().getToken(token);
+
 		m_mesh.set(*m_meshDataP);
 
 		if (!is_reload)
 		{
+	
 			QVector3D lower(m_meshDataP->xmin(), m_meshDataP->ymin(), m_meshDataP->zmin());
 			QVector3D upper(m_meshDataP->xmax(), m_meshDataP->ymax(), m_meshDataP->zmax());
 			m_center = (lower + upper) / 2;
-
-			m_scale = 2 / (upper - lower).length();
+			m_eye = m_center + QVector3D(0, -m_meshDataP->zmax()*2, 0);
+			m_upvec = QVector3D(0, 0, 1);
+			//m_scale = 1;
 
 			// Reset other camera parameters
-			m_zoom = 1;
-			m_yaw = 0;
-			m_tilt = 90;
+
+
 		}
 
 		update();
 
-		
+
 	}
 
 
@@ -157,12 +170,12 @@ protected:
 
 	void mouseDoubleClickEvent(QMouseEvent* event)
 	{
-		std::array<QVector3D, 2> r = privMousePos2ray();
+		QVector3D r = privMousePos2ray(m_mousePos);
 
-		std::array<QVector3D, 2> p = m_meshDataP->closest2ray(r[0], r[1]);
+		std::array<QVector3D, 2> p = m_meshDataP->closest2ray(m_eye, r);
 		m_center = p[0];
 		update();
-		
+
 
 	}
 	void keyPressEvent(QKeyEvent * event)
@@ -171,24 +184,25 @@ protected:
 		if (event->key() == Qt::Key_C)
 		{
 
-			std::array<QVector3D,2> r = privMousePos2ray();
-			
-			std::array<QVector3D,2> p= m_meshDataP->closest2ray(r[0],r[1]);
-			
+			QVector3D r = privMousePos2ray(m_mousePos);
+
+			std::array<QVector3D, 2> p = m_meshDataP->closest2ray(m_eye, r);
+
+
 			QMatrix4x4 t;
-			
-			
+
+
 			//m_mousePos.x() / (0.5*width()), m_mousePos.y() / (0.5*height())
 			t.translate(p[0]);
 			t.rotate(-std::acos(p[1].z())*rad2deg, QVector3D(p[1].y(), -p[1].x(), 0.0f));
 			t.scale(0.05f);
 			m_circles[0].set(t);
-			//m_lines[0].set(p[0], p[0]+p[1]);
-			m_lines[0].set(r[0], r[0] + r[1]);
+			m_lines[0].set(p[0], p[0]+p[1]);
+			//m_lines[0].set(r[0], r[0] + r[1]);
 
 			set_status(QString::number(p[0].x()) + "," + QString::number(p[0].y()) + "," + QString::number(p[0].z()));
 		}
-		
+
 	}
 
 	void mousePressEvent(QMouseEvent* event)
@@ -212,43 +226,53 @@ protected:
 
 	void mouseMoveEvent(QMouseEvent* event)
 	{
-		auto p = event->pos();
-		auto d = p - m_mousePos;
+		auto oldPos = event->pos();
+		auto d = oldPos - m_mousePos;
+		m_mousePos = oldPos;
+
+		QVector3D rayO = privMousePos2ray(oldPos);
+		QVector3D rayO = privMousePos2ray(m_mousePos);
 
 
 		if (event->buttons() & Qt::LeftButton)
 		{
-			m_yaw = fmod(m_yaw - d.x(), 360);
-			m_tilt = fmod(m_tilt - d.y(), 360);
+			QVector3D n = m_eye - m_center;
+			float yaw = fmod( -d.x(), 360);
+			float tilt = fmod( -d.y(), 360);
+			QMatrix4x4 m;
+			m.rotate(tilt, QVector3D::crossProduct(m_upvec,n));
+			m.rotate(yaw, m_upvec);
+			n = m*n;
+			m_eye = m_center + n;
+
 			update();
 		}
 		else if (event->buttons() & Qt::MiddleButton)
 		{
-			m_center = transform_matrix().inverted() *
-				view_matrix().inverted() *
-				QVector3D(-d.x() / (0.5*width()),
-					d.y() / (0.5*height()), 0);
+			QVector3D n = m_eye - m_center;
+
+			QMatrix4x4 m;
+			m.translate(-d.x()*QVector3D::crossProduct(m_upvec, n));
+			m.translate(-d.y()*m_upvec);
+			m_center = m*m_center;
+			m_eye = m*m_eye;
 			update();
 		}
 
 
 
-		m_mousePos = p;
+		
 	}
 
 	void wheelEvent(QWheelEvent *event)
 	{
 
-
-		auto p = event->pos();
-		QVector3D v(1 - p.x() / (0.5*width()),
-			p.y() / (0.5*height()) - 1, 0);
-		QVector3D a = transform_matrix().inverted() *
-			view_matrix().inverted() * v;
+		QPoint numDegrees = event->angleDelta() / 8;
 		
-		QVector3D b = transform_matrix().inverted() *
-			view_matrix().inverted() * v;
-		m_center += b - a;
+		auto n = m_eye- m_center;
+		n *= numDegrees.y() > 0 ? 9.0/10 : 10.0/9;
+		m_eye = m_center + n;
+		
 		update();
 	}
 
@@ -258,13 +282,13 @@ protected:
 	}
 	void set_perspective(float p)
 	{
-		perspective = p;
+		//perspective = p;
 		update();
 	}
 
 	void view_anim(float v)
 	{
-		anim.setStartValue(perspective);
+		//anim.setStartValue(perspective);
 		anim.setEndValue(v);
 		anim.start();
 	}
@@ -276,6 +300,13 @@ protected:
 
 private:
 
+	static float privZnear(float s=0)
+	{
+		float v = 0.01;
+		if (s != 0)
+			s = v;
+		return v;
+	}
 
 
 	//void DrawCircle(float cx, float cy, float cz, float r)
@@ -297,53 +328,49 @@ private:
 	//	
 	//}
 
-	
 
-	std::array<QVector3D,2> privMousePos2ray() const
+
+	QVector3D privMousePos2ray(const QPoint& mp) const
 	{
 
-		std::array<QVector3D, 2> res =
-		{
-			transform_matrix().inverted() * view_matrix().inverted()*QVector3D(0,0,-1),
-			transform_matrix().inverted() * view_matrix().inverted()*QVector3D(m_mousePos.x() * 2.0 / float(width()) - 1.0f, -(m_mousePos.y() * 2.0 / float(height()) - 1.0f),0)
-		};
-		res[1] = res[1] - res[0];
-		res[1].normalize();
+
+		QVector4D pB(mp.x() * 2.0 / float(width()) - 1.0f, -(mp.y() * 2.0 / float(height()) - 1.0f), 1, 1);
+		pB = privTmat().inverted()*privVmat().inverted()*pB;
+		pB /= pB.w();
+
+
+		QVector3D res = (pB - m_eye).toVector3D();
+		res.normalize();
 		return res;
 	}
 
-	 template < class ValueType>
-	 static	inline ValueType QTLogicalToDevice(QWidget *qw, const ValueType &value)
+	template < class ValueType>
+	static	inline ValueType QTLogicalToDevice(QWidget *qw, const ValueType &value)
 	{
 		return value*qw->devicePixelRatio();
 	}
 
-	
-
-
-	QMatrix4x4 transform_matrix() const
+	//transformation matrix
+	QMatrix4x4 privTmat() const
 	{
 		QMatrix4x4 m;
-		m.rotate(m_tilt, QVector3D(1, 0, 0));
-		m.rotate(m_yaw, QVector3D(0, 0, 1));
-		m.scale(-m_scale, -m_scale, -m_scale);
-		m.translate(-m_center);
+		m.lookAt(m_eye, m_center, m_upvec);
 		return m;
 	}
-
-	QMatrix4x4 view_matrix() const
+	//view Matrix
+	QMatrix4x4 privVmat() const
 	{
 		QMatrix4x4 m;
-		if (width() > height())
-		{
-			m.scale(-height() / float(width()), 1, 0.5);
-		}
-		else
-		{
-			m.scale(-1, width() / float(height()), 0.5);
-		}
-		m.scale(m_zoom, m_zoom, 1);
-		m(3, 2) = perspective;
+
+		float ratio = width() / (float)height();
+
+		//m.ortho(-ratio, ratio, -1.f, 1.f, 0.f, 10.f);
+		
+		//m.frustum(-ratio*S, ratio*S, -S, S, S, 100.f);
+		m.perspective(45, ratio, privZnear(), 10.f);
+		
+
+
 		return m;
 	}
 
@@ -354,14 +381,17 @@ private:
 	GLMesh m_mesh;
 	Backdrop m_backdrop;
 
+	QVector3D m_eye;
 	QVector3D m_center;
+	QVector3D m_upvec;
 
-	float m_scale;
-	float m_zoom;
-	float m_tilt;
-	float m_yaw;
 
-	float perspective;
+	//float m_zoom;
+	//float m_scale;
+	//float m_tilt;
+	//float m_yaw;
+	//
+	//float perspective;
 
 
 

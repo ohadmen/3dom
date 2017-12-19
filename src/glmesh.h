@@ -46,6 +46,7 @@ public:
 		glUniformMatrix4fv(
 			m_meshShader.uniformLocation("transform_matrix"),
 			1, GL_FALSE, transformMatrix.data());
+
 		glUniformMatrix4fv(
 			m_meshShader.uniformLocation("view_matrix"),
 			1, GL_FALSE, viewMatrix.data());
