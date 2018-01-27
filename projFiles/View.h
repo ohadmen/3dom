@@ -1,6 +1,7 @@
 #pragma once
 #include <QMatrix4x4>
 #include <QtOpenGL/QGLFunctions>
+#include <Q3d\QLine3D.h>
 #include <array>
 
 #include "GeomObjs.h"
@@ -10,18 +11,19 @@ class View {
 	QMatrix4x4 matrix;
 	QMatrix4x4 inverse;
 	int viewport[4];
-	bool isOrtho;
+	bool m_isOrtho;
 	
 public:
-	View() :isOrtho(false) {}
+	View() :m_isOrtho(false) {}
 
+	bool isOrtho() const { return m_isOrtho; }
 	void getView() {
 		glGetFloatv(GL_PROJECTION_MATRIX, proj.data());
 		glGetFloatv(GL_MODELVIEW_MATRIX, model.data());
 		glGetIntegerv(GL_VIEWPORT, (GLint*)viewport);
 
-		if (proj(3,3) == 0) isOrtho = false;
-		else isOrtho = true;
+		if (proj(3,3) == 0) m_isOrtho = false;
+		else m_isOrtho = true;
 
 		matrix = proj*model;
 		inverse = matrix.inverted();
@@ -40,7 +42,7 @@ public:
 	}
 	QVector3D viewPoint() const {
 
-		return  model.inverted()*QVector3D(0, 0, isOrtho ? 3 : 0);
+		return  model.inverted()*QVector3D(0, 0, m_isOrtho ? 3 : 0);
 	}
 	
 
@@ -63,7 +65,7 @@ public:
 	{
 		
 		QVector3D vp = viewPoint();
-		return Ray(isOrtho ? p : vp, isOrtho ? -vp : (p - vp));
+		return Ray(m_isOrtho ? p : vp, m_isOrtho ? -vp : (p - vp));
 	
 	}
 
@@ -72,7 +74,7 @@ public:
 	{
 		QVector3D vp = viewPoint();
 		QVector3D pp = unProject(p);
-		return Ray(isOrtho ? pp : vp, isOrtho ? -vp : (pp - vp));
+		return Ray(m_isOrtho ? pp : vp, m_isOrtho ? -vp : (pp - vp));
 		
 	}
 
@@ -108,4 +110,41 @@ public:
 		return a;
 	}
 
+	// Note that p it is assumed to be in model coordinate.
+	QLine3D viewLineFromModel(const QVector3D &p) const
+	{
+		QLine3D line;
+		QVector3D vp = viewPoint();
+		if (m_isOrtho) {
+			line = QLine3D(p, -vp + p);
+			//line.setOrigin(p);
+			//line.direction(-vp);
+		}
+		else {
+			line = QLine3D(vp, p);
+			//line.SetOrigin(vp);
+			//line.SetDirection(p - vp);
+		}
+		return line;
+	}
+
+	// Note that p it is assumed to be in window coordinate.
+	QLine3D viewLineFromWindow(const QVector3D &p) const
+	{
+		QLine3D line;  // plane perpedicular to view direction and passing through manip center
+		QVector3D vp = viewPoint();
+		QVector3D pp = unProject(p);
+
+		if (m_isOrtho) {
+			line = QLine3D(pp, -vp + pp);
+			//line.SetOrigin(pp);
+			//line.SetDirection(-vp);
+		}
+		else {
+			line = QLine3D(vp,  pp);
+			//line.SetOrigin(vp);
+			//line.SetDirection(pp - vp);
+		}
+		return line;
+	}
 };
