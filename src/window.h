@@ -147,37 +147,37 @@ public:
 		file_menu->addAction(autoreload_action);
 		file_menu->addAction(quit_action);
 
-		auto view_menu = menuBar()->addMenu("View");
-		auto projection_menu = view_menu->addMenu("Projection");
-		projection_menu->addAction(perspective_action);
-		projection_menu->addAction(orthogonal_action);
-		auto projections = new QActionGroup(projection_menu);
-		for (auto p : { perspective_action, orthogonal_action })
-		{
-			projections->addAction(p);
-			p->setCheckable(true);
-		}
-		perspective_action->setChecked(true);
-		projections->setExclusive(true);
-		QObject::connect(projections, &QActionGroup::triggered,
-			this, &Window::on_projection);
+		//auto view_menu = menuBar()->addMenu("View");
+		//auto projection_menu = view_menu->addMenu("Projection");
+		//projection_menu->addAction(perspective_action);
+		//projection_menu->addAction(orthogonal_action);
+		//auto projections = new QActionGroup(projection_menu);
+		//for (auto p : { perspective_action, orthogonal_action })
+		//{
+		//	projections->addAction(p);
+		//	p->setCheckable(true);
+		//}
+		//perspective_action->setChecked(true);
+		//projections->setExclusive(true);
+		//QObject::connect(projections, &QActionGroup::triggered,
+		//	this, &Window::on_projection);
 
 
 
-		auto texture_menu = view_menu->addMenu("Texture");
-		texture_menu->addAction(txtureMapping_none);
-		texture_menu->addAction(txtureMapping_normal);
-		texture_menu->addAction(txtureMapping_texture);
-		auto textures = new QActionGroup(texture_menu);
-		for (auto p : { txtureMapping_none, txtureMapping_normal,txtureMapping_texture })
-		{
-			textures->addAction(p);
-			p->setCheckable(true);
-		}
-		txtureMapping_none->setChecked(true);
-		textures->setExclusive(true);
-		QObject::connect(textures, &QActionGroup::triggered,
-			this, &Window::on_texture);
+		//auto texture_menu = view_menu->addMenu("Texture");
+		//texture_menu->addAction(txtureMapping_none);
+		//texture_menu->addAction(txtureMapping_normal);
+		//texture_menu->addAction(txtureMapping_texture);
+		//auto textures = new QActionGroup(texture_menu);
+		//for (auto p : { txtureMapping_none, txtureMapping_normal,txtureMapping_texture })
+		//{
+		//	textures->addAction(p);
+		//	p->setCheckable(true);
+		//}
+		//txtureMapping_none->setChecked(true);
+		//textures->setExclusive(true);
+		//QObject::connect(textures, &QActionGroup::triggered,
+		//	this, &Window::on_texture);
 
 
 
@@ -338,28 +338,28 @@ protected:
 	}
 
 	private slots:
-	void on_projection(QAction* proj)
-	{
-		if (proj == perspective_action)
-		{
-			m_canvas->view_perspective();
-		}
-		else
-		{
-			m_canvas->view_orthographic();
-		}
-	}
-	void on_texture(QAction* proj)
-	{
-		if (proj == perspective_action)
-		{
-			m_canvas->view_perspective();
-		}
-		else
-		{
-			m_canvas->view_orthographic();
-		}
-	}
+	//void on_projection(QAction* proj)
+	//{
+	//	if (proj == perspective_action)
+	//	{
+	//		m_canvas->view_perspective();
+	//	}
+	//	else
+	//	{
+	//		m_canvas->view_orthographic();
+	//	}
+	//}
+	//void on_texture(QAction* proj)
+	//{
+	//	if (proj == perspective_action)
+	//	{
+	//		m_canvas->view_perspective();
+	//	}
+	//	else
+	//	{
+	//		m_canvas->view_orthographic();
+	//	}
+	//}
 
 
 

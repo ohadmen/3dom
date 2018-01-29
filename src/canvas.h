@@ -2,10 +2,8 @@
 #define CANVAS_H
 
 #include <QWidget>
-#include <QPropertyAnimation>
-#include <QtOpenGL/QGLWidget>
-#include <QtOpenGL/QGLFunctions>
-#include <QtOpenGL/QGLShaderProgram>
+//#include <QPropertyAnimation>
+//#include <QtOpenGL/QGLShaderProgram>
 #include <QMatrix4x4>
 #include <QMouseEvent>
 #include <QDebug>
@@ -18,21 +16,22 @@
 #include "Trackball.h"
 
 
-class Canvas : public QGLWidget, protected QGLFunctions
+class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
 	Q_OBJECT
 
 public:
 	Canvas(const QGLFormat& format, QWidget *parent = 0)
-		: QGLWidget(format, parent), m_mesh(),
-		 anim(this, "perspective"), m_status(" ")
+		: QOpenGLWidget(parent), m_mesh()
+		 //,anim(this, "perspective"), m_status(" ")
 	{
-		QFile styleFile("style.qss");
-		styleFile.open(QFile::ReadOnly);
-		setStyleSheet(styleFile.readAll());
-		setFocusPolicy(Qt::StrongFocus);//catching keyboard events
-		setMouseTracking(true);
-		anim.setDuration(100);
+
+		//QFile styleFile("style.qss");
+		//styleFile.open(QFile::ReadOnly);
+		//setStyleSheet(styleFile.readAll());
+		//setFocusPolicy(Qt::StrongFocus);//catching keyboard events
+		//setMouseTracking(true);
+		//anim.setDuration(100);
 
 	}
 
@@ -47,26 +46,25 @@ public:
 
 	void initializeGL()
 	{
-
+		initializeOpenGLFunctions();
 		m_mesh.glinit();
 		//m_backdrop.glinit();
 
 
 
 	}
-	void paintEvent(QPaintEvent *event)
+	void paintGL()
 	{
-		Q_UNUSED(event);
+		
 
-		glClearColor(0.0, 0.0, 0.0, 0.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
+		
 
 
 		//m_backdrop.draw();
 
 
-		m_mesh.draw(privTmat(), privVmat());
+		//m_mesh.draw(privTmat(), privVmat());
 
 
 
@@ -92,15 +90,15 @@ public:
 
 
 
-	void view_orthographic()
-	{
-		view_anim(0);
-	}
-
-	void view_perspective()
-	{
-		view_anim(0.25);
-	}
+	//void view_orthographic()
+	//{
+	//	view_anim(0);
+	//}
+	//
+	//void view_perspective()
+	//{
+	//	view_anim(0.25);
+	//}
 
 
 	public slots:
@@ -165,7 +163,7 @@ protected:
 		//trackball.MouseDown(e->x(), width() - e->y(), Trackball::BUTTON_LEFT);       
 		// if(e->button() == Qt::RightButton)
 		//   trackball.MouseDown(e->x(), width() - e->y(), Trackball::BUTTON_LEFT | Trackball::KEY_CTRL);       
-		updateGL();
+		update();
 	}
 
 	void mouseReleaseEvent(QMouseEvent *e) {
@@ -185,37 +183,32 @@ protected:
 
 	void mouseMoveEvent(QMouseEvent *e) {
 		m_tb.MouseMove(e->x(), height() - e->y());
-		updateGL();
+		update();
 	}
 
 	void wheelEvent(QWheelEvent *event)
 	{
 
-		QPoint numDegrees = event->angleDelta() / 8;
-		
-		auto n = m_eye- m_center;
-		n *= numDegrees.y() > 0 ? 9.0/10 : 10.0/9;
-		m_eye = m_center + n;
-
-		update();
+	
 	}
 
 	void resizeGL(int width, int height)
 	{
 		glViewport(0, 0, width, height);
+		
 	}
-	void set_perspective(float p)
-	{
-		//perspective = p;
-		update();
-	}
-
-	void view_anim(float v)
-	{
-		//anim.setStartValue(perspective);
-		anim.setEndValue(v);
-		anim.start();
-	}
+	//void set_perspective(float p)
+	//{
+	//	//perspective = p;
+	//	update();
+	//}
+	//
+	//void view_anim(float v)
+	//{
+	//	//anim.setStartValue(perspective);
+	//	anim.setEndValue(v);
+	//	anim.start();
+	//}
 
 
 
@@ -224,90 +217,14 @@ protected:
 
 private:
 
-	static float privZnear(float s=0)
-	{
-		float v = 0.01;
-		if (s != 0)
-			s = v;
-		return v;
-	}
-	static float privFOV(float s = 0)
-	{
-		float v = 45;
-		if (s != 0)
-			s = v;
-		return v;
-	}
-	float privTBradius()
-	{
-		float v = std::min(width(),height())/3;
-		return v;
-	}
-
-
-
-	//void DrawCircle(float cx, float cy, float cz, float r)
-	//{
-	//	static const float pi = std::acos(0.0)*2;
-	//	static const int num_segments = 32;
-	//	static const float theta = 2 * pi / float(num_segments);
-	//
-	//	glLineWidth(10);
-	//	glColor3f(0.0f, 1.0f, 0.0f);
-	//	glBegin(GL_LINE_LOOP);
-	//	for (int ii = 0; ii < num_segments; ii++)
-	//	{
-
-	//		glVertex3f( cx + r*std::cos(theta*ii), cy+r*std::sin(theta*ii),cz);//output vertex 
-
-	//	}
-	//	glEnd();
-	//	
-	//}
-
-
-
-	QVector3D privMousePos2ray(const QPoint& mp) const
-	{
-
-
-		QVector4D pB(mp.x() * 2.0 / float(width()) - 1.0f, -(mp.y() * 2.0 / float(height()) - 1.0f), 1, 1);
-		pB = privTmat().inverted()*privVmat().inverted()*pB;
-		pB /= pB.w();
-
-
-		QVector3D res = (pB - m_eye).toVector3D();
-		res.normalize();
-		return res;
-	}
-
+	
 	template < class ValueType>
 	static	inline ValueType QTLogicalToDevice(QWidget *qw, const ValueType &value)
 	{
 		return value*qw->devicePixelRatio();
 	}
 
-	//transformation matrix
-	QMatrix4x4 privTmat() const
-	{
-		QMatrix4x4 m;
-		m.lookAt(m_eye, m_center, m_upvec);
-		return m;
-	}
-	//view Matrix
-	QMatrix4x4 privVmat() const
-	{
-		QMatrix4x4 m;
-
-		float ratio = width() / (float)height();
-		//m.ortho(-ratio, ratio, -1.f, 1.f, 0.f, 10000.f);
-		//m.frustum(-ratio*S, ratio*S, -S, S, S, 10000.f);
-		m.perspective(privFOV(), ratio, privZnear(), 10000.f);
-		
-
-
-		return m;
-	}
+	
 
 	QGLShaderProgram m_meshShader;
 	//QGLShaderProgram m_quadShader;
@@ -334,14 +251,10 @@ private:
 	//	vcg::Trackball m_trackball_light;
 
 
-	Q_PROPERTY(float perspective WRITE set_perspective);
-	QPropertyAnimation anim;
+	//Q_PROPERTY(float perspective WRITE set_perspective);
+	//QPropertyAnimation anim;
 
-	QPoint m_mousePos;
-	QVector3D m_mouseRay;
-	QPoint m_mousePressPos;
-	QVector3D m_mousePressEye;
-	QVector3D m_mousePressUpvec;
+
 	QString m_status;
 	Trackball m_tb;
 

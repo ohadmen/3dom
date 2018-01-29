@@ -7,7 +7,21 @@
 #include "Similarity.h"
 class Trackball
 {
+	std::map<int, TrackMode *> m_modes;
+	View m_camera;
+	int current_button;
+	//TODO: needs to move inside modes!!!
+	TrackMode* current_mode;
+	TrackMode* m_idle_and_keys_mode;
+	TrackMode* m_inactive_mode;
+	QVector3D m_center;
+	float m_radius;
+	Similarity m_track;
+	Similarity m_undoTrack;
+	Similarity m_lastTrack;
+	std::vector<QVector3D> m_hits;
 
+	QVector3D m_lastPoint;
 	enum Button {
 		BUTTON_NONE = 0x0000, ///< No button or key pressed.
 		BUTTON_LEFT = 0x0001, ///< Left mouse button pressed.
@@ -94,9 +108,9 @@ class Trackball
 		m_modes[BUTTON_LEFT] = new SphereMode();
 		m_modes[BUTTON_LEFT | KEY_CTRL] = new PanMode();
 		m_modes[BUTTON_MIDDLE] = new PanMode();
-		m_modes[WHEEL] =
-		m_modes[BUTTON_LEFT | KEY_SHIFT] = new ScaleMode();
-		m_modes[BUTTON_LEFT | KEY_ALT] = new ZMode();
+		//m_modes[WHEEL] =
+		//m_modes[BUTTON_LEFT | KEY_SHIFT] = new ScaleMode();
+		//m_modes[BUTTON_LEFT | KEY_ALT] = new ZMode();
 
 	}
 public:
@@ -121,7 +135,13 @@ public:
 		privClearModes();
 		delete  m_inactive_mode;
 	}
-	Trackball() :m_radius(1), m_center(0, 0, 0) {
+	Trackball():
+		m_radius(1),
+		m_center(0, 0, 0),
+		current_mode        (nullptr),
+		m_idle_and_keys_mode(nullptr),
+		m_inactive_mode		(nullptr)
+	{
 		privSetDefaultMapping();
 	}
 
@@ -142,7 +162,7 @@ public:
 
 
 	void MouseMove(int x, int y) {
-		if (current_mode == NULL) return;
+		if (current_mode == nullptr) return;
 		if (m_lastPoint[2] == -1) { //changed mode in the middle of moving
 			m_lastPoint = QVector3D((float)x, (float)y, 0);
 			return;
@@ -169,22 +189,6 @@ public:
 	}
 
 
-private:
-	std::map<int, TrackMode *> m_modes;
-	View m_camera;
-	int current_button;
-	//TODO: needs to move inside modes!!!
-	TrackMode* current_mode;
-	TrackMode* m_idle_and_keys_mode;
-	TrackMode* m_inactive_mode;
 
-
-	QVector3D m_center;
-	float m_radius;
-	Similarity m_track;
-	Similarity m_undoTrack;
-	Similarity m_lastTrack;
-	std::vector<QVector3D> m_hits;
-
-	QVector3D m_lastPoint;
+	
 };
