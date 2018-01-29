@@ -80,7 +80,7 @@ public:
 			drawPlaneHandle();
 	}
 
-	static void DrawSphereIcon(const Trackball& tb, bool active, bool planeshandle = false)
+	static void drawSphereIcon(const Trackball& tb, bool active, bool planeshandle = false)
 	{
 		glPushAttrib(GL_TRANSFORM_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT | GL_LINE_BIT | GL_CURRENT_BIT | GL_LIGHTING_BIT);
 		glMatrixMode(GL_MODELVIEW);
@@ -89,10 +89,11 @@ public:
 
 		auto track = tb.getTrack();
 
-		QVector3D center = tb.center() + track.inverted()*QVector3D(0, 0, 0);
+		QVector3D center = tb.getCenter() + track.inverted()*QVector3D(0, 0, 0);
 
 		glTranslatef(center.x(), center.y(), center.z());
-		glScalef(tb.radius() / track.m11, tb.radius() / track.m22, tb.radius() / track.m33);
+		float s = tb.getRadius() / track.scale();
+		glScalef(s,s,s);
 
 
 		float amb[4] = { .35f, .35f, .35f, 1.0f };
@@ -138,6 +139,15 @@ public:
 		QPlane3D pl(plnorm, QVector3D::dotProduct(plnorm,center));
 		
 		return pl;
+	}
+	static QVector3D hitViewPlane(const View& camera, const QVector3D& center, const QVector3D& p)
+	{
+		QPlane3D vp = getViewPlane(camera.viewPoint(), center);
+		QLine3D ln = camera.viewLineFromWindow(QVector3D(p[0], p[1], 0));
+		QVector3D PonVP;
+		vp.intersection(ln, &PonVP);
+		
+		return PonVP;
 	}
 	static bool hitHyper(const QVector3D& center, float radius, const QVector3D& viewpoint, const QPlane3D& viewplane, const QVector3D& hitOnViewplane, QVector3D* hitP)
 	{
@@ -209,7 +219,7 @@ public:
 	}
 	static QVector3D hitSphere(const Trackball& tb, const QVector3D & p)
 	{
-		QVector3D center = tb.center();
+		QVector3D center = tb.getCenter();
 		auto camera = tb.getCamera();
 		
 		QLine3D ln = camera.viewLineFromWindow(QVector3D(p[0], p[1], 0));
@@ -218,7 +228,7 @@ public:
 			
 	
 
-		QSphere3D sphere(center, tb.radius());//trackball sphere
+		QSphere3D sphere(center, tb.getRadius());//trackball sphere
 		QVector3D hitSphere1, hitSphere2;
 		bool resSp = sphere.intersection(ln,&hitSphere1, &hitSphere2);
 
@@ -237,9 +247,9 @@ public:
 		vp.intersection(ln, &hitPlane);
 		QVector3D hitHyperPt;
 		if (camera.isOrtho())
-			resHp = hitHyperOrtho(center, tb.radius(), viewpoint, vp, hitPlane, &hitHyperPt);
+			resHp = hitHyperOrtho(center, tb.getRadius(), viewpoint, vp, hitPlane, &hitHyperPt);
 		else
-			resHp = hitHyper(center, tb.radius(), viewpoint, vp, hitPlane, &hitHyperPt);
+			resHp = hitHyper(center, tb.getRadius(), viewpoint, vp, hitPlane, &hitHyperPt);
 
 		// four cases
 

@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="TrackMode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeomObjs.h" />

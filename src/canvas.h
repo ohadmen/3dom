@@ -15,8 +15,7 @@
 #include "backdrop.h"
 #include "glmesh.h"
 #include "mesh.h"
-#include "circle3d.h"
-#include "Line3d.h"
+#include "Trackball.h"
 
 
 class Canvas : public QGLWidget, protected QGLFunctions
@@ -35,8 +34,6 @@ public:
 		setMouseTracking(true);
 		anim.setDuration(100);
 
-		m_circles.resize(2);
-		m_lines.resize(1);
 	}
 
 	~Canvas()
@@ -54,21 +51,6 @@ public:
 		m_mesh.glinit();
 		//m_backdrop.glinit();
 
-		QMatrix4x4 s1; s1.scale(1);
-		QMatrix4x4 s2; s1.scale(.5);
-
-		m_circles[0].setColor(1, 0, 0);
-		m_circles[0].setLineWidth(1);
-		m_circles[0].set(s1);
-
-		m_circles[1].setColor(0, 1, 0);
-		m_circles[1].setLineWidth(1);
-		m_circles[1].set(s2);
-
-		m_lines[0].setColor(0, 1, 0, 1);
-		m_lines[0].setLineWidth(1);
-
-		privSetTrackBallCircles();
 
 
 	}
@@ -85,15 +67,7 @@ public:
 
 
 		m_mesh.draw(privTmat(), privVmat());
-		for (int i = 0; i != m_circles.size(); ++i)
-			m_circles[i].draw(privTmat(), privVmat());
-		for (int i = 0; i != m_lines.size(); ++i)
-			m_lines[i].draw(privTmat(), privVmat());
 
-
-		m_trackBall[0].draw(privTmat(), privVmat());
-		m_trackBall[1].draw(privTmat(), privVmat());
-		m_trackBall[2].draw(privTmat(), privVmat());
 
 
 
@@ -163,211 +137,55 @@ public:
 		}
 
 		update();
-
+	
 
 	}
 
 
 protected:
 
-	void privSetTrackBallCircles()
-	{
-		
-		m_trackBall[0].setColor(.92, .14, .14);
-		m_trackBall[1].setColor(.14, .92, .14);
-		m_trackBall[2].setColor(.14, .14, .92);
-		m_trackBall[0].setLineWidth(1);
-		m_trackBall[1].setLineWidth(1);
-		m_trackBall[2].setLineWidth(1);
-
-		QVector3D cntrlRay = privMousePos2ray(QPoint(width() / 2, height() / 2));
-		QVector3D outrlRay = privMousePos2ray(QPoint(width() / 2+privTBradius(), height() / 2));
-		float r = (outrlRay - cntrlRay).length()*(m_center - m_eye).length();
-		QMatrix4x4 t;
-		
-		t.translate(m_center);
-		t.scale(r);
-		
-		m_trackBall[0].set(t);
-		t.rotate(90, 0, 1, 0);
-		m_trackBall[1].set(t);
-		t.rotate(90, 1, 0, 0);
-		m_trackBall[2].set(t);
-
-	}
 
 
 	void mouseDoubleClickEvent(QMouseEvent* event)
 	{
 	
 
-		std::array<QVector3D, 2> p = m_meshDataP->closest2ray(m_eye, m_mouseRay);
-		m_center = p[0];
-		update();
-
+		
 
 	}
 	void keyPressEvent(QKeyEvent * event)
 	{
-		static const float rad2deg = 90.0 / std::acos(0);
-		if (event->key() == Qt::Key_C)
-		{
-
-			
-
-			std::array<QVector3D, 2> p = m_meshDataP->closest2ray(m_eye, m_mouseRay);
-
-
-			QMatrix4x4 t;
-
-
-			//m_mousePos.x() / (0.5*width()), m_mousePos.y() / (0.5*height())
-			t.translate(p[0]);
-			t.rotate(-std::acos(p[1].z())*rad2deg, QVector3D(p[1].y(), -p[1].x(), 0.0f));
-			t.scale(0.05f);
-			m_circles[0].set(t);
-			m_lines[0].set(p[0], p[0]+p[1]);
-			//m_lines[0].set(r[0], r[0] + r[1]);
-
-			set_status(QString::number(p[0].x()) + "," + QString::number(p[0].y()) + "," + QString::number(p[0].z()));
-		}
-
-	}
-
-	void mousePressEvent(QMouseEvent* event)
-	{
-		if (event->button() == Qt::LeftButton ||
-			event->button() == Qt::RightButton)
-		{
-			
-			setCursor(Qt::ClosedHandCursor);
-			
-		}
-		m_mousePressPos = event->pos();
-		m_mousePressEye = m_eye;
-		m_mousePressUpvec = m_upvec;
-		
-		
 	
 
-
 	}
 
-	void mouseReleaseEvent(QMouseEvent* event)
-	{
-		if (event->button() == Qt::LeftButton ||
-			event->button() == Qt::RightButton)
-		{
-			unsetCursor();
-		}
+	void mousePressEvent(QMouseEvent *e) {
+		m_tb.callback_mouseDown(e->x(), height() - e->y(),  e->button(), e->modifiers());
+		//   if(e->button() == Qt::LeftButton)
+		//trackball.MouseDown(e->x(), width() - e->y(), Trackball::BUTTON_LEFT);       
+		// if(e->button() == Qt::RightButton)
+		//   trackball.MouseDown(e->x(), width() - e->y(), Trackball::BUTTON_LEFT | Trackball::KEY_CTRL);       
+		updateGL();
 	}
+
+	void mouseReleaseEvent(QMouseEvent *e) {
+		m_tb.callback_mouseUp(e->x(), height() - e->y(), e->button(),e->modifiers());
+		// if(e->button() == Qt::LeftButton)
+		//trackball.MouseUp(e->x(), width() - e->y(), Trackball::BUTTON_LEFT);  
+		//if(e->button() == Qt::RightButton)
+		//  trackball.MouseUp(e->x(), width() - e->y(), Trackball::BUTTON_LEFT | Trackball::KEY_CTRL);                 
+	}
+
 
 	static float minmax1(float v)
 	{
 		return std::min(1.0f, std::max(-1.0f, v));
 	}
-	static QMatrix4x4 vvrotate( QVector3D v0,  QVector3D v1)
-	{
-		v0.normalize();
-		v1.normalize();
-		static const float rad2deg = 90.0 / std::acos(0);
-		QVector3D ra = -QVector3D::crossProduct(v0, v1);
-		float rd = std::acos(QVector3D::dotProduct(v0, v1))*rad2deg;
-		QMatrix4x4 m;
-		m.rotate(rd, ra);
-		return m;
-	}
-	void mouseMoveEvent(QMouseEvent* event)
-	{
-		static const float rad2deg = 90.0 / std::acos(0);
-		QPoint newPos = event->pos();
-		QPoint d = newPos - m_mousePos;
 
 
-		
-		
-
-		QVector3D ray0 = privMousePos2ray(newPos);
-		QVector3D ray1 = m_mouseRay;
-		QVector3D n = m_mousePressEye - m_center;
-		
-		
-		float tbRadius = privTBradius();
-		float tbRadius2 = tbRadius2*tbRadius2;
-		QPoint c(width()/2, height()/2);
-		if (event->buttons() & Qt::LeftButton)
-		{
-			
-			QVector3D n0(minmax1((m_mousePressPos.x() - width() / 2) / tbRadius), minmax1((m_mousePressPos.y() - height() / 2) / tbRadius), 0);
-			QVector3D n1(minmax1((m_mousePos.x()      - width() / 2) / tbRadius), minmax1((m_mousePos.y()      - height() / 2) / tbRadius), 0);
-			n0.setZ(-std::sqrt(std::max(0.0f, 1 - n0.x()*n0.x() - n0.y()*n0.y())));
-			n1.setZ(-std::sqrt(std::max(0.0f, 1 - n1.x()*n1.x() - n1.y()*n1.y())));
-			QMatrix4x4 m2 = vvrotate(n, QVector3D(0, 0, -1));
-
-			n0 = m2*n0;
-			n1 = m2*n1;
-
-			QMatrix4x4 m = vvrotate(n0,n1);
-			
-		
-			QVector3D n = m_mousePressEye - m_center;
-
-			m_eye = m*(n)+ m_center;
-			m_upvec = m*m_mousePressUpvec;
-			
-			QVector3D nn = n;
-			nn.normalize();
-			std::cout << "nn:" << nn.x() << "," << nn.y() << "," << nn.z() ;
-			std::cout << "n0:" << n0.x() << "," << n0.y() << "," << n0.z();
-			std::cout << std::endl;
-
-			//QPoint od = (c - m_mousePressPos);
-			//float d2 = od.x()*od.x() + od.y()*od.y();
-			//if (d2 < tbRadius2)
-			//{
-			//	QMatrix4x4 m;
-			//	m.rotate(QVector3D::dotProduct(ray0, ray1), -QVector3D::crossProduct(ray0, ray1));
-			//	n = m*n;
-			//	m_eye = m_center + n;
-			//	m_upvec = m*m_upvec;
-			//}
-			//else
-			//{
-			//	static const float rad2deg = 90.0/std::acos(0) ;
-			//	QVector2D va(newPos.x() - c.x(), newPos.y() - c.y());
-			//	QVector2D vb(m_mousePos.x() - c.x(), m_mousePos.y() - c.y());
-			//	va.normalize();
-			//	vb.normalize();
-
-			//	//float phi=std::acos(QVector2D::dotProduct(va, vb) );
-			//	float phi = (std::atan2f(va.y(), va.x()) - std::atan2f(vb.y(), vb.x()))*rad2deg;
-			//	QMatrix4x4 m;
-			//	m.rotate(phi, n);
-			//	m_upvec = m*m_upvec;
-			//	//std::cout << phi<<"   "<< m_upvec.x() << "," << m_upvec.y() << "," << m_upvec.z() << std::endl;
-			//}
-			////std::cout << "   " << od.x() << "," << od.y() <<  std::endl;
-			
-
-			update();
-		}
-		else if (event->buttons() & Qt::MiddleButton)
-		{
-			QVector3D n = m_eye - m_center;
-
-			QMatrix4x4 m;
-			QVector3D dv = (ray1 - ray0)*n.length();
-			m.translate(dv);
-	
-			m_center = m*m_center;
-			privSetTrackBallCircles();
-			m_eye = m*m_eye;
-			update();
-			//std::cout << dv.x()<<","<<dv.y()<<","<<dv.z() << std::endl;
-		}
-
-		m_mousePos = newPos;
-		m_mouseRay =  privMousePos2ray(m_mousePos);
+	void mouseMoveEvent(QMouseEvent *e) {
+		m_tb.MouseMove(e->x(), height() - e->y());
+		updateGL();
 	}
 
 	void wheelEvent(QWheelEvent *event)
@@ -378,7 +196,7 @@ protected:
 		auto n = m_eye- m_center;
 		n *= numDegrees.y() > 0 ? 9.0/10 : 10.0/9;
 		m_eye = m_center + n;
-		privSetTrackBallCircles();
+
 		update();
 	}
 
@@ -525,10 +343,7 @@ private:
 	QVector3D m_mousePressEye;
 	QVector3D m_mousePressUpvec;
 	QString m_status;
-	std::vector<Circle3d> m_circles;
-	std::vector<Line3d> m_lines;
-
-	Circle3d m_trackBall[3];
+	Trackball m_tb;
 
 
 

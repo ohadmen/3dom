@@ -4,7 +4,7 @@
 #include <Q3d\QLine3D.h>
 #include <array>
 
-#include "GeomObjs.h"
+
 class View {
 	QMatrix4x4 proj;
 	QMatrix4x4 model;
@@ -46,35 +46,35 @@ public:
 	}
 	
 
-
+//
+//	// Note that p it is assumed to be in model coordinate.
+//	QPlane3D viewPlaneFromModel(const QVector3D& p)
+//	{
+//		//compute normal, pointing away from view.
+//		QMatrix4x4 imodel = model.inverted();
+//		QVector3D vp = viewPoint();
+//		QVector3D n = imodel * QVector3D(0.0f, 0, -1.0f) - vp;
+//		
+//		
+//		
+//		return QPlane3D(p,n);
+//	}
+//
 	// Note that p it is assumed to be in model coordinate.
-	Plane viewPlaneFromModel(const QVector3D& p)
-	{
-		//compute normal, pointing away from view.
-		QMatrix4x4 imodel = model.inverted();
-		QVector3D vp = viewPoint();
-		QVector3D n = imodel * QVector3D(0.0f, 0, -1.0f) - vp;
-
-		
-		
-		return Plane(p,n);
-	}
-
-	// Note that p it is assumed to be in model coordinate.
-	Ray viewRayFromModel(const QVector3D &p)
+	QRay3D viewRayFromModel(const QVector3D &p)
 	{
 		
 		QVector3D vp = viewPoint();
-		return Ray(m_isOrtho ? p : vp, m_isOrtho ? -vp : (p - vp));
+		return QRay3D(m_isOrtho ? p : vp, m_isOrtho ? -vp : (p - vp));
 	
 	}
 
 	// Note that p it is assumed to be in window coordinate.
-	Ray viewRayFromWindow(const QVector3D &p)
+	QRay3D viewRayFromWindow(const QVector3D &p)
 	{
 		QVector3D vp = viewPoint();
 		QVector3D pp = unProject(p);
-		return Ray(m_isOrtho ? pp : vp, m_isOrtho ? -vp : (pp - vp));
+		return QRay3D(m_isOrtho ? pp : vp, m_isOrtho ? -vp : (pp - vp));
 		
 	}
 

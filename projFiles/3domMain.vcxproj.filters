@@ -80,6 +80,9 @@
     <ClCompile Include="Release\moc_canvas.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="TrackMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\src\app.h">
@@ -146,9 +149,6 @@
     <ClInclude Include="Similarity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TrackMode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TrackUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -165,6 +165,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Q3d\QSphere3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TrackMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
