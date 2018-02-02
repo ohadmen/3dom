@@ -140,9 +140,6 @@
     <ClInclude Include="View.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeomObjs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Trackball.h">
       <Filter>Header Files</Filter>
     </ClInclude>

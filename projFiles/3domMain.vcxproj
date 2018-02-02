@@ -142,7 +142,6 @@
     <ClCompile Include="TrackMode.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeomObjs.h" />
     <ClInclude Include="Q3d\QLine3D.h" />
     <ClInclude Include="Q3d\QPlane3D.h" />
     <ClInclude Include="Q3d\QPrimitive3D.h" />
