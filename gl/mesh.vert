@@ -1,13 +1,8 @@
-#version 120
-attribute vec3 vertex_position;
-
-uniform mat4 transform_matrix;
-uniform mat4 view_matrix;
-
-
-varying vec3 ec_pos;
-
+attribute highp vec4 posAttr;
+attribute lowp vec4 colAttr;
+varying lowp vec4 col;
+uniform highp mat4 matrix;
 void main() {
-    gl_Position = view_matrix*transform_matrix*vec4(vertex_position, 1.0);
-    ec_pos = gl_Position.xyz;
+   col = colAttr;
+   gl_Position = matrix * posAttr;
 }
