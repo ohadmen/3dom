@@ -1,35 +1,62 @@
 #ifndef GLMESH_H
 #define GLMESH_H
 
-#include <QtOpenGL/QGLBuffer>
-#include <QtOpenGL/QGLFunctions>
+#include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLBuffer>
 #include "mesh.h"
 
-class GLMesh : protected QGLFunctions
+class GLMesh : protected QOpenGLFunctions
 {
 public:
-	GLMesh() : m_vertices(QGLBuffer::VertexBuffer), m_indices(QGLBuffer::IndexBuffer)
+	~GLMesh()
 	{
-
+		if (m_vertices.isCreated())
+			m_vertices.destroy();
+		if (m_indices.isCreated())
+			m_indices.destroy();
 	}
-	void glinit()
+	GLMesh() : m_vertices(QOpenGLBuffer::VertexBuffer), m_indices(QOpenGLBuffer::IndexBuffer)
 	{
-		
-		initializeGLFunctions();
-		m_meshShader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/mesh.vert");
-		m_meshShader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/mesh.frag");
+		// Enable depth buffer
+		glEnable(GL_DEPTH_TEST);
+
+		// Enable back face culling
+		glEnable(GL_CULL_FACE);
+	}
+	void initShader()
+	{
+		//static const char *vertexShaderSource =
+		//	"attribute highp vec4 posAttr;\n"
+		//	"attribute lowp vec4 colAttr;\n"
+		//	"varying lowp vec4 col;\n"
+		//	"uniform highp mat4 matrix;\n"
+		//	"void main() {\n"
+		//	"   col = colAttr;\n"
+		//	"   gl_Position = matrix * posAttr;\n"
+		//	"}\n";
+
+		//static const char *fragmentShaderSource =
+		//	"varying lowp vec4 col;\n"
+		//	"void main() {\n"
+		//	"   gl_FragColor = col;\n"
+		//	"}\n";
+		//
+		initializeOpenGLFunctions();
+		m_meshShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/mesh.vert");
+		m_meshShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh.frag");
 		m_meshShader.link();
 	}
 	void set(const Mesh&  mesh)
 		
 	{
-		initializeGLFunctions();
+		initializeOpenGLFunctions();
 
 		m_vertices.create();
 		m_indices.create();
 
-		m_vertices.setUsagePattern(QGLBuffer::StaticDraw);
-		m_indices.setUsagePattern(QGLBuffer::StaticDraw);
+		m_vertices.setUsagePattern(QOpenGLBuffer::StaticDraw);
+		m_indices.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
 		m_vertices.bind();
 		m_vertices.allocate(mesh.vertData(),	int(mesh.vertSize() * sizeof(float)*3));
@@ -40,42 +67,33 @@ public:
 		m_indices.release();
 		
 	}
-    void draw(const QMatrix4x4& transformMatrix, const QMatrix4x4& viewMatrix)
+    void draw(const QMatrix4x4& mvp)
 	{
 		m_meshShader.bind();
-		glUniformMatrix4fv(
-			m_meshShader.uniformLocation("transform_matrix"),
-			1, GL_FALSE, transformMatrix.data());
-
-		glUniformMatrix4fv(
-			m_meshShader.uniformLocation("view_matrix"),
-			1, GL_FALSE, viewMatrix.data());
-		const GLuint vp = m_meshShader.attributeLocation("vertex_position");
-		glEnableVertexAttribArray(vp);
+		m_meshShader.setUniformValue("mvp_matrix", mvp);
+		int vp = m_meshShader.attributeLocation("a_position");
+		
+		m_meshShader.setAttributeBuffer(vp, GL_FLOAT, 0, 3, sizeof(m_vertices));
 
 		m_vertices.bind();
 		m_indices.bind();
 
 		glVertexAttribPointer(vp, 3, GL_FLOAT, false, 3 * sizeof(float), NULL);
 		glDrawElements(GL_TRIANGLES, m_indices.size() / sizeof(uint32_t),	GL_UNSIGNED_INT, NULL);
-		
-
-
-
 
 		m_vertices.release();
 		m_indices.release();
 
 		// Clean up state machine
-		glDisableVertexAttribArray(vp);
+		m_meshShader.disableAttributeArray(vp);
 		m_meshShader.release();
 	}
 
 
 private:
-	QGLShaderProgram m_meshShader;
-    QGLBuffer m_vertices;
-    QGLBuffer m_indices;
+	QOpenGLShaderProgram  m_meshShader;
+    QOpenGLBuffer m_vertices;
+	QOpenGLBuffer m_indices;
 	
 };
 

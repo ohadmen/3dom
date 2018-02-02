@@ -1,6 +1,5 @@
 #pragma once
 #include <QMatrix4x4>
-#include <QtOpenGL/QGLFunctions>
 #include <Q3d\QLine3D.h>
 #include <Q3d\QRay3D.h>
 #include <Q3d\QPlane3D.h>

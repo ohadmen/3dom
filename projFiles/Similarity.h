@@ -1,6 +1,6 @@
 #pragma once
 #include <QMatrix4x4>
-#include <QtOpenGL/QGLFunctions>
+
 class Similarity {
 	QQuaternion rot;
 	QVector3D tra;

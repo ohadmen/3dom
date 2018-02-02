@@ -2,7 +2,7 @@
 #ifndef TRACKMODE_H
 #define TRACKMODE_H
 
-#include <QtOpenGL/QGLFunctions>
+
 
 #include <Q3d\QLine3D.h>
 #include <Q3d\QRay3D.h>

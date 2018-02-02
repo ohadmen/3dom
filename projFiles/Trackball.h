@@ -1,7 +1,7 @@
 #pragma once
 #include<set>
 #include <QMatrix4x4>
-#include <QtOpenGL/QGLFunctions>
+
 #include "View.h"
 #include "TrackMode.h"
 #include "Similarity.h"
@@ -129,6 +129,8 @@ public:
 
 	void pushHit(const QVector3D& h)	{		m_hits.push_back(h);	}
 	const QVector3D& getLastPoint()const { return m_lastPoint; }
+
+	const QMatrix4x4& getMVP() const {return m_camera.getView()}
 
 	~Trackball()
 	{
