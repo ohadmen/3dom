@@ -1,283 +1,187 @@
+
 #ifndef CANVAS_H
 #define CANVAS_H
 
-#include <QWidget>
-//#include <QPropertyAnimation>
-//#include <QtOpenGL/QGLShaderProgram>
-#include <QMatrix4x4>
+
 #include <QMouseEvent>
-#include <QDebug>
-#include <iostream>
-#include <cmath>
+#include <QOpenGLWidget>
+#include <QOpenGLFunctions>
+#include <QMatrix4x4>
+#include <QQuaternion>
+#include <QVector2D>
+#include <QBasicTimer>
+#include <QOpenGLShaderProgram>
 
-#include "backdrop.h"
-#include "glmesh.h"
-#include "mesh.h"
-#include "Trackball.h"
+#include "loader.h"
 
+class GeometryEngine;
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
 	Q_OBJECT
 
 public:
-	Canvas(const QGLFormat& format, QWidget *parent = 0)
-		: QOpenGLWidget(parent), m_mesh()
-		 //,anim(this, "perspective"), m_status(" ")
+	explicit Canvas(QWidget *parent=0) :
+		QOpenGLWidget(parent),
+		
+
+		angularSpeed(0)
 	{
 
-		//QFile styleFile("style.qss");
-		//styleFile.open(QFile::ReadOnly);
-		//setStyleSheet(styleFile.readAll());
-		//setFocusPolicy(Qt::StrongFocus);//catching keyboard events
-		//setMouseTracking(true);
-		//anim.setDuration(100);
-
 	}
-
 	~Canvas()
 	{
 
+		// and the buffers.
+		makeCurrent();
 
+		
+		doneCurrent();
 	}
+	void setToken(int token) { m_currentMeshToken = token; }
+	void loadMesh(int token)
+	{
+		MeshArray::i().getMesh(token)->initGL();
+	}
+	
+protected:
+	void mousePressEvent(QMouseEvent *e)
+	{
+		// Save mouse press position
+		mousePressPosition = QVector2D(e->localPos());
+	}
+	void mouseReleaseEvent(QMouseEvent *e)
+	{
+		// Mouse release position - mouse press position
+		QVector2D diff = QVector2D(e->localPos()) - mousePressPosition;
 
+		// Rotation axis is perpendicular to the mouse position difference
+		// vector
+		QVector3D n = QVector3D(diff.y(), diff.x(), 0.0).normalized();
 
+		// Accelerate angular speed relative to the length of the mouse sweep
+		qreal acc = diff.length() / 100.0;
 
+		// Calculate new rotation axis as weighted sum
+		rotationAxis = (rotationAxis * angularSpeed + n * acc).normalized();
+
+		// Increase angular speed
+		angularSpeed += acc;
+	}
+	void timerEvent(QTimerEvent *e) {
+		// Decrease angular speed (friction)
+		angularSpeed *= 0.99;
+
+		// Stop rotation when speed goes below threshold
+		if (angularSpeed < 0.01) {
+			angularSpeed = 0.0;
+		}
+		else {
+			// Update rotation
+			rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
+
+			// Request an update
+			update();
+		}
+	}
 
 	void initializeGL()
 	{
 		initializeOpenGLFunctions();
-		m_mesh.glinit();
-		//m_backdrop.glinit();
+
+		glClearColor(0, 0, 0, 1);
+
+		initShaders();
 
 
+		//! [2]
+		// Enable depth buffer
+		glEnable(GL_DEPTH_TEST);
 
+		// Enable back face culling
+		glEnable(GL_CULL_FACE);
+		//! [2]
+
+		
+
+		auto t = MeshArray::i().getTokenList();
+		for (auto zz : t)
+			MeshArray::i().getMesh(zz)->initGL();
+		// Use QBasicTimer because its faster than QTimer
+		timer.start(12, this);
+	}
+
+	void resizeGL(int w, int h)
+	{
+		// Calculate aspect ratio
+		qreal aspect = qreal(w) / qreal(h ? h : 1);
+
+		// Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
+		const qreal zNear = 3.0, zFar = 7.0, fov = 45.0;	
+
+		// Reset projection
+		projection.setToIdentity();
+
+		// Set perspective projection
+		projection.perspective(fov, aspect, zNear, zFar);
 	}
 	void paintGL()
 	{
-		
-
+		// Clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+
+		//! [6]
+		// Calculate model view transformation
+		QMatrix4x4 matrix;
+		matrix.translate(0.0, 0.0, -5.0);
+		matrix.rotate(rotation);
+
+		// Set modelview-projection matrix
+		program.setUniformValue("mvp_matrix", projection * matrix);
+		//! [6]
+
+			// Draw cube geometry
 		
-
-
-		//m_backdrop.draw();
-
-
-		//m_mesh.draw(privTmat(), privVmat());
-
-
-
-
-
-		//glPointSize(10);
-		//glColor3f(1, 1, .5);
-		//glBegin(GL_POINTS);
-		//glVertex3f(.5, 0, 0);
-		//glEnd();
-
-
-
-
-		//DrawCircle(0.1, 0.5, 0, 0.1);
-
-		if (m_status.isNull())    return;
-
-		QPainter painter(this);
-		painter.setRenderHint(QPainter::Antialiasing);
-		painter.drawText(10, height() - 10, m_status);
+		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
+		if (p == nullptr)
+			return;
+		p->draw(&program);
 	}
 
-
-
-	//void view_orthographic()
-	//{
-	//	view_anim(0);
-	//}
-	//
-	//void view_perspective()
-	//{
-	//	view_anim(0.25);
-	//}
-
-
-	public slots:
-	void set_status(const QString &s)
+	void initShaders()
 	{
-		m_status = s;
-		update();
+		// Compile vertex shader
+		if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
+			close();
+
+		// Compile fragment shader
+		if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
+			close();
+
+		// Link shader pipeline
+		if (!program.link())
+			close();
+
+		// Bind shader pipeline for use
+		if (!program.bind())
+			close();
 	}
-
-	void clear_status()
-	{
-		m_status = "";
-		update();
-	}
-	void load_mesh(int token, bool is_reload)
-	{
-
-		m_meshDataP = MeshArray::i().getToken(token);
-
-		m_mesh.set(*m_meshDataP);
-
-		if (!is_reload)
-		{
-	
-			QVector3D lower(m_meshDataP->xmin(), m_meshDataP->ymin(), m_meshDataP->zmin());
-			QVector3D upper(m_meshDataP->xmax(), m_meshDataP->ymax(), m_meshDataP->zmax());
-			m_center = (lower + upper) / 2;
-			//TODO : use privFOV to calculate init distance
-			m_eye = m_center + QVector3D(0, 0,m_meshDataP->ymin()*4);
-			m_upvec = QVector3D(0, 1, 0);
-		
-
-
-		}
-
-		update();
-	
-
-	}
-
-
-protected:
-
-
-
-	void mouseDoubleClickEvent(QMouseEvent* event)
-	{
-	
-
-		
-
-	}
-	void keyPressEvent(QKeyEvent * event)
-	{
-	
-
-	}
-
-	void mousePressEvent(QMouseEvent *e) {
-		m_tb.callback_mouseDown(e->x(), height() - e->y(),  e->button(), e->modifiers());
-		//   if(e->button() == Qt::LeftButton)
-		//trackball.MouseDown(e->x(), width() - e->y(), Trackball::BUTTON_LEFT);       
-		// if(e->button() == Qt::RightButton)
-		//   trackball.MouseDown(e->x(), width() - e->y(), Trackball::BUTTON_LEFT | Trackball::KEY_CTRL);       
-		update();
-	}
-
-	void mouseReleaseEvent(QMouseEvent *e) {
-		m_tb.callback_mouseUp(e->x(), height() - e->y(), e->button(),e->modifiers());
-		// if(e->button() == Qt::LeftButton)
-		//trackball.MouseUp(e->x(), width() - e->y(), Trackball::BUTTON_LEFT);  
-		//if(e->button() == Qt::RightButton)
-		//  trackball.MouseUp(e->x(), width() - e->y(), Trackball::BUTTON_LEFT | Trackball::KEY_CTRL);                 
-	}
-
-
-	static float minmax1(float v)
-	{
-		return std::min(1.0f, std::max(-1.0f, v));
-	}
-
-
-	void mouseMoveEvent(QMouseEvent *e) {
-		m_tb.MouseMove(e->x(), height() - e->y());
-		update();
-	}
-
-	void wheelEvent(QWheelEvent *event)
-	{
-
-	
-	}
-
-	void resizeGL(int width, int height)
-	{
-		glViewport(0, 0, width, height);
-		
-	}
-	//void set_perspective(float p)
-	//{
-	//	//perspective = p;
-	//	update();
-	//}
-	//
-	//void view_anim(float v)
-	//{
-	//	//anim.setStartValue(perspective);
-	//	anim.setEndValue(v);
-	//	anim.start();
-	//}
-
-
-
-
-
 
 private:
-
-	
-	template < class ValueType>
-	static	inline ValueType QTLogicalToDevice(QWidget *qw, const ValueType &value)
-	{
-		return value*qw->devicePixelRatio();
-	}
-
+	QBasicTimer timer;
+	QOpenGLShaderProgram program;
 	
 
-	QGLShaderProgram m_meshShader;
-	//QGLShaderProgram m_quadShader;
 
-	const Mesh* m_meshDataP;
-	GLMesh m_mesh;
-	Backdrop m_backdrop;
+	QMatrix4x4 projection;
 
-	QVector3D m_eye;
-	QVector3D m_center;
-	QVector3D m_upvec;
-
-
-	//float m_zoom;
-	//float m_scale;
-	//float m_tilt;
-	//float m_yaw;
-	//
-	//float perspective;
-
-
-
-	//	vcg::Trackball m_trackball;
-	//	vcg::Trackball m_trackball_light;
-
-
-	//Q_PROPERTY(float perspective WRITE set_perspective);
-	//QPropertyAnimation anim;
-
-
-	QString m_status;
-	Trackball m_tb;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	QVector2D mousePressPosition;
+	QVector3D rotationAxis;
+	qreal angularSpeed;
+	QQuaternion rotation;
+	int m_currentMeshToken;
 };
 
-#endif // CANVAS_H
+#endif // Canvas_H

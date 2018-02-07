@@ -2,6 +2,7 @@
 #define LOADER_H
 
 #include <QThread>
+#include <QFile>
 #include <future>
 
 
@@ -12,42 +13,30 @@ class Loader : public QThread
 {
     Q_OBJECT
 
-		struct Vertex
+		struct Vertex: public Mesh::VertData
 	{
-		Vertex() {}
-		Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
-
-		GLfloat x, y, z;
-		GLuint i = 0;
-
-
-		bool operator!=(const Vertex& rhs) const
-		{
-			return x != rhs.x || y != rhs.y || z != rhs.z;
-		}
-		bool operator<(const Vertex& rhs) const
-		{
-			if (x != rhs.x)    return x < rhs.x;
-			else if (y != rhs.y)    return y < rhs.y;
-			else if (z != rhs.z)    return z < rhs.z;
-			else                    return false;
-		}
-		operator QVector3D()		{			return QVector3D(x, y, z);		}
+		uint32_t i;
+		Vertex():i(0) {}
+		Vertex(float x, float y, float z) :Mesh::VertData(x,y,z),i(0) {}
+		
 	};
 		
 	
 
 
 public:
-    explicit Loader(QObject* parent, const QString& filename, bool is_reload)
-		: QThread(parent), filename(filename), is_reload(is_reload)
+
+	static QString default3DmodelFilename(){		return "./res/horse.stl";	}
+
+    explicit Loader(QObject* parent =0)
+		: QThread(parent)
 	{
 		// Nothing to do here
 	}
 
-	void run()
+	int load(const QString& filename)
 	{
-		int token = load_stl();
+		int token = loadSTL(filename);
 
 		if (token == -1)
 		{
@@ -56,16 +45,18 @@ public:
 		}
 		else
 		{
-			emit got_mesh(token, is_reload);
+			emit got_mesh(token);
 			emit loaded_file(filename);
 		}
+		return token;
+
 
 
 	}
     
 
 protected:
-	int load_stl()
+	int loadSTL(const QString& filename)
 	{
 		QFile file(filename);
 		if (!file.open(QIODevice::ReadOnly))
@@ -85,16 +76,19 @@ protected:
 				file.seek(0);
 				return read_stl_ascii(file);
 			}
-			confusing_stl = true;
+			
 		}
-		else
-		{
-			confusing_stl = false;
-		}
+		
 
 		// Otherwise, skip the rest of the header material and read as binary
 		file.seek(0);
 		return read_stl_binary(file);
+	}
+	static float privColData2ch(uint16_t cd, int ch)
+	{
+		 const uint16_t mask = (1 << 5) - 1;
+		 float v=((cd >> ch * 5)&mask);
+		return v/31.0;
 	}
 
 	int read_stl_binary(QFile& file)
@@ -127,20 +121,24 @@ protected:
 		for (auto v = verts.begin(); v != verts.end(); v += 3)
 		{
 			// Load vertex data from .stl file into vertices
+			uint16_t coldata = *reinterpret_cast<uint16_t*>(b + 9 * sizeof(float));
+			
+			float rgb[3] = { privColData2ch(coldata,0) ,privColData2ch(coldata,1),privColData2ch(coldata,2) };
 			for (unsigned i = 0; i < 3; ++i)
 			{
 				memcpy(&v[i], b, 3 * sizeof(float));
+				v[i].r = rgb[0];
+				v[i].g = rgb[1];
+				v[i].b = rgb[2];
 				b += 3 * sizeof(float);
 			}
+			
 
 			// Skip face attribute and next face's normal vector
 			b += 3 * sizeof(float) + sizeof(uint16_t);
 		}
 
-		if (confusing_stl)
-		{
-			emit warning_confusing_stl();
-		}
+	
 
 		return mesh_from_verts(tri_count, verts);
 	}
@@ -203,12 +201,11 @@ protected:
 
 signals:
     void loaded_file(QString filename);
-    void got_mesh(int token, bool is_reload);
+    void got_mesh(int token);
 
     void error_bad_stl();
     void error_empty_mesh();
-    void warning_confusing_stl();
-    void error_missing_file();
+     void error_missing_file();
 
 private:
 
@@ -277,7 +274,7 @@ private:
 		}
 		verts.resize(vertex_count);
 
-		std::vector<QVector3D> flat_verts(verts.size());
+		std::vector<Mesh::VertData> flat_verts(verts.size());
 		
 		for (int i=0;i!=verts.size();++i)
 		{
@@ -290,11 +287,8 @@ private:
 	}
 
 
-    const QString filename;
-    bool is_reload;
 
-    /*  Used to warn on binary STLs that begin with the word 'solid'" */
-    bool confusing_stl;
+  
 
 };
 
