@@ -9,7 +9,9 @@
 #include <algorithm>
 #include <vector>
 #include <map>
+
 #include <array>
+#include "Shader.h"
 
 class Mesh : protected QOpenGLFunctions
 {
@@ -45,8 +47,9 @@ private:
 	QOpenGLBuffer m_vBuff;
 	QOpenGLBuffer m_iBuff;
 	bool m_glInitialized;
+	Shader m_meshShader;
 public:
-	Mesh():m_vBuff(QOpenGLBuffer::VertexBuffer), m_iBuff(QOpenGLBuffer::IndexBuffer), m_glInitialized(false){
+	Mesh():m_vBuff(QOpenGLBuffer::VertexBuffer), m_iBuff(QOpenGLBuffer::IndexBuffer), m_glInitialized(false), m_meshShader(){
 		
 	}
 	~Mesh()
@@ -73,9 +76,6 @@ public:
 		m_vBuff.setUsagePattern(QOpenGLBuffer::StaticDraw);
 		m_iBuff.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
-		std::vector<QVector3D> vv(m_vertices.size());
-		for (int i = 0; i != m_vertices.size(); ++i)
-			vv[i] = m_vertices[i];
 
 		m_vBuff.bind();
 		m_vBuff.allocate(m_vertices.data(), int(m_vertices.size() * sizeof(VertData)));
@@ -85,6 +85,7 @@ public:
 		m_iBuff.allocate(m_indices.data(), int(m_indices.size() * sizeof(uint32_t)));
 		m_iBuff.release();
 		m_glInitialized = true;
+		m_meshShader.init("vshader", "fshader");
 
 	}
 
@@ -118,9 +119,10 @@ public:
 
 
 	
-	void draw(QOpenGLShaderProgram* shader)
+	void draw(const QMatrix4x4& mvp)
 	{
-
+		m_meshShader.setMVP(mvp);
+		auto shader = m_meshShader.get();
 		m_vBuff.bind();
 		m_iBuff.bind();
 
@@ -142,6 +144,7 @@ public:
 
 		// Clean up state machine
 		shader->disableAttributeArray(vp);
+		shader->disableAttributeArray(vc);
 		
 	}
 
@@ -211,14 +214,16 @@ private:
 
 class MeshArray
 {
-	std::map<int,Mesh> m_meshArr;
+	std::map<int,Mesh*> m_meshArr;
 public:
 
 	int allocate(Mesh*& p)
 	{
 		int token  =int( m_meshArr.size());
-		m_meshArr.insert(std::pair<int, Mesh>(token, Mesh()));
-		p = &m_meshArr[token];
+		
+		m_meshArr.emplace(token,new Mesh());
+
+		p = m_meshArr[token];
 
 
 		return token;
@@ -235,11 +240,12 @@ public:
 	{
 		if (!m_meshArr.count(token))
 			return nullptr;
-		return &m_meshArr[token];
+		return m_meshArr[token];
 	}
 
 	void releaseToken(int token)
 	{
+		delete  m_meshArr[token];
 		m_meshArr.erase(token);
 	}
 
@@ -257,6 +263,11 @@ private:
 
 public:
 	MeshArray(MeshArray const&) = delete;
+	~MeshArray()
+	{
+		for (auto i : m_meshArr)
+			delete i.second;
+	}
 	void operator=(MeshArray const&) = delete;
 
 };

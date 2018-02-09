@@ -10,9 +10,8 @@
 #include <QQuaternion>
 #include <QVector2D>
 #include <QBasicTimer>
-#include <QOpenGLShaderProgram>
-
 #include "loader.h"
+#include "TrackUtils.h"
 
 class GeometryEngine;
 
@@ -45,6 +44,14 @@ public:
 	}
 	
 protected:
+	void wheelEvent(QWheelEvent *event)
+	{
+		QMatrix4x4 t;
+		t.translate(QVector3D(0, 0, float(event->delta()) / 1000));
+		projection = projection*t;
+		update();
+		
+	}
 	void mousePressEvent(QMouseEvent *e)
 	{
 		// Save mouse press position
@@ -91,19 +98,12 @@ protected:
 
 		glClearColor(0, 0, 0, 1);
 
-		initShaders();
-
-
-		//! [2]
-		// Enable depth buffer
 		glEnable(GL_DEPTH_TEST);
 
-		// Enable back face culling
 		glEnable(GL_CULL_FACE);
-		//! [2]
 
 		
-
+		m_trackUtils.init();
 		auto t = MeshArray::i().getTokenList();
 		for (auto zz : t)
 			MeshArray::i().getMesh(zz)->initGL();
@@ -117,13 +117,14 @@ protected:
 		qreal aspect = qreal(w) / qreal(h ? h : 1);
 
 		// Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-		const qreal zNear = 3.0, zFar = 7.0, fov = 45.0;	
+		const qreal zNear = 1.0, zFar = 99.0, fov = 45.0;	
 
 		// Reset projection
 		projection.setToIdentity();
 
 		// Set perspective projection
 		projection.perspective(fov, aspect, zNear, zFar);
+		accRot = projection;
 	}
 	void paintGL()
 	{
@@ -139,49 +140,36 @@ protected:
 		matrix.rotate(rotation);
 
 		// Set modelview-projection matrix
-		program.setUniformValue("mvp_matrix", projection * matrix);
+		QMatrix4x4 mvp = projection * matrix;
+
 		//! [6]
 
-			// Draw cube geometry
-		
+		m_trackUtils.drawSphereIcon(accRot * matrix, false);
+
 		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
 		if (p == nullptr)
 			return;
-		p->draw(&program);
+		//p->draw(mvp);
 	}
 
-	void initShaders()
-	{
-		// Compile vertex shader
-		if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
-			close();
-
-		// Compile fragment shader
-		if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
-			close();
-
-		// Link shader pipeline
-		if (!program.link())
-			close();
-
-		// Bind shader pipeline for use
-		if (!program.bind())
-			close();
-	}
 
 private:
 	QBasicTimer timer;
-	QOpenGLShaderProgram program;
+	
 	
 
-
 	QMatrix4x4 projection;
+	QMatrix4x4 accRot;
 
 	QVector2D mousePressPosition;
 	QVector3D rotationAxis;
 	qreal angularSpeed;
 	QQuaternion rotation;
+
+
 	int m_currentMeshToken;
+	
+	TrackUtils m_trackUtils;
 };
 
 #endif // Canvas_H

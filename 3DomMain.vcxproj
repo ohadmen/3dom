@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\TrackUtils.h" />
     <CustomBuild Include="src\loader.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing loader.h...</Message>

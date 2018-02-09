@@ -2,24 +2,21 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
-class Shader: public QOpenGLFunctions
+class Shader
 {
 	QOpenGLShaderProgram m_shader;
 public:
-	bool init()
+	Shader() {}
+	bool init(const QString& vshader, const QString& fshader)
 	{
-	
-		// Enable depth buffer
-		glEnable(GL_DEPTH_TEST);
+		//initializeOpenGLFunctions();
 
-		// Enable back face culling
-		glEnable(GL_CULL_FACE);
 		// Compile vertex shader
-		if (!m_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/vshader.glsl"))
+		if (!m_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/"+ vshader+".glsl"))
 			return false;
 
 		// Compile fragment shader
-		if (!m_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/fshader.glsl"))
+		if (!m_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/"+ fshader+".glsl"))
 			return false;
 
 		// Link shader pipeline
@@ -36,5 +33,5 @@ public:
 		m_shader.setUniformValue("mvp_matrix", mvp);
 	}
 
-	QOpenGLShaderProgram& get() { return m_shader; }
+	QOpenGLShaderProgram* get() { return &m_shader; }
 };
