@@ -151,9 +151,12 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Params.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\mesh.h" />
+    <ClInclude Include="src\Params.h" />
+    <ClInclude Include="src\Qmvp.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\TrackUtils.h" />
     <CustomBuild Include="src\loader.h">

@@ -2,6 +2,7 @@
 #include <vector>
 #include <QOpenGLFunctions>
 #include "Shader.h"
+#include "Params.h"
 class TrackUtils: protected QOpenGLFunctions
 {
 	Shader m_ballShader;
@@ -14,39 +15,7 @@ class TrackUtils: protected QOpenGLFunctions
 		Pt() :xyz(0, 0, 0), rgb(0, 0, 0) {}
 		Pt(float x, float y, float z, float r, float g, float b) :xyz(x, y, z), rgb(r, g, b) {}
 	};
-	class DrawingHint
-	{
-	public:
-		static int circleStep(int vin = -1)
-		{
-			static int vs = 64;
-			if (vin != -1)
-				vs = vin;
-			return vs;
-		}
-		static int lineWidthStill(float vin = -1)
-		{
-			static float vs = 0.9f;
-			if (vin != -1)
-				vs = vin;
-			return vs;
-		}
-		static int lineWidthMoving(float vin = -1)
-		{
-			static float vs = 1.8f;
-			if (vin != -1)
-				vs = vin;
-			return vs;
-		}
-		static QColor color(QColor vin = -1)
-		{
-			static QColor vs = Qt::darkBlue;
-			if (vin != -1)
-				vs = vin;
-			return vs;
-		}
 
-	};
 	void privDrawCircle(QMatrix4x4 mvp, const QVector4D& col, int lw)
 	{
 		m_ballShader.bind();
@@ -99,7 +68,7 @@ public:
 			return false;
 
 		
-		static const int nPoints = DrawingHint::circleStep();
+		static const int nPoints = Params::trackBallCircleStep();
 		static const float twopi = std::acos(0) * 4;
 		static const float radius = 1;
 		std::vector<Pt> circPoints(nPoints);
@@ -137,7 +106,7 @@ public:
 		static const QVector4D colG(.40f, .85f, .40f, 1.0f);
 		static const QVector4D colB(.85f, .40f, .40f, 1.0f);
 
-		int lw = active ? DrawingHint::lineWidthMoving() : DrawingHint::lineWidthStill();
+		int lw = active ? Params::trackBallLineWidthMoving() : Params::trackBallLineWidthStill();
 
 
 		privDrawCircle(mvp     ,colR,lw);

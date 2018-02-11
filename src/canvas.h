@@ -12,6 +12,8 @@
 #include <QBasicTimer>
 #include "loader.h"
 #include "TrackUtils.h"
+#include "Params.h"
+#include "Qmvp.h";
 
 class GeometryEngine;
 
@@ -46,9 +48,8 @@ public:
 protected:
 	void wheelEvent(QWheelEvent *event)
 	{
-		QMatrix4x4 t;
-		t.translate(QVector3D(0, 0, float(event->delta()) / 1000));
-		projection = projection*t;
+
+		m_mvp.applyT(QVector3D(0, 0, float(event->delta()) / 1000));
 		update();
 		
 	}
@@ -121,12 +122,11 @@ protected:
 		// Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
 		const qreal zNear = 1.0, zFar = 99.0, fov = 45.0;	
 
-		// Reset projection
-		projection.setToIdentity();
 
-		// Set perspective projection
-		projection.perspective(fov, aspect, zNear, zFar);
-		accRot = projection;
+		m_mvp.setPerpective(aspect);
+
+	
+		accRot = m_mvp.getPmat();
 	}
 	void paintGL()
 	{
@@ -142,7 +142,7 @@ protected:
 		matrix.rotate(rotation);
 
 		// Set modelview-projection matrix
-		QMatrix4x4 mvp = projection * matrix;
+		QMatrix4x4 mvp = m_mvp.getPmat() * matrix;
 
 		//! [6]
 
@@ -160,9 +160,9 @@ private:
 	
 	
 
-	QMatrix4x4 projection;
+	
 	QMatrix4x4 accRot;
-
+	
 	QVector2D mousePressPosition;
 	QVector3D rotationAxis;
 	qreal angularSpeed;
@@ -172,6 +172,7 @@ private:
 	int m_currentMeshToken;
 	
 	TrackUtils m_trackUtils;
+	Qmvp m_mvp;
 };
 
 #endif // Canvas_H
