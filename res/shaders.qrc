@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>vshader.glsl</file>
-        <file>fshader.glsl</file>
-        <file>lineV.glsl</file>
-		<file>lineF.glsl</file>
+        <file>meshv.glsl</file>
+        <file>meshf.glsl</file>
+        <file>linev.glsl</file>
+		<file>linef.glsl</file>
     </qresource>
 </RCC>

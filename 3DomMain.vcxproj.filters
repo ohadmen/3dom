@@ -78,10 +78,16 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\fshader.glsl">
+    <None Include="res\linef.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="res\vshader.glsl">
+    <None Include="res\linev.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\meshf.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\meshv.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

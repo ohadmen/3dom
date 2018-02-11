@@ -85,7 +85,7 @@ public:
 		m_iBuff.allocate(m_indices.data(), int(m_indices.size() * sizeof(uint32_t)));
 		m_iBuff.release();
 		m_glInitialized = true;
-		m_meshShader.init("vshader", "fshader");
+		m_meshShader.init("meshv", "meshf");
 
 	}
 
@@ -121,6 +121,7 @@ public:
 	
 	void draw(const QMatrix4x4& mvp)
 	{
+		m_meshShader.bind();
 		m_meshShader.setMVP(mvp);
 		auto shader = m_meshShader.get();
 		m_vBuff.bind();

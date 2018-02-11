@@ -95,12 +95,14 @@ protected:
 	void initializeGL()
 	{
 		initializeOpenGLFunctions();
-
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glEnable(GL_LINE_SMOOTH);
 		glClearColor(0, 0, 0, 1);
 
-		glEnable(GL_DEPTH_TEST);
-
-		glEnable(GL_CULL_FACE);
+		//glEnable(GL_DEPTH_TEST);
+		//
+		//glEnable(GL_CULL_FACE);
 
 		
 		m_trackUtils.init();
