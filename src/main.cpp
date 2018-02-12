@@ -27,8 +27,9 @@ int main(int argc, char *argv[])
 
 #ifndef QT_NO_OPENGL
     Canvas widget;
-	widget.setToken(token);
+	
     widget.show();
+	widget.setToken(token);
 
 #else
     QLabel note("OpenGL Support required");

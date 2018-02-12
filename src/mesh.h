@@ -44,6 +44,8 @@ private:
 	
 	std::vector<VertData> m_vertices;
 	std::vector<GLuint> m_indices;//concatenated tri indices
+	QVector3D m_objCenter;
+	float     m_objcontainerRadius;
 	QOpenGLBuffer m_vBuff;
 	QOpenGLBuffer m_iBuff;
 	bool m_glInitialized;
@@ -64,7 +66,12 @@ public:
 
 		m_vertices = v;
 		m_indices = i;
+		m_objCenter = std::accumulate(m_vertices.begin(), m_vertices.end(), QVector3D(), [](const QVector3D& s,const VertData& v) {return s + v; }) / float(v.size());
+		auto p = std::max_element(m_vertices.begin(), m_vertices.end(), [&](const VertData& a, const VertData&b) {return (a - m_objCenter).length() < (b - m_objCenter).length(); });
+		m_objcontainerRadius = (*p - m_objCenter).length();
 	}
+	QVector3D getCenter() const { m_objCenter; }
+	float getContainmentRadius() const { m_objcontainerRadius; }
 	void initGL()
 	{
 		if (m_glInitialized)

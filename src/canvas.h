@@ -13,7 +13,7 @@
 #include "loader.h"
 #include "TrackUtils.h"
 #include "Params.h"
-#include "Qmvp.h";
+#include "Qmvp.h"
 
 class GeometryEngine;
 
@@ -24,6 +24,7 @@ class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 public:
 	explicit Canvas(QWidget *parent=0) :
 		QOpenGLWidget(parent),
+		m_currentMeshToken(-1),
 		
 
 		angularSpeed(0)
@@ -39,7 +40,10 @@ public:
 		
 		doneCurrent();
 	}
-	void setToken(int token) { m_currentMeshToken = token; }
+	void setToken(int token) { 
+		m_currentMeshToken = token;
+		MeshArray::i().getMesh(m_currentMeshToken)->initGL();
+	}
 	void loadMesh(int token)
 	{
 		MeshArray::i().getMesh(token)->initGL();
@@ -107,9 +111,9 @@ protected:
 
 		
 		m_trackUtils.init();
-		auto t = MeshArray::i().getTokenList();
-		for (auto zz : t)
-			MeshArray::i().getMesh(zz)->initGL();
+//		auto t = MeshArray::i().getTokenList();
+//		for (auto zz : t)
+//			MeshArray::i().getMesh(zz)->initGL();
 		// Use QBasicTimer because its faster than QTimer
 		timer.start(12, this);
 	}
@@ -144,6 +148,7 @@ protected:
 		QMatrix4x4 mvp = m_mvp.getPmat() * matrix;
 
 		m_trackUtils.drawSphereIcon(accRot * matrix, false);
+
 
 		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
 		if (p == nullptr)
