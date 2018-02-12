@@ -70,8 +70,8 @@ public:
 		auto p = std::max_element(m_vertices.begin(), m_vertices.end(), [&](const VertData& a, const VertData&b) {return (a - m_objCenter).length() < (b - m_objCenter).length(); });
 		m_objcontainerRadius = (*p - m_objCenter).length();
 	}
-	QVector3D getCenter() const { m_objCenter; }
-	float getContainmentRadius() const { m_objcontainerRadius; }
+	QVector3D getCenter() const {return m_objCenter; }
+	float getContainmentRadius() const {return m_objcontainerRadius; }
 	void initGL()
 	{
 		if (m_glInitialized)

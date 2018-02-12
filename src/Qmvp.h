@@ -27,27 +27,41 @@ class Qmvp
 
 public:
 	Qmvp() {
+		
+		resetView();
+	}
+	void resetView()
+	{
 		setPerpective(1.0);
-
+		m_viewR = QQuaternion(0, QVector3D(0, 0, 1));
+		m_viewT = QVector3D(0, 0, 0);
+		m_viewS = 1.0f;
 	}
 	//QMatrix4x4 getMmat()const { return m_proj; }
 	QMatrix4x4 getPmat()const { return m_proj; }
 	//QMatrix4x4 getVmat()const {  }
 
 	void applyT(const QVector3D& t) { m_viewT += t; }
-
+	void applyR(const QVector3D& axis, float angle)
+	{
+		m_viewR = QQuaternion::fromAxisAndAngle(axis, angle) * m_viewR;
+	}
 
 	void setPerpective(float aspectratio)
 	{
 		m_proj.setToIdentity();
 		m_proj.perspective(Params::camFOV(), aspectratio, Params::camZnear(), Params::camZfar());
 	}
-	QMatrix4x4 toMat() const
+	QMatrix4x4 getMat() const
 	{
 			//return m_proj*s*r*t;  // trans * scale * rot;
 			return m_proj*pV();  // trans * scale * rot;
 	}
-	QMatrix4x4 toMatInv() const
+	QMatrix4x4 getMatNoScale() const
+	{
+		return m_proj*pT()*pR();
+	}
+	QMatrix4x4 getMatInv() const
 	{
 		//return m_proj*s*r*t;  // trans * scale * rot;
 		return pVi()*m_proj.inverted();  // trans * scale * rot;
@@ -86,13 +100,13 @@ public:
 
 	QVector3D project(const QVector3D &p) const {
 		QVector3D r;
-		r = toMat() * p;
+		r = getMat() * p;
 		return normDevCoordToWindowCoord(r);
 	}
 
 	QVector3D unProject(const QVector3D &p) const {
 		QVector3D s = windowCoordToNormDevCoord(p);
-		s = toMatInv() * s;
+		s = getMatInv() * s;
 		return s;
 	}
 

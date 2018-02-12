@@ -48,7 +48,19 @@ public:
 	{
 		MeshArray::i().getMesh(token)->initGL();
 	}
-	
+	bool cam2geometry()
+	{
+		static const float deg2rad = std::acos(0.0f) / 90.0f;
+
+		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
+		if (p == nullptr)
+			return false;
+		m_mvp.resetView();
+
+		float t = p->getContainmentRadius() / std::tan(Params::camFOV() / 2 * deg2rad);
+		m_mvp.applyT(-p->getCenter() - QVector3D(0, 0, t));
+
+	}
 protected:
 	void wheelEvent(QWheelEvent *event)
 	{
@@ -91,12 +103,12 @@ protected:
 		else {
 			// Update rotation
 			rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
-
+			m_mvp.applyR(rotationAxis, angularSpeed);
 			// Request an update
 			update();
 		}
 	}
-
+	
 	void initializeGL()
 	{
 		initializeOpenGLFunctions();
@@ -130,7 +142,7 @@ protected:
 		m_mvp.setPerpective(aspect);
 
 	
-		accRot = m_mvp.getPmat();
+		
 	}
 	void paintGL()
 	{
@@ -147,7 +159,7 @@ protected:
 		// Set modelview-projection matrix
 		QMatrix4x4 mvp = m_mvp.getPmat() * matrix;
 
-		m_trackUtils.drawSphereIcon(accRot * matrix, false);
+		m_trackUtils.drawSphereIcon(m_mvp.getPmat() * matrix, false);
 
 
 		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
@@ -163,7 +175,7 @@ private:
 	
 
 	
-	QMatrix4x4 accRot;
+
 	
 	QVector2D mousePressPosition;
 	QVector3D rotationAxis;
