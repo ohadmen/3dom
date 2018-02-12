@@ -28,11 +28,11 @@ class Qmvp
 public:
 	Qmvp() {
 		
-		resetView();
+		resetView(1.0);
 	}
-	void resetView()
+	void resetView(float ar)
 	{
-		setPerpective(1.0);
+		setPerpective(ar);
 		m_viewR = QQuaternion(0, QVector3D(0, 0, 1));
 		m_viewT = QVector3D(0, 0, 0);
 		m_viewS = 1.0f;

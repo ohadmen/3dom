@@ -70,7 +70,7 @@ public:
 		
 		static const int nPoints = Params::trackBallCircleStep();
 		static const float twopi = std::acos(0) * 4;
-		static const float radius = 1;
+		static const float radius = Params::trackBallRadius();
 		std::vector<Pt> circPoints(nPoints);
 		for (int i = 0; i != nPoints; ++i)
 		{

@@ -25,8 +25,6 @@ public:
 	explicit Canvas(QWidget *parent=0) :
 		QOpenGLWidget(parent),
 		m_currentMeshToken(-1),
-		
-
 		angularSpeed(0)
 	{
 
@@ -51,14 +49,14 @@ public:
 	bool cam2geometry()
 	{
 		static const float deg2rad = std::acos(0.0f) / 90.0f;
-
+		qreal aspect = qreal(width()) / qreal(height() ? height() : 1);
 		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
 		if (p == nullptr)
 			return false;
-		m_mvp.resetView();
+		m_mvp.resetView(aspect);
 
 		float t = p->getContainmentRadius() / std::tan(Params::camFOV() / 2 * deg2rad);
-		m_mvp.applyT(-p->getCenter() - QVector3D(0, 0, t));
+		m_mvp.applyT(-p->getCenter()+QVector3D(0, 0, -t));
 
 	}
 protected:
@@ -101,8 +99,7 @@ protected:
 			angularSpeed = 0.0;
 		}
 		else {
-			// Update rotation
-			rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
+
 			m_mvp.applyR(rotationAxis, angularSpeed);
 			// Request an update
 			update();
@@ -150,22 +147,13 @@ protected:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-
-		// Calculate model view transformation
-		QMatrix4x4 matrix;
-		matrix.translate(0.0, 0.0, -5.0);
-		matrix.rotate(rotation);
-
-		// Set modelview-projection matrix
-		QMatrix4x4 mvp = m_mvp.getPmat() * matrix;
-
-		m_trackUtils.drawSphereIcon(m_mvp.getPmat() * matrix, false);
+		m_trackUtils.drawSphereIcon(m_mvp.getMatNoScale(), false);
 
 
 		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
 		if (p == nullptr)
 			return;
-		p->draw(mvp);
+		p->draw(m_mvp.getMat());
 	}
 
 
@@ -180,11 +168,10 @@ private:
 	QVector2D mousePressPosition;
 	QVector3D rotationAxis;
 	qreal angularSpeed;
-	QQuaternion rotation;
+
 
 
 	int m_currentMeshToken;
-	
 	TrackUtils m_trackUtils;
 	Qmvp m_mvp;
 };

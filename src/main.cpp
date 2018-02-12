@@ -29,8 +29,9 @@ int main(int argc, char *argv[])
     Canvas widget;
 	
     widget.show();
-	widget.cam2geometry();
+	
 	widget.setToken(token);
+	widget.cam2geometry();
 
 #else
     QLabel note("OpenGL Support required");
