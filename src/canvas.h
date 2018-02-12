@@ -96,14 +96,14 @@ protected:
 	void initializeGL()
 	{
 		initializeOpenGLFunctions();
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
 		glEnable(GL_LINE_SMOOTH);
 		glClearColor(0, 0, 0, 1);
 
-		//glEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);
 		//
-		//glEnable(GL_CULL_FACE);
+		glEnable(GL_CULL_FACE);
 
 		
 		m_trackUtils.init();
@@ -135,7 +135,6 @@ protected:
 
 
 
-		//! [6]
 		// Calculate model view transformation
 		QMatrix4x4 matrix;
 		matrix.translate(0.0, 0.0, -5.0);
@@ -144,14 +143,12 @@ protected:
 		// Set modelview-projection matrix
 		QMatrix4x4 mvp = m_mvp.getPmat() * matrix;
 
-		//! [6]
-
 		m_trackUtils.drawSphereIcon(accRot * matrix, false);
 
 		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
 		if (p == nullptr)
 			return;
-		//p->draw(mvp);
+		p->draw(mvp);
 	}
 
 
