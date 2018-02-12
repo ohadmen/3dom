@@ -12,55 +12,52 @@ class Qmvp
 	QVector3D   m_viewT;
 	float		m_viewS;
 	QMatrix4x4 m_proj;
+	QVector2D m_uv2pix;//[w h]/2
 
 
-	QMatrix4x4 pR()const{ QMatrix4x4 r; r.rotate(m_viewR);   return std::move(r);}
-	QMatrix4x4 pS()const{ QMatrix4x4 s; s.scale(m_viewS);	return std::move(s);}
-	QMatrix4x4 pT()const{ QMatrix4x4 t; t.translate(m_viewT);return std::move(t);}
-
-	QMatrix4x4 pRi()const { QMatrix4x4 r; r.rotate(m_viewR.inverted());   return std::move(r); }
-	QMatrix4x4 pSi()const { QMatrix4x4 s; s.scale(1 / m_viewS);	return std::move(s); }
-	QMatrix4x4 pTi()const { QMatrix4x4 t; t.translate(-m_viewT); return std::move(t); }
-
-	QMatrix4x4 pV()const {	return pT()*pS()*pR();	}
-	QMatrix4x4 pVi()const { return pRi()*pSi()*pTi(); }
+	
+	QMatrix4x4 pV()const {	return getT()*getS()*getR();	}
+	QMatrix4x4 pVi()const { return getRi()*getSi()*getTi(); }
 
 public:
 	Qmvp() {
+		resetView(1, 1);
 		
-		resetView(1.0);
+		m_uv2pix=QVector2D(1,1);
+		
 	}
-	void resetView(float ar)
+	void resetView(int w, int h)
 	{
-		setPerpective(ar);
+		setWinSize(w,h);
 		m_viewR = QQuaternion(0, QVector3D(0, 0, 1));
 		m_viewT = QVector3D(0, 0, 0);
 		m_viewS = 1.0f;
 	}
-	//QMatrix4x4 getMmat()const { return m_proj; }
-	QMatrix4x4 getPmat()const { return m_proj; }
-	//QMatrix4x4 getVmat()const {  }
 
 	void applyT(const QVector3D& t) { m_viewT += t; }
-	void applyR(const QVector3D& axis, float angle)
-	{
-		m_viewR = QQuaternion::fromAxisAndAngle(axis, angle) * m_viewR;
-	}
+	void applyR(const QVector3D& axis, float angle)	{		m_viewR = QQuaternion::fromAxisAndAngle(axis, angle) * m_viewR;	}
 
-	void setPerpective(float aspectratio)
+	QMatrix4x4 getR()const  { QMatrix4x4 r;r.setToIdentity();r.rotate(m_viewR);   return std::move(r); }
+	QMatrix4x4 getS()const  { QMatrix4x4 s;s.setToIdentity();s.scale(m_viewS);	return std::move(s); }
+	QMatrix4x4 getT()const  { QMatrix4x4 t;t.setToIdentity();t.translate(m_viewT); return std::move(t); }
+	QMatrix4x4 getRi()const { QMatrix4x4 r;r.setToIdentity();r.rotate(m_viewR.inverted());   return std::move(r); }
+	QMatrix4x4 getSi()const { QMatrix4x4 s;s.setToIdentity();s.scale(1 / m_viewS);	return std::move(s); }
+	QMatrix4x4 getTi()const { QMatrix4x4 t;t.setToIdentity();t.translate(-m_viewT); return std::move(t); }
+	QMatrix4x4 getP()const { return m_proj; }
+
+	void setWinSize(int w, int h)
 	{
+		float ar = float(w) / float(h ? h : 1);
+		m_uv2pix = QVector2D(w / 2.0, h / 2.0);
 		m_proj.setToIdentity();
-		m_proj.perspective(Params::camFOV(), aspectratio, Params::camZnear(), Params::camZfar());
+		m_proj.perspective(Params::camFOV(), ar, Params::camZnear(), Params::camZfar());
 	}
 	QMatrix4x4 getMat() const
 	{
 			//return m_proj*s*r*t;  // trans * scale * rot;
 			return m_proj*pV();  // trans * scale * rot;
 	}
-	QMatrix4x4 getMatNoScale() const
-	{
-		return m_proj*pT()*pR();
-	}
+	
 	QMatrix4x4 getMatInv() const
 	{
 		//return m_proj*s*r*t;  // trans * scale * rot;
@@ -69,11 +66,9 @@ public:
 
 
 	bool isOrth() const { return m_proj(3, 3) == 0; }
-	QVector3D viewPoint() const {
+	QVector3D getViewPoint() const { 		return  pVi()*QVector3D(0, 0, isOrth()? 3 : 0);	}
+	QPlane3D  getViewPlane() const { QPlane3D(getViewPoint(), 1); }
 
-		return  pVi()*QVector3D(0, 0, isOrth()? 3 : 0);
-	}
-	// Note that p it is assumed to be in model coordinate.
 	QPlane3D viewPlaneFromModel(const QVector3D& p)
 	{
 
@@ -98,40 +93,21 @@ public:
 
 	}
 
-	QVector3D project(const QVector3D &p) const {
-		QVector3D r;
-		r = getMat() * p;
-		return normDevCoordToWindowCoord(r);
+	QVector2D project(const QVector3D &xyz) const {
+		QVector3D uv = getMat() * xyz; //[-1 1]
+		QVector2D pix = QVector2D(uv[0] / uv[2], uv[1] / uv[2])*m_uv2pix + m_uv2pix;;
+		
+		return  pix;
 	}
 
-	QVector3D unProject(const QVector3D &p) const {
-		QVector3D s = windowCoordToNormDevCoord(p);
-		s = getMatInv() * s;
-		return s;
-	}
-
-
-	QVector3D normDevCoordToWindowCoord(const QVector3D &p) const {
-		//QVector3D a;
-		//a[0] = (p[0] + 1)*(viewport[2] / 2.0f) + viewport[0];
-		//a[1] = (p[1] + 1)*(viewport[3] / 2.0f) + viewport[1];
-		//a[2] = (p[2] + 1) / 2;
-		//return a;
-		return m_proj*p;
+	QVector3D unProject(const QVector2D &pix) const {
+		QVector2D uv = (pix - m_uv2pix) / m_uv2pix;
+		
+		QVector3D xyz = getMatInv() * QVector3D(uv, 1);
+		return xyz;
 	}
 
 
-	QVector3D windowCoordToNormDevCoord(const QVector3D &p) const {
-		//QVector3D a;
-		//a[0] = (p[0] - viewport[0]) / (viewport[2] / 2.0f) - 1;
-		//a[1] = (p[1] - viewport[1]) / (viewport[3] / 2.0f) - 1;
-		////a[1] = -a[1];
-		//a[2] = 2 * p[2] - 1;
-		//return a;
-		return m_proj.inverted()*p;
-	}
-
-	// Note that p it is assumed to be in model coordinate.
 	QLine3D viewLineFromModel(const QVector3D &p) const
 	{
 		QLine3D line;
@@ -150,7 +126,7 @@ public:
 	}
 
 	// Note that p it is assumed to be in window coordinate.
-	QLine3D viewLineFromWindow(const QVector3D &p) const
+	QLine3D viewLineFromWindow(const QVector2D &p) const
 	{
 		QLine3D line;  // plane perpedicular to view direction and passing through manip center
 		QVector3D vp = viewPoint();

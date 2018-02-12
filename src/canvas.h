@@ -49,11 +49,11 @@ public:
 	bool cam2geometry()
 	{
 		static const float deg2rad = std::acos(0.0f) / 90.0f;
-		qreal aspect = qreal(width()) / qreal(height() ? height() : 1);
+		
 		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
 		if (p == nullptr)
 			return false;
-		m_mvp.resetView(aspect);
+		m_mvp.resetView(width(),height());
 
 		float t = p->getContainmentRadius() / std::tan(Params::camFOV() / 2 * deg2rad);
 		m_mvp.applyT(-p->getCenter()+QVector3D(0, 0, -t));
@@ -129,14 +129,10 @@ protected:
 
 	void resizeGL(int w, int h)
 	{
-		// Calculate aspect ratio
-		qreal aspect = qreal(w) / qreal(h ? h : 1);
-
-		// Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-		const qreal zNear = 1.0, zFar = 99.0, fov = 45.0;	
+		
 
 
-		m_mvp.setPerpective(aspect);
+		m_mvp.setWinSize(w,h);
 
 	
 		
@@ -146,14 +142,20 @@ protected:
 		// Clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-		m_trackUtils.drawSphereIcon(m_mvp.getMatNoScale(), false);
+		QMatrix4x4 matNoScale = m_mvp.getP()*m_mvp.getT()*m_mvp.getR();
+		m_trackUtils.drawSphereIcon(matNoScale, false);
 
 
 		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
 		if (p == nullptr)
 			return;
 		p->draw(m_mvp.getMat());
+
+
+		QMatrix4x4 m = m_mvp.getMat();
+		QVector3D a(0, 0, 0);
+		QVector3D b = m*a;
+
 	}
 
 
