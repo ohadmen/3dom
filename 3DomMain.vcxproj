@@ -159,7 +159,7 @@
     <ClInclude Include="src\Qmvp.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Trackball.h" />
-    <ClInclude Include="src\TrackMode.h" />
+    <ClInclude Include="src\TrackStates.h" />
     <ClInclude Include="src\TrackUtils.h" />
     <CustomBuild Include="src\loader.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

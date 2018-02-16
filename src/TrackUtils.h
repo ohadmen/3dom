@@ -3,6 +3,8 @@
 #include <QOpenGLFunctions>
 #include "Shader.h"
 #include "Params.h"
+#include "Q3d/QSphere3D.h"
+#include "Qmvp.h"
 class TrackUtils: protected QOpenGLFunctions
 {
 	Shader m_ballShader;
@@ -87,8 +89,9 @@ public:
 	}
 
 	
-	void drawSphereIcon(const QMatrix4x4& mvp, bool active, bool planeshandle = false)
+	void drawSphereIcon(const Qmvp& mvp, bool active, bool planeshandle = false)
 	{
+		QMatrix4x4 matNoScale = mvp.getP()*mvp.getT()*mvp.getR();
 		initializeOpenGLFunctions();
 		static const QMatrix4x4 r90x
 		(1, 0, 0, 0,
@@ -109,24 +112,26 @@ public:
 		int lw = active ? Params::trackBallLineWidthMoving() : Params::trackBallLineWidthStill();
 
 
-		privDrawCircle(mvp     ,colR,lw);
-		privDrawCircle(mvp*r90x,colG,lw);
-		privDrawCircle(mvp*r90y,colB,lw);
+		privDrawCircle(matNoScale     ,colR,lw);
+		privDrawCircle(matNoScale*r90x,colG,lw);
+		privDrawCircle(matNoScale*r90y,colB,lw);
 
 	}
-	QVector3D hitSphere(const Qmvp& mvp, const QVector2D & p)
+	QVector3D hitSphere( Qmvp mvp,  QVector2D p)
 	{
+		return QVector3D();
+		/*
 		QLine3D ll = mvp.viewLineFromWindow(p);
 
-		Line3fN ln = tb->camera.ViewLineFromWindow(Point3f(p[0], p[1], 0));
-		Plane3f vp = GetViewPlane(tb->camera, center);
-		Point3f hitPlane(0, 0, 0), //intersection view plane with point touched
+		QLine3D ln = mvp.viewLineFromWindow(p);
+		QPlane3D vp = mvp.getViewPlane();
+		QVector3D hitPlane(0, 0, 0), //intersection view plane with point touched
 			hitSphere(0, 0, 0),
 			hitSphere1(0, 0, 0),
 			hitSphere2(0, 0, 0),
 			hitHyper(0, 0, 0);
 
-		Sphere3f sphere(center, tb->radius);//trackball sphere
+		QSphere3D sphere(QVector3D(), Params::trackBallRadius());//trackball sphere
 		bool resSp = IntersectionLineSphere < float >(sphere, ln, hitSphere1, hitSphere2);
 
 		Point3f viewpoint = tb->camera.ViewPoint();
@@ -137,7 +142,7 @@ public:
 				hitSphere = hitSphere2;
 		}
 
-		/*float dl= */ Distance(ln, center);
+		/ *float dl= * / Distance(ln, center);
 		bool resHp;
 		IntersectionPlaneLine < float >(vp, ln, hitPlane);
 		if (tb->camera.isOrtho)
@@ -166,6 +171,7 @@ public:
 			return hitSphere;
 		else
 			return hitHyper;
+*/
 
 	
 	}

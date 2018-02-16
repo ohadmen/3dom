@@ -10,10 +10,13 @@
 #include <QQuaternion>
 #include <QVector2D>
 #include <QBasicTimer>
+#include "Qmvp.h"
 #include "loader.h"
 #include "TrackUtils.h"
+#include "TrackBall.h"
+
 #include "Params.h"
-#include "Qmvp.h"
+
 
 class GeometryEngine;
 
@@ -53,29 +56,38 @@ public:
 		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
 		if (p == nullptr)
 			return false;
-		m_mvp.resetView(width(),height());
+		//m_mvp.resetView(width(),height());
 
 		float t = p->getContainmentRadius() / std::tan(Params::camFOV() / 2 * deg2rad);
-		m_mvp.applyT(-p->getCenter()+QVector3D(0, 0, -t));
-
+		//m_mvp.applyT(-p->getCenter()+QVector3D(0, 0, -t));
+		QVector3D initpos = -p->getCenter() + QVector3D(0, 0, -t);
+		m_tb.resetView(width(), height(), initpos);
+		return true;
 	}
 protected:
+
+	void keyPressEvent(QKeyEvent *event)
+	{
+		m_tb.keyPressEvent(event);
+	}
 	void wheelEvent(QWheelEvent *event)
 	{
-
-		m_mvp.applyT(QVector3D(0, 0, float(event->delta()) / 1000));
+		m_tb.wheelEvent(event);
+		//m_mvp.applyT(QVector3D(0, 0, float(event->delta()) / 1000));
 		update();
 		
 	}
-	void mousePressEvent(QMouseEvent *e)
+	void mousePressEvent(QMouseEvent *event)
 	{
+		m_tb.mousePressEvent(event);
 		// Save mouse press position
-		mousePressPosition = QVector2D(e->localPos());
+		mousePressPosition = QVector2D(event->localPos());
 	}
-	void mouseReleaseEvent(QMouseEvent *e)
+	void mouseReleaseEvent(QMouseEvent *event)
 	{
+		m_tb.mouseReleaseEvent(event);
 		// Mouse release position - mouse press position
-		QVector2D diff = QVector2D(e->localPos()) - mousePressPosition;
+		QVector2D diff = QVector2D(event->localPos()) - mousePressPosition;
 
 		// Rotation axis is perpendicular to the mouse position difference
 		// vector
@@ -100,7 +112,7 @@ protected:
 		}
 		else {
 
-			m_mvp.applyR(rotationAxis, angularSpeed);
+			//m_mvp.applyR(rotationAxis, angularSpeed);
 			// Request an update
 			update();
 		}
@@ -119,7 +131,7 @@ protected:
 		glEnable(GL_CULL_FACE);
 
 		
-		m_trackUtils.init();
+		m_tb.init();
 //		auto t = MeshArray::i().getTokenList();
 //		for (auto zz : t)
 //			MeshArray::i().getMesh(zz)->initGL();
@@ -129,32 +141,28 @@ protected:
 
 	void resizeGL(int w, int h)
 	{
-		
 
+		//m_mvp.setWinSize(w,h);
+		m_tb.resetView(w, h, QVector3D());
 
-		m_mvp.setWinSize(w,h);
-
-	
-		
 	}
 	void paintGL()
 	{
 		// Clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		QMatrix4x4 matNoScale = m_mvp.getP()*m_mvp.getT()*m_mvp.getR();
-		m_trackUtils.drawSphereIcon(matNoScale, false);
-
+		//QMatrix4x4 matNoScale = m_mvp.getP()*m_mvp.getT()*m_mvp.getR();
+		//m_trackUtils.drawSphereIcon(matNoScale, false);
+		m_tb.draw();
 
 		Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
 		if (p == nullptr)
 			return;
-		p->draw(m_mvp.getMat());
+		//p->draw(m_mvp.getMat());
+		p->draw(m_tb.getMVP().getMat());
 
 
-		QMatrix4x4 m = m_mvp.getMat();
-		QVector3D a(0, 0, 0);
-		QVector3D b = m*a;
+
 
 	}
 
@@ -174,8 +182,9 @@ private:
 
 
 	int m_currentMeshToken;
-	TrackUtils m_trackUtils;
-	Qmvp m_mvp;
+	
+	Trackball m_tb;
+	//Qmvp m_mvp;
 };
 
 #endif // Canvas_H

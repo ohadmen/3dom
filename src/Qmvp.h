@@ -1,9 +1,8 @@
-
-#ifndef QMVP
-#define  QVMP
+#pragma  once
 #include <QMatrix4x4>
 #include <qquaternion.h>
 #include "Q3d/QPlane3D.h"
+#include "Params.h"
 
 class Qmvp
 {
@@ -36,6 +35,7 @@ public:
 
 	void applyT(const QVector3D& t) { m_viewT += t; }
 	void applyR(const QVector3D& axis, float angle)	{		m_viewR = QQuaternion::fromAxisAndAngle(axis, angle) * m_viewR;	}
+	void applyS(float s) { m_viewS *= s; }
 
 	QMatrix4x4 getR()const  { QMatrix4x4 r;r.setToIdentity();r.rotate(m_viewR);   return std::move(r); }
 	QMatrix4x4 getS()const  { QMatrix4x4 s;s.setToIdentity();s.scale(m_viewS);	return std::move(s); }
@@ -79,15 +79,15 @@ public:
 	QRay3D viewRayFromModel(const QVector3D &p)
 	{
 
-		QVector3D vp = viewPoint();
+		QVector3D vp = getViewPoint();
 		return QRay3D(isOrth() ? p : vp, isOrth() ? -vp : (p - vp));
 
 	}
 
 	// Note that p it is assumed to be in window coordinate.
-	QRay3D viewRayFromWindow(const QVector3D &p)
+	QRay3D viewRayFromWindow(const QVector2D &p)
 	{
-		QVector3D vp = viewPoint();
+		QVector3D vp = getViewPoint();
 		QVector3D pp = unProject(p);
 		return QRay3D(isOrth() ? pp : vp, isOrth() ? -vp : (pp - vp));
 
@@ -111,7 +111,7 @@ public:
 	QLine3D viewLineFromModel(const QVector3D &p) const
 	{
 		QLine3D line;
-		QVector3D vp = viewPoint();
+		QVector3D vp = getViewPoint();
 		if (isOrth()) {
 			line = QLine3D(p, -vp + p);
 			//line.setOrigin(p);
@@ -129,7 +129,7 @@ public:
 	QLine3D viewLineFromWindow(const QVector2D &p) const
 	{
 		QLine3D line;  // plane perpedicular to view direction and passing through manip center
-		QVector3D vp = viewPoint();
+		QVector3D vp = getViewPoint();
 		QVector3D pp = unProject(p);
 
 		if (isOrth()) {
@@ -146,4 +146,14 @@ public:
 	}
 
 };
-#endif
+
+//Qmvp operator*(const Qmvp& a, const Qmvp& b)
+//{
+//	Qmvp c;
+//	c.m_viewR  = a.m_viewR  * b.m_viewR	;
+//	c.m_viewT  = a.m_viewT  * b.m_viewT	;
+//	c.m_viewS  = a.m_viewS  * b.m_viewS	;
+//	c.m_proj   = a.m_proj   * b.m_proj	;
+//	c.m_uv2pix = a.m_uv2pix * b.m_uv2pix;
+//}
+
