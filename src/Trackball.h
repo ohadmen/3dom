@@ -36,50 +36,50 @@ public:
 
 	void init()
 	{
-		m_sr.init();
+		m_sr.tu.init();
 	}
 
 	void keyPressEvent(QKeyEvent *e)
 	{
 
-		//m_states[m_sr.getState()]->applyKeyEvent(e);
+		//m_states[m_sr.currentState]->applyKeyEvent(e);
 	}
 	void keyReleaseEvent(QKeyEvent *e)
 	{
 
-		//m_states[m_sr.getState()]->applyKeyEvent(e);
+		//m_states[m_sr.currentState]->applyKeyEvent(e);
 	}
 	void mouseReleaseEvent(QMouseEvent *e)
 	{
 		int buttonChange = int(m_prevMouseState) ^ int(e->buttons());
 		m_prevMouseState = e->buttons();
-		m_states[m_sr.getState()]->apply(-buttonChange, e->modifiers(), e->localPos(), 0);
+		m_states[m_sr.currentState]->apply(-buttonChange, e->modifiers(), e->localPos(), 0);
 	}
 	void mousePressEvent(QMouseEvent *e)
 	{
 		int buttonChange = int(m_prevMouseState) ^ int(e->buttons());
 		m_prevMouseState = e->buttons();
-		m_states[m_sr.getState()]->apply(buttonChange, e->modifiers(), e->localPos(), 0);
+		m_states[m_sr.currentState]->apply(buttonChange, e->modifiers(), e->localPos(), 0);
 	}
 	void mouseMoveEvent(QMouseEvent *e)
 	{
-		m_states[m_sr.getState()]->apply(Qt::MouseButton::NoButton, e->modifiers(), e->localPos(), 0);
+		m_states[m_sr.currentState]->apply(Qt::MouseButton::NoButton, e->modifiers(), e->localPos(), 0);
 	}
 	void wheelEvent(QWheelEvent *e)
 	{
-		m_states[m_sr.getState()]->apply(e->buttons(), e->modifiers(), e->posF(), e->delta());
+		m_states[m_sr.currentState]->apply(e->buttons(), e->modifiers(), e->posF(), e->delta());
 	}
 
 	void draw()
 	{
-		m_states[m_sr.getState()]->draw();
+		m_states[m_sr.currentState]->draw();
 	}
 	Qmvp getMVP()const
 	{
-		return m_sr.getTrack();
+		return m_sr.track;
 	}
-	void resetView(int w,int h)	    { m_sr.resetView(w,h);			}
-	void applyT(const QVector3D& t) { m_sr.applyT(t); }
-	void applyS(float s)            { m_sr.applyS(s); }
-
+	void resetView(int w,int h)	    { m_sr.track.resetView(w,h);			}
+	void applyT(const QVector3D& t) { m_sr.track.applyT(t); }
+	void applyS(float s)            { m_sr.track.applyS(s); }
+	void setWinSize(int w, int h) { m_sr.track.setWinSize(w,h); }
 };

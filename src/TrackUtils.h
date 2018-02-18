@@ -50,7 +50,7 @@ class TrackUtils: protected QOpenGLFunctions
 	}
 	void privDrawCircleBlur(const QMatrix4x4& mvp, QVector4D col,int lw)
 	{
-		static const int nBlurSteps = 5;
+		static const int nBlurSteps = 20;
 		col[3] = 1 / float(nBlurSteps);
 		for (int i = 0; i != nBlurSteps; ++i)
 		{

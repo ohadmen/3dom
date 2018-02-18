@@ -110,9 +110,15 @@ public:
 		return  pix;
 	}
 
-	QVector3D unProject(const QVector2D &pix) const {
+	QVector2D pix2uv(const QVector2D &pix) const {
 		QVector2D uv = (pix - m_uv2pix) / m_uv2pix;
 		uv[1] *= -1;//inverse Y
+		return uv;
+	}
+
+	QVector3D unProject(const QVector2D &pix) const {
+		QVector2D uv = pix2uv(pix);
+		
 		QVector3D xyz = getPi() * QVector3D(uv, 1);
 		return xyz;
 	}

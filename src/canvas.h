@@ -85,7 +85,7 @@ protected:
 
 		glEnable(GL_DEPTH_TEST);
 		//
-		glEnable(GL_CULL_FACE);
+		//glEnable(GL_CULL_FACE);
 
 		
 		m_tb.init();
@@ -99,7 +99,8 @@ protected:
 	{
 
 		//m_mvp.setWinSize(w,h);
-		m_tb.resetView(w, h);
+		m_tb.setWinSize(w, h);
+		update();
 
 	}
 	void paintGL()
