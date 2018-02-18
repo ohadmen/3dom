@@ -27,11 +27,8 @@ class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 public:
 	explicit Canvas(QWidget *parent=0) :
 		QOpenGLWidget(parent),
-		m_currentMeshToken(-1),
-		angularSpeed(0)
-	{
-
-	}
+		m_currentMeshToken(-1)
+	{}
 	~Canvas()
 	{
 
@@ -58,65 +55,25 @@ public:
 			return false;
 		//m_mvp.resetView(width(),height());
 
-		float t = p->getContainmentRadius() / std::tan(Params::camFOV() / 2 * deg2rad);
-		//m_mvp.applyT(-p->getCenter()+QVector3D(0, 0, -t));
-		QVector3D initpos = -p->getCenter() + QVector3D(0, 0, -t);
-		m_tb.resetView(width(), height(), initpos);
+		//fit object s.t. if camera is at 0,0,-1 all is visible
+		float tanfovH = std::tan(Params::camFOV() / 2 * deg2rad);
+		float s = tanfovH / (p->getContainmentRadius()*(1+ tanfovH));
+
+
+		
+		m_tb.resetView(width(), height());
+		m_tb.applyT(-p->getCenter()+QVector3D(0,0,-1));
+		m_tb.applyS(s);
 		return true;
 	}
 protected:
 
-	void keyPressEvent(QKeyEvent *event)
-	{
-		m_tb.keyPressEvent(event);
-	}
-	void wheelEvent(QWheelEvent *event)
-	{
-		m_tb.wheelEvent(event);
-		//m_mvp.applyT(QVector3D(0, 0, float(event->delta()) / 1000));
-		update();
-		
-	}
-	void mousePressEvent(QMouseEvent *event)
-	{
-		m_tb.mousePressEvent(event);
-		// Save mouse press position
-		mousePressPosition = QVector2D(event->localPos());
-	}
-	void mouseReleaseEvent(QMouseEvent *event)
-	{
-		m_tb.mouseReleaseEvent(event);
-		// Mouse release position - mouse press position
-		QVector2D diff = QVector2D(event->localPos()) - mousePressPosition;
+	void keyPressEvent    (QKeyEvent   *event){m_tb.keyPressEvent    (event); update();}
+	void wheelEvent       (QWheelEvent *event){m_tb.wheelEvent       (event); update();}
+	void mousePressEvent  (QMouseEvent *event){m_tb.mousePressEvent  (event); update();}
+	void mouseReleaseEvent(QMouseEvent *event){m_tb.mouseReleaseEvent(event); update();}
+	void mouseMoveEvent   (QMouseEvent *event){m_tb.mouseMoveEvent   (event); update();}
 
-		// Rotation axis is perpendicular to the mouse position difference
-		// vector
-		QVector3D n = QVector3D(diff.y(), diff.x(), 0.0).normalized();
-
-		// Accelerate angular speed relative to the length of the mouse sweep
-		qreal acc = diff.length() / 100.0;
-
-		// Calculate new rotation axis as weighted sum
-		rotationAxis = (rotationAxis * angularSpeed + n * acc).normalized();
-
-		// Increase angular speed
-		angularSpeed += acc;
-	}
-	void timerEvent(QTimerEvent *e) {
-		// Decrease angular speed (friction)
-		angularSpeed *= 0.99;
-
-		// Stop rotation when speed goes below threshold
-		if (angularSpeed < 0.01) {
-			angularSpeed = 0.0;
-		}
-		else {
-
-			//m_mvp.applyR(rotationAxis, angularSpeed);
-			// Request an update
-			update();
-		}
-	}
 	
 	void initializeGL()
 	{
@@ -135,15 +92,14 @@ protected:
 //		auto t = MeshArray::i().getTokenList();
 //		for (auto zz : t)
 //			MeshArray::i().getMesh(zz)->initGL();
-		// Use QBasicTimer because its faster than QTimer
-		timer.start(12, this);
+
 	}
 
 	void resizeGL(int w, int h)
 	{
 
 		//m_mvp.setWinSize(w,h);
-		m_tb.resetView(w, h, QVector3D());
+		m_tb.resetView(w, h);
 
 	}
 	void paintGL()
@@ -168,23 +124,12 @@ protected:
 
 
 private:
-	QBasicTimer timer;
-	
-	
-
-	
-
-	
-	QVector2D mousePressPosition;
-	QVector3D rotationAxis;
-	qreal angularSpeed;
-
 
 
 	int m_currentMeshToken;
 	
 	Trackball m_tb;
-	//Qmvp m_mvp;
+
 };
 
 #endif // Canvas_H

@@ -11,7 +11,9 @@ class Trackball
 	TrackState::SharedRes m_sr;
 	std::map<TrackState::State, TrackState*> m_states;
 
-
+	//press/release callback tells us the current state *after* the event
+	//to know which button was pressed/released, we need to save the previous state.
+	Qt::MouseButtons m_prevMouseState;
 
 
 
@@ -30,7 +32,7 @@ class Trackball
 
 public:
 	~Trackball() { privClearStates(); }
-	Trackball() { privInitStates(); }
+	Trackball():m_prevMouseState(Qt::MouseButton::NoButton){ privInitStates(); }
 
 	void init()
 	{
@@ -49,11 +51,19 @@ public:
 	}
 	void mouseReleaseEvent(QMouseEvent *e)
 	{
-		m_states[m_sr.getState()]->apply(e->buttons(), e->modifiers(), e->localPos(), 0);
+		int buttonChange = int(m_prevMouseState) ^ int(e->buttons());
+		m_prevMouseState = e->buttons();
+		m_states[m_sr.getState()]->apply(-buttonChange, e->modifiers(), e->localPos(), 0);
 	}
 	void mousePressEvent(QMouseEvent *e)
 	{
-		m_states[m_sr.getState()]->apply(e->buttons(), e->modifiers(), e->localPos(), 0);
+		int buttonChange = int(m_prevMouseState) ^ int(e->buttons());
+		m_prevMouseState = e->buttons();
+		m_states[m_sr.getState()]->apply(buttonChange, e->modifiers(), e->localPos(), 0);
+	}
+	void mouseMoveEvent(QMouseEvent *e)
+	{
+		m_states[m_sr.getState()]->apply(Qt::MouseButton::NoButton, e->modifiers(), e->localPos(), 0);
 	}
 	void wheelEvent(QWheelEvent *e)
 	{
@@ -68,10 +78,8 @@ public:
 	{
 		return m_sr.getTrack();
 	}
-	void resetView(int w,int h,const QVector3D& initpos)
-	{
-		m_sr.resetView(w,h,initpos);
-		
-	}
+	void resetView(int w,int h)	    { m_sr.resetView(w,h);			}
+	void applyT(const QVector3D& t) { m_sr.applyT(t); }
+	void applyS(float s)            { m_sr.applyS(s); }
 
 };

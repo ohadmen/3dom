@@ -6,10 +6,15 @@
 
 class Qmvp
 {
-	//QMatrix4x4 m_model; //UNUSED
+	//QQuaternion m_modelR;
+	//QVector3D   m_modelT;
+	//float		m_modelS;
+
+
 	QQuaternion m_viewR;
 	QVector3D   m_viewT;
 	float		m_viewS;
+
 	QMatrix4x4 m_proj;
 	QVector2D m_uv2pix;//[w h]/2
 
@@ -44,6 +49,7 @@ public:
 	QMatrix4x4 getSi()const { QMatrix4x4 s;s.setToIdentity();s.scale(1 / m_viewS);	return std::move(s); }
 	QMatrix4x4 getTi()const { QMatrix4x4 t;t.setToIdentity();t.translate(-m_viewT); return std::move(t); }
 	QMatrix4x4 getP()const { return m_proj; }
+	QMatrix4x4 getPi()const { return m_proj.inverted(); }
 
 	void setWinSize(int w, int h)
 	{
@@ -51,6 +57,10 @@ public:
 		m_uv2pix = QVector2D(w / 2.0, h / 2.0);
 		m_proj.setToIdentity();
 		m_proj.perspective(Params::camFOV(), ar, Params::camZnear(), Params::camZfar());
+	}
+	float getAspectRatio() const 
+	{
+		return m_proj(1, 1) / m_proj(0, 0);
 	}
 	QMatrix4x4 getMat() const
 	{
@@ -66,32 +76,32 @@ public:
 
 
 	bool isOrth() const { return m_proj(3, 3) == 0; }
-	QVector3D getViewPoint() const { 		return  pVi()*QVector3D(0, 0, isOrth()? 3 : 0);	}
-	QPlane3D  getViewPlane() const { QPlane3D(getViewPoint(), 1); }
+	QVector3D getViewPoint() const { 		return getPi()*QVector3D(0, 0, isOrth()? 3 : 0);	}
+	//QPlane3D  getViewPlane() const { QPlane3D(getViewPoint(), 1); }
 
-	QPlane3D viewPlaneFromModel(const QVector3D& p)
-	{
+	//QPlane3D viewPlaneFromModel(const QVector3D& p)
+	//{
+	//
+	//	QVector3D n = pVi() * QVector3D(0, 0, -1);
+	//	return QPlane3D(p, n);
+	//}
 
-		QVector3D n = pVi() * QVector3D(0, 0, -1);
-		return QPlane3D(p, n);
-	}
-
-	QRay3D viewRayFromModel(const QVector3D &p)
-	{
-
-		QVector3D vp = getViewPoint();
-		return QRay3D(isOrth() ? p : vp, isOrth() ? -vp : (p - vp));
-
-	}
+	//QRay3D viewRayFromModel(const QVector3D &p)
+	//{
+	//
+	//	QVector3D vp = getViewPoint();
+	//	return QRay3D(isOrth() ? p : vp, isOrth() ? -vp : (p - vp));
+	//
+	//}
 
 	// Note that p it is assumed to be in window coordinate.
-	QRay3D viewRayFromWindow(const QVector2D &p)
-	{
-		QVector3D vp = getViewPoint();
-		QVector3D pp = unProject(p);
-		return QRay3D(isOrth() ? pp : vp, isOrth() ? -vp : (pp - vp));
-
-	}
+	//QRay3D viewRayFromWindow(const QVector2D &p)
+	//{
+	//	QVector3D vp = getViewPoint();
+	//	QVector3D pp = unProject(p);
+	//	return QRay3D(isOrth() ? pp : vp, isOrth() ? -vp : (pp - vp));
+	//
+	//}
 
 	QVector2D project(const QVector3D &xyz) const {
 		QVector3D uv = getMat() * xyz; //[-1 1]
@@ -102,48 +112,57 @@ public:
 
 	QVector3D unProject(const QVector2D &pix) const {
 		QVector2D uv = (pix - m_uv2pix) / m_uv2pix;
-		
-		QVector3D xyz = getMatInv() * QVector3D(uv, 1);
+		uv[1] *= -1;//inverse Y
+		QVector3D xyz = getPi() * QVector3D(uv, 1);
 		return xyz;
 	}
 
 
-	QLine3D viewLineFromModel(const QVector3D &p) const
-	{
-		QLine3D line;
-		QVector3D vp = getViewPoint();
-		if (isOrth()) {
-			line = QLine3D(p, -vp + p);
-			//line.setOrigin(p);
-			//line.direction(-vp);
-		}
-		else {
-			line = QLine3D(vp, p);
-			//line.SetOrigin(vp);
-			//line.SetDirection(p - vp);
-		}
-		return line;
-	}
+	//QLine3D viewLineFromModel(const QVector3D &p) const
+	//{
+	//	QLine3D line;
+	//	QVector3D vp = getViewPoint();
+	//	if (isOrth()) {
+	//		line = QLine3D(p, -vp + p);
+	//		//line.setOrigin(p);
+	//		//line.direction(-vp);
+	//	}
+	//	else {
+	//		line = QLine3D(vp, p);
+	//		//line.SetOrigin(vp);
+	//		//line.SetDirection(p - vp);
+	//	}
+	//	return line;
+	//}
 
-	// Note that p it is assumed to be in window coordinate.
-	QLine3D viewLineFromWindow(const QVector2D &p) const
+	QVector3D getViewVector(const QVector2D& p) const
 	{
-		QLine3D line;  // plane perpedicular to view direction and passing through manip center
+		//p - xy coordinates on window
+		//vp - focal point location
+		//pp - point location on screen at distance of 1 normalized unit from focal point
 		QVector3D vp = getViewPoint();
 		QVector3D pp = unProject(p);
-
-		if (isOrth()) {
-			line = QLine3D(pp, -vp + pp);
-			//line.SetOrigin(pp);
-			//line.SetDirection(-vp);
-		}
-		else {
-			line = QLine3D(vp, pp);
-			//line.SetOrigin(vp);
-			//line.SetDirection(pp - vp);
-		}
-		return line;
+		return (pp - vp).normalized();
 	}
+	// Note that p it is assumed to be in window coordinate.
+	//QLine3D viewLineFromWindow(const QVector2D& p) const
+	//{
+	//	QLine3D line;  // plane perpedicular to view direction and passing through manip center
+	//	QVector3D vp = getViewPoint();
+	//	QVector3D pp = unProject(p);
+	//
+	//	if (isOrth()) {
+	//		line = QLine3D(pp, -vp + pp);
+	//		//line.SetOrigin(pp);
+	//		//line.SetDirection(-vp);
+	//	}
+	//	else {
+	//		line = QLine3D(vp, pp);
+	//		//line.SetOrigin(vp);
+	//		//line.SetDirection(pp - vp);
+	//	}
+	//	return line;
+	//}
 
 };
 

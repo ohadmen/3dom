@@ -91,7 +91,17 @@ public:
 	
 	void drawSphereIcon(const Qmvp& mvp, bool active, bool planeshandle = false)
 	{
-		QMatrix4x4 matNoScale = mvp.getP()*mvp.getT()*mvp.getR();
+		static const float deg2rad = std::acos(0.0f) / 90.0f;
+		float tanfovH = std::tan(Params::camFOV() / 2 * deg2rad);
+		
+		QMatrix4x4 fixedView;
+		//fixedView.scale( 1.0, mvp.getAspectRatio(), 1.0);
+		//fixedView.ortho(1, -1, 1, -1, 0, 2);
+		fixedView.translate(0, 0, -1);
+		fixedView.scale(tanfovH);
+		
+
+		QMatrix4x4 sphereMVP = mvp.getP()*fixedView*mvp.getR();
 		initializeOpenGLFunctions();
 		static const QMatrix4x4 r90x
 		(1, 0, 0, 0,
@@ -112,9 +122,9 @@ public:
 		int lw = active ? Params::trackBallLineWidthMoving() : Params::trackBallLineWidthStill();
 
 
-		privDrawCircle(matNoScale     ,colR,lw);
-		privDrawCircle(matNoScale*r90x,colG,lw);
-		privDrawCircle(matNoScale*r90y,colB,lw);
+		privDrawCircle(sphereMVP     ,colR,lw);
+		privDrawCircle(sphereMVP*r90x,colG,lw);
+		privDrawCircle(sphereMVP*r90y,colB,lw);
 
 	}
 	QVector3D hitSphere( Qmvp mvp,  QVector2D p)
