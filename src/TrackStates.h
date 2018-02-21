@@ -117,7 +117,7 @@ public:
 		{
 			m_pressTrack = m_sr->track;
 			//m_pressVec = m_pressTrack.getViewVector(QVector2D(xy));
-			m_pressVec = privXY2vec(QVector2D(xy),m_pressTrack);
+			m_pressVec = m_sr->tu.hitSphere(m_pressTrack, QVector2D(xy));
 			
 		}
 		else if (mb.first == Qt::MouseButton::LeftButton && !mb.second)//release
@@ -129,29 +129,25 @@ public:
 		{
 			static const float rad2deg = 90.0/ std::acos(0.0);
 			static const float twopi = 4 * std::acos(0.0);
-			QVector3D vv = privXY2vec(QVector2D(xy),m_pressTrack);
-			//QVector3D vv = m_pressTrack.getViewVector(QVector2D(xy));
+	
+			QVector3D hitNew = m_sr->tu.hitSphere(m_pressTrack, QVector2D(xy));
+			
+			QVector3D axis = QVector3D::crossProduct( m_pressVec, hitNew).normalized();
+			float f = std::acos(QVector3D::dotProduct(hitNew.normalized(), m_pressVec.normalized()))*rad2deg;
+
+			//  Figure out how much to rotate around that axis.
+			//  float phi = Distance (hitNew, hitOld) / tb->radius;
+			//  float phi = vcg::Angle(hitNew - center,hitOld - center)*(Distance(hitNew,center)/tb->radius);
+			float phi = std::max(f, (hitNew - m_pressVec).length() / Params::trackBallRadius());
+
 			m_sr->track = m_pressTrack;
-			QVector3D axis = QVector3D::crossProduct(vv, m_pressVec);
-			float angle = std::acos(QVector3D::dotProduct(vv, m_pressVec))*rad2deg;
-			m_sr->track.applyR(axis,angle);
+			m_sr->track.applyR(axis, -phi);
 		}
 			
 
 		
 	}
-	QVector3D privXY2vec(const QVector2D& xy, const Qmvp& mvp)
-	{
-		static const float rad2deg = 90.0 / std::acos(0.0);
-		static const float twopi = 4 * std::acos(0.0);
-		QVector2D uv = mvp.pix2uv(QVector2D(xy));
-		uv = uv*twopi*Params::trackBallRadius();
-		uv[0] = std::sin(uv[0]);
-		uv[1] = std::sin(uv[1]);
-		float z = -std::sqrt(std::max(0.0f,1.0f - uv[0] * uv[0]-uv[1]*uv[1]));
-		return QVector3D(uv, z);
-
-	}
+	
 	void draw()
 	{
 		m_sr->tu.drawSphereIcon(m_sr->track, false);

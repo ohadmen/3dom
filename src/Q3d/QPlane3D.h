@@ -20,19 +20,33 @@ public:
 
     void      setNormal   (const QVector3D &value);
     void      setDistance (float value);
-    void      redefine    (const QVector3D &normal, float distance);
-    void      redefine    (const QVector3D &normal, const QVector3D &point);
-    void      redefine    (const QVector3D &p0, const QVector3D &p1, const QVector3D &p2);
+    void      redefine    (const QVector3D &normal, float distance)
+	{
+		_normal = normal.normalized();
+		_distance = distance;
+		_dirty++;
+		update();
+	}
+
+
+    void      redefine    (const QVector3D &normal, const QVector3D &point)
+	{
+		redefine(normal, QVector3D::dotProduct(normal, point));
+	}
+    void      redefine    (const QVector3D &p0, const QVector3D &p1, const QVector3D &p2)
+	{
+		redefine(QVector3D::crossProduct(p1 - p0, p2 - p0).normalized(), p0);
+	}
     bool      operator == (const QPlane3D &plane);
     bool      operator != (const QPlane3D &plane);
-	bool	  intersection(const QLine3D li,QVector3D* pP)
+	bool	  intersection(const QLine3D& li,QVector3D* pP) const
 	{
 		const float epsilon = (1e-8f);
 
-		float k = QVector3D::dotProduct(direction(),li.direction());						// Compute 'k' factor
-		if ((k > -epsilon) && (k < epsilon))
+		float k = QVector3D::dotProduct(normal(),li.direction());						// Compute 'k' factor
+		if (std::abs(k) < epsilon)
 			return false;
-		float r = QVector3D::dotProduct(origin() - direction(),li.p1()) / k;	// Compute ray distance
+		float r = (distance()-QVector3D::dotProduct(normal(),li.p1())) / k;	// Compute ray distance
 		*pP = li.p1() + li.direction()*r;
 		return true;
 	}
@@ -103,7 +117,7 @@ inline void QPlane3D::setNormal(const QVector3D &value)
 {
     if(!qFuzzyCompare(_normal, value))
     {
-        _normal = value;
+        _normal = value.normalized();
         _dirty++;
         update();
     }
@@ -119,29 +133,8 @@ inline void QPlane3D::setDistance(float value)
     }
 }
 
-inline void QPlane3D::redefine(const QVector3D &normal, float distance)
-{
-    _normal   = normal;
-    _distance = distance;
-    _dirty++;
-    update();
-}
 
-inline void QPlane3D::redefine(const QVector3D &normal, const QVector3D &point)
-{
-    _normal   = normal;
-    _distance = QVector3D::dotProduct(_normal, point);
-    _dirty++;
-    update();
-}
 
-inline void QPlane3D::redefine(const QVector3D &p0, const QVector3D &p1, const QVector3D &p2)
-{
-    _normal   = QVector3D::crossProduct(p1 - p0, p2 - p0).normalized();
-	_distance = QVector3D::dotProduct(_normal, p0);
-    _dirty++;
-    update();
-}
 
 inline bool QPlane3D::operator == (const QPlane3D &plane)
 {

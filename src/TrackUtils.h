@@ -88,20 +88,32 @@ public:
 		return true;
 	}
 
-	
-	void drawSphereIcon(const Qmvp& mvp, bool active, bool planeshandle = false)
+	Qmvp  getShpereMVP(const Qmvp& mvp)
 	{
 		static const float deg2rad = std::acos(0.0f) / 90.0f;
 		float tanfovH = std::tan(Params::camFOV() / 2 * deg2rad);
-		
-		QMatrix4x4 fixedView;
-		//fixedView.scale( 1.0, mvp.getAspectRatio(), 1.0);
-		//fixedView.ortho(1, -1, 1, -1, 0, 2);
-		fixedView.translate(0, 0, -1);
-		fixedView.scale(tanfovH);
-		
 
-		QMatrix4x4 sphereMVP = mvp.getP()*fixedView*mvp.getR();
+
+		Qmvp sphereMVP=mvp;
+		sphereMVP.setT(QVector3D(0, 0, -1));
+		sphereMVP.setS(tanfovH);
+	
+		return sphereMVP;
+	}
+	void drawSphereIcon(const Qmvp& mvp, bool active, bool planeshandle = false)
+	{
+		//static const float deg2rad = std::acos(0.0f) / 90.0f;
+		//float tanfovH = std::tan(Params::camFOV() / 2 * deg2rad);
+		//
+		//QMatrix4x4 fixedView;
+		////fixedView.scale( 1.0, mvp.getAspectRatio(), 1.0);
+		////fixedView.ortho(1, -1, 1, -1, 0, 2);
+		//fixedView.translate(0, 0, -1);
+		//fixedView.scale(tanfovH);
+		//
+		//
+		//QMatrix4x4 sphereMVP = mvp.getP()*fixedView*mvp.getR();
+		QMatrix4x4 sphereMVP = getShpereMVP(mvp).getMat();
 		initializeOpenGLFunctions();
 		static const QMatrix4x4 r90x
 		(1, 0, 0, 0,
@@ -127,63 +139,73 @@ public:
 		privDrawCircle(sphereMVP*r90y,colB,lw);
 
 	}
-	QVector3D hitSphere( Qmvp mvp,  QVector2D p)
+	QVector3D hitSphere(const Qmvp& mvp_,const  QVector2D& p)
 	{
-		return QVector3D();
-		/*
-		QLine3D ll = mvp.viewLineFromWindow(p);
-
+		Qmvp mvp = getShpereMVP(mvp_);
+		static const float rad2deg = 90.0 / std::acos(0.0);
+		QVector3D sphereT = mvp.getT().row(2).toVector3D();
+		float shpereR = Params::trackBallRadius()*mvp.getS()(0,0);
+		
 		QLine3D ln = mvp.viewLineFromWindow(p);
+		QVector3D viewpoint = mvp.getViewPoint();
+
 		QPlane3D vp = mvp.getViewPlane();
-		QVector3D hitPlane(0, 0, 0), //intersection view plane with point touched
-			hitSphere(0, 0, 0),
-			hitSphere1(0, 0, 0),
-			hitSphere2(0, 0, 0),
-			hitHyper(0, 0, 0);
+		
+		QVector3D hits1, hits2;
+		
+		QSphere3D sphere(sphereT, shpereR);//trackball sphere
+		bool resSp = sphere.intersection(ln, &hits1, &hits2);
+		
+		QVector3D hs = (viewpoint - hits1).length() < (viewpoint - hits2).length() ? hits1 : hits2;
+		
 
-		QSphere3D sphere(QVector3D(), Params::trackBallRadius());//trackball sphere
-		bool resSp = IntersectionLineSphere < float >(sphere, ln, hitSphere1, hitSphere2);
-
-		Point3f viewpoint = tb->camera.ViewPoint();
-		if (resSp == true) {
-			if (Distance(viewpoint, hitSphere1) < Distance(viewpoint, hitSphere2))
-				hitSphere = hitSphere1;
-			else
-				hitSphere = hitSphere2;
-		}
-
-		/ *float dl= * / Distance(ln, center);
-		bool resHp;
-		IntersectionPlaneLine < float >(vp, ln, hitPlane);
-		if (tb->camera.isOrtho)
-			resHp = HitHyperOrtho(center, tb->radius, viewpoint, vp, hitPlane, hitHyper);
-		else
-			resHp = HitHyper(center, tb->radius, viewpoint, vp, hitPlane, hitHyper);
+		QVector3D	hitHyper;
+		bool 	resHp = sprivHitHyper(sphereT, shpereR,viewpoint, vp, ln, &hitHyper);
 
 		// four cases
 
 		// 1) Degenerate line tangent to both sphere and hyperboloid!
-		if ((!resSp && !resHp)) {
-			Point3f hit = ClosestPoint(ln, center);
-			//printf("closest point to line %f\n",Distance(hit,tb->center));
-			return hit;
-		}
-		if ((resSp && !resHp))
-			return hitSphere;           // 2) line cross only the sphere
-		if ((!resSp && resHp))
-			return hitHyper;            // 3) line cross only the hyperboloid
-
-										// 4) line cross both sphere and hyperboloid: choose according angle.
-		float angleDeg = math::ToDeg(Angle((viewpoint - center), (hitSphere - center)));
-
-		//  qDebug("Angle %f (%5.2f %5.2f %5.2f) (%5.2f %5.2f %5.2f)",angleDeg,hitSphere[0],hitSphere[1],hitSphere[2],hitHyper[0],hitHyper[1],hitHyper[2]);
-		if (angleDeg < 45)
-			return hitSphere;
+		QVector3D hit;
+		if (!resSp && !resHp)
+		 hit = ln.point(ln.projection(QVector3D(0, 0, 0))); 
+		else if (resSp && !resHp)
+			hit = hs;           // 2) line cross only the sphere
+		else if (!resSp && resHp)
+			hit = hitHyper;            // 3) line cross only the hyperboloid
 		else
-			return hitHyper;
-*/
-
+		{
+			// 4) line cross both sphere and hyperboloid: choose according angle.
+			float angleDeg = std::acos(QVector3D::dotProduct(viewpoint.normalized(),hs.normalized()))*rad2deg;
+			hit = angleDeg < 45 ? hs : hitHyper;
+		}
+		return hit;
 	
+	}
+	static bool sprivHitHyper(const QVector3D& center,float r, const QVector3D& viewpoint, const QPlane3D& viewplane, const QLine3D& viewLine, QVector3D* hitP)
+	{
+		QVector3D hitOnViewplane;  //intersection view plane with point touched
+		bool ResPl = viewplane.intersection(viewLine, &hitOnViewplane);
+
+		float hitplaney = (hitOnViewplane- center).length();
+		float viewpointx = (viewpoint- center).length();
+
+		float a = hitplaney / viewpointx;
+		float b = -hitplaney;
+		float c = r*r / 2.0f;
+		float delta = b * b - 4 * a * c;
+		if (delta < 0)
+			return false;
+
+		float	xval = (-b - sqrt(delta)) / (2.0f * a);
+		float 	yval = c / xval;            //  alternatively it also could be the other part of the equation yval=-(hitplaney/viewpointx)*xval+hitplaney;
+		
+		// Computing the result in 3d space;
+		QVector3D dirRadial = (hitOnViewplane- center).normalized();
+
+		QVector3D dirView = viewplane.direction();
+		
+		*hitP = center+dirRadial * yval + dirView * xval;
+		return true;
 	}
 
 
