@@ -45,8 +45,8 @@ public:
 		}
 		else
 		{
-			emit got_mesh(token);
-			emit loaded_file(filename);
+			//emit got_mesh(token);
+			//emit loaded_file(filename);
 		}
 		return token;
 
@@ -200,8 +200,8 @@ protected:
 
 
 signals:
-    void loaded_file(QString filename);
-    void got_mesh(int token);
+    //void loaded_file(QString filename);
+    //void got_mesh(int token);
 
     void error_bad_stl();
     void error_empty_mesh();

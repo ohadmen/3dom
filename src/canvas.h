@@ -18,11 +18,11 @@
 #include "Params.h"
 
 
-class GeometryEngine;
+
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
-	Q_OBJECT
+	/*Q_OBJECT*/ //REMOVE AFTER THE FIRST SLOT IS INSERTED
 
 public:
 	explicit Canvas(QWidget *parent=0) :

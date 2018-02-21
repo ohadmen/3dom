@@ -202,7 +202,7 @@ public:
 		// Computing the result in 3d space;
 		QVector3D dirRadial = (hitOnViewplane- center).normalized();
 
-		QVector3D dirView = viewplane.direction();
+		QVector3D dirView = -viewplane.normal();
 		
 		*hitP = center+dirRadial * yval + dirView * xval;
 		return true;

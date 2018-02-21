@@ -129,10 +129,10 @@ public:
 		{
 			static const float rad2deg = 90.0/ std::acos(0.0);
 			static const float twopi = 4 * std::acos(0.0);
-	
+			QVector3D sphereT = m_sr->tu.getShpereMVP(m_pressTrack).getT().row(2).toVector3D();
 			QVector3D hitNew = m_sr->tu.hitSphere(m_pressTrack, QVector2D(xy));
 			
-			QVector3D axis = QVector3D::crossProduct( m_pressVec, hitNew).normalized();
+			QVector3D axis = QVector3D::crossProduct(  hitNew- sphereT, m_pressVec - sphereT).normalized();
 			float f = std::acos(QVector3D::dotProduct(hitNew.normalized(), m_pressVec.normalized()))*rad2deg;
 
 			//  Figure out how much to rotate around that axis.
