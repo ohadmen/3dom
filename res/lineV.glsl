@@ -21,7 +21,7 @@ void main()
     gl_Position = mvp_matrix * a_xyz;
 
     v_xyz = a_xyz;
-	v_col=u_col;
+    v_col=u_col;
 
 }
 //! [0]

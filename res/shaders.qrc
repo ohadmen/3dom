@@ -3,6 +3,6 @@
         <file>meshv.glsl</file>
         <file>meshf.glsl</file>
         <file>linev.glsl</file>
-		<file>linef.glsl</file>
+        <file>linef.glsl</file>
     </qresource>
 </RCC>

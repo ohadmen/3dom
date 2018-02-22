@@ -20,6 +20,6 @@ void main()
     gl_Position = mvp_matrix * a_xyz;
 
     v_xyz = a_xyz;
-	v_rgb = a_rgb;
+    v_rgb = a_rgb;
 }
 //! [0]

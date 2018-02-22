@@ -13,7 +13,7 @@
 
 int main(int argc, char *argv[])
 {
-	
+    
     QApplication app(argc, argv);
 
     QSurfaceFormat format;
@@ -22,16 +22,16 @@ int main(int argc, char *argv[])
 
     app.setApplicationName("cube");
     app.setApplicationVersion("0.1");
-	Loader m_loader;
-	int token = m_loader.load(Loader::default3DmodelFilename());
+    Loader m_loader;
+    int token = m_loader.load(Loader::default3DmodelFilename());
 
 #ifndef QT_NO_OPENGL
     Canvas widget;
-	
+    
     widget.show();
-	
-	widget.setToken(token);
-	widget.cam2geometry();
+    
+    widget.setToken(token);
+    widget.cam2geometry();
 
 #else
     QLabel note("OpenGL Support required");
