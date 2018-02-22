@@ -10,6 +10,7 @@ class Trackball
 
     TrackState::SharedRes m_sr;
     std::map<TrackState::State, TrackState*> m_states;
+    int* m_currentMeshTokenP;
 
     //press/release callback tells us the current state *after* the event
     //to know which button was pressed/released, we need to save the previous state.
@@ -19,11 +20,12 @@ class Trackball
 
     void privInitStates()
     {
-
+        privClearStates();
         m_states[TrackState::IDLE] = new TrackIState_idle(&m_sr, m_states);
         m_states[TrackState::ROTATE] = new TrackIState_rotate(&m_sr, m_states);
         m_states[TrackState::ZOOM] = new TrackIState_zoom(&m_sr, m_states);
         m_states[TrackState::PAN] = new TrackIState_pan(&m_sr, m_states);
+        m_states[TrackState::RETARGET] = new TrackIState_retarget(&m_sr, m_states,m_currentMeshTokenP);
     }
     void privClearStates()
     {
@@ -33,11 +35,13 @@ class Trackball
 
 public:
     ~Trackball() { privClearStates(); }
-    Trackball():m_prevMouseState(Qt::MouseButton::NoButton){ privInitStates(); }
+    Trackball():m_prevMouseState(Qt::MouseButton::NoButton), m_currentMeshTokenP(nullptr){  }
 
-    void init()
+    void init(int* currentMeshTokenP)
     {
+        m_currentMeshTokenP = currentMeshTokenP;
         m_sr.tu.init();
+        privInitStates();
     }
 
     /*void keyPressEvent(QKeyEvent *e)
@@ -61,6 +65,11 @@ public:
         int buttonChange = int(m_prevMouseState) ^ int(e->buttons());
         m_prevMouseState = e->buttons();
         m_states[m_sr.currentState]->apply(buttonChange, e->modifiers(), e->localPos(), 0);
+    }
+    void mouseDoubleClickEvent(QMouseEvent *e)
+    {
+        //map double click to ExtraButton10 
+        m_states[m_sr.currentState]->apply(int(Qt::MouseButton::ExtraButton10), e->modifiers(), e->localPos(), 0);
     }
     void mouseMoveEvent(QMouseEvent *e)
     {

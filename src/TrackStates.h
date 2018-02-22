@@ -4,6 +4,7 @@
 #include <QVector2D>
 #include "Qmvp.h"
 #include "TrackUtils.h"
+#include "mesh.h"
 
 
 /*
@@ -22,6 +23,7 @@ public:
         ROTATE,
         PAN,
         ZOOM,
+        RETARGET,
     };
 
     struct SharedRes
@@ -98,6 +100,10 @@ public:
         else if (mb.first == Qt::MouseButton::NoButton && kbm == Qt::KeyboardModifier::NoModifier && wheelNotch != 0)
         {
             m_sr->currentState=(State::ZOOM);
+        }
+        else if (mb.first == Qt::MouseButton::ExtraButton10 && kbm == Qt::KeyboardModifier::NoModifier )
+        {
+            m_sr->currentState = (State::RETARGET);
         }
         else
             return;//no state change, do not run apply on next state (e.g. next state is idle)
@@ -200,8 +206,6 @@ public:
     }
 };
 
-
-
 //----------------------TrackIState_zoom----------------------------
 class TrackIState_zoom :public TrackState {
 public:
@@ -226,6 +230,32 @@ public:
     }
 
 };
+
+//----------------------TrackIState_zoom----------------------------
+class TrackIState_retarget :public TrackState {
+    int* m_currentMeshTokenP;
+public:
+    TrackIState_retarget(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList,int* currentMeshTokenP) :TrackState(sharedRes, stateList), m_currentMeshTokenP(currentMeshTokenP){}
+    const char *Name() { return "TrackIState_retarget"; };
+    void apply(int , Qt::KeyboardModifiers , const QPointF& xy, float )
+    {
+        const Mesh* p = MeshArray::i().getMesh(*m_currentMeshTokenP);
+        if (p != nullptr)
+        {
+            QVector3D pt = m_sr->tu.hitViewPlane(m_sr->track, QVector2D(xy), false);
+
+            std::array<QVector3D, 2> v = p->closest2ray(QVector3D(), pt);
+            m_sr->track.setT(-v[0], false);
+        }
+     
+        
+
+            m_sr->currentState = (State::IDLE);
+        
+    }
+
+};
+
 
 //----------------------TrackIState_none----------------------------
 class TrackIState_none :public TrackState {

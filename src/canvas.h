@@ -34,8 +34,6 @@ public:
 
         // and the buffers.
         makeCurrent();
-
-        
         doneCurrent();
     }
     void setToken(int token) { 
@@ -69,10 +67,11 @@ public:
 protected:
 
     //void keyPressEvent    (QKeyEvent   *event){m_tb.keyPressEvent    (event); update();}
-    void wheelEvent       (QWheelEvent *event){m_tb.wheelEvent       (event); update();}
-    void mousePressEvent  (QMouseEvent *event){m_tb.mousePressEvent  (event); update();}
-    void mouseReleaseEvent(QMouseEvent *event){m_tb.mouseReleaseEvent(event); update();}
-    void mouseMoveEvent   (QMouseEvent *event){m_tb.mouseMoveEvent   (event); update();}
+    void wheelEvent           (QWheelEvent *event){m_tb.wheelEvent       (event); update();}
+    void mousePressEvent      (QMouseEvent *event){m_tb.mousePressEvent  (event); update();}
+    void mouseReleaseEvent    (QMouseEvent *event){m_tb.mouseReleaseEvent(event); update();}
+    void mouseMoveEvent       (QMouseEvent *event){m_tb.mouseMoveEvent   (event); update();}
+    void mouseDoubleClickEvent(QMouseEvent *event){m_tb.mouseDoubleClickEvent(event); update(); }
 
     
     void initializeGL()
@@ -88,7 +87,7 @@ protected:
         //glEnable(GL_CULL_FACE);
 
         
-        m_tb.init();
+        m_tb.init(&m_currentMeshToken);
 //        auto t = MeshArray::i().getTokenList();
 //        for (auto zz : t)
 //            MeshArray::i().getMesh(zz)->initGL();
