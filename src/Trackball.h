@@ -23,6 +23,7 @@ class Trackball
 		m_states[TrackState::IDLE] = new TrackIState_idle(&m_sr, m_states);
 		m_states[TrackState::ROTATE] = new TrackIState_rotate(&m_sr, m_states);
 		m_states[TrackState::ZOOM] = new TrackIState_zoom(&m_sr, m_states);
+		m_states[TrackState::PAN] = new TrackIState_pan(&m_sr, m_states);
 	}
 	void privClearStates()
 	{
@@ -39,16 +40,16 @@ public:
 		m_sr.tu.init();
 	}
 
-	void keyPressEvent(QKeyEvent *e)
+	/*void keyPressEvent(QKeyEvent *e)
 	{
 
-		//m_states[m_sr.currentState]->applyKeyEvent(e);
+		m_states[m_sr.currentState]->applyKeyEvent(e);
 	}
 	void keyReleaseEvent(QKeyEvent *e)
 	{
 
-		//m_states[m_sr.currentState]->applyKeyEvent(e);
-	}
+		m_states[m_sr.currentState]->applyKeyEvent(e);
+	}*/
 	void mouseReleaseEvent(QMouseEvent *e)
 	{
 		int buttonChange = int(m_prevMouseState) ^ int(e->buttons());

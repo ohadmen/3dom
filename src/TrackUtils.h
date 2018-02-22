@@ -100,7 +100,7 @@ public:
 	
 		return sphereMVP;
 	}
-	void drawSphereIcon(const Qmvp& mvp, bool active, bool planeshandle = false)
+	void drawSphereIcon(const Qmvp& mvp, bool active)
 	{
 		//static const float deg2rad = std::acos(0.0f) / 90.0f;
 		//float tanfovH = std::tan(Params::camFOV() / 2 * deg2rad);
@@ -138,6 +138,16 @@ public:
 		privDrawCircle(sphereMVP*r90x,colG,lw);
 		privDrawCircle(sphereMVP*r90y,colB,lw);
 
+	}
+	QVector3D hitViewPlane(const Qmvp& mvp_, const  QVector2D& p)
+	{
+		Qmvp mvp = getShpereMVP(mvp_);
+		QPlane3D vp = mvp.getViewPlane();
+		QLine3D ln = mvp.viewLineFromWindow(p);
+		QVector3D hitpoint;
+		bool ok = vp.intersection(ln, &hitpoint);
+
+		return ok?hitpoint:QVector3D();
 	}
 	QVector3D hitSphere(const Qmvp& mvp_,const  QVector2D& p)
 	{
@@ -185,7 +195,8 @@ public:
 	{
 		QVector3D hitOnViewplane;  //intersection view plane with point touched
 		bool ResPl = viewplane.intersection(viewLine, &hitOnViewplane);
-
+		if (!ResPl)
+			return false;
 		float hitplaney = (hitOnViewplane- center).length();
 		float viewpointx = (viewpoint- center).length();
 

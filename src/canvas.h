@@ -68,7 +68,7 @@ public:
 	}
 protected:
 
-	void keyPressEvent    (QKeyEvent   *event){m_tb.keyPressEvent    (event); update();}
+	//void keyPressEvent    (QKeyEvent   *event){m_tb.keyPressEvent    (event); update();}
 	void wheelEvent       (QWheelEvent *event){m_tb.wheelEvent       (event); update();}
 	void mousePressEvent  (QMouseEvent *event){m_tb.mousePressEvent  (event); update();}
 	void mouseReleaseEvent(QMouseEvent *event){m_tb.mouseReleaseEvent(event); update();}
