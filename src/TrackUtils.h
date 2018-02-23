@@ -156,76 +156,104 @@ public:
         }
         return ok?hitpoint:QVector3D();
     }
-    QVector3D hitSphere(const Qmvp& mvp_,const  QVector2D& p)
+    QVector3D hitSphere(const Qmvp& mvp_, const  QVector2D& p)
     {
         Qmvp mvp = getShpereMVP(mvp_);
         static const float rad2deg = 90.0 / std::acos(0.0);
         QVector3D sphereT = -mvp.getT();
         float shpereR = Params::trackBallRadius()*mvp.getS();
-        
+
         QLine3D ln = mvp.viewLineFromWindow(p);
         QVector3D viewpoint = mvp.getViewPoint();
 
         QPlane3D vp = mvp.getViewPlane();
-        
+
         QVector3D hits1, hits2;
-        
+
         QSphere3D sphere(sphereT, shpereR);//trackball sphere
         bool resSp = sphere.intersection(ln, &hits1, &hits2);
-        
+
         QVector3D hs = (viewpoint - hits1).length() < (viewpoint - hits2).length() ? hits1 : hits2;
-        
 
-        QVector3D    hitHyper;
-        bool     resHp = sprivHitHyper(sphereT, shpereR,viewpoint, vp, ln, &hitHyper);
 
-        // four cases
-
-        // 1) Degenerate line tangent to both sphere and hyperboloid!
-        QVector3D hit;
-        if (!resSp && !resHp)
-         hit = ln.point(ln.projection(QVector3D(0, 0, 0))); 
-        else if (resSp && !resHp)
-            hit = hs;           // 2) line cross only the sphere
-        else if (!resSp && resHp)
-            hit = hitHyper;            // 3) line cross only the hyperboloid
+        QVector3D    hit;
+        //try to hit hyperboloid
+        if (sprivHitHyper(sphereT, shpereR, viewpoint, vp, ln, &hit))
+        { }
+        //try to hit sphere
+        else if(sphere.intersection(ln, &hits1, &hits2))
+            hit = (viewpoint - hits1).length() < (viewpoint - hits2).length() ? hits1 : hits2;
+        //?not hitting any, take closest point
         else
-        {
-            // 4) line cross both sphere and hyperboloid: choose according angle.
-            float angleDeg = std::acos(QVector3D::dotProduct(viewpoint.normalized(),hs.normalized()))*rad2deg;
-            hit = angleDeg < 45 ? hs : hitHyper;
-        }
+            hit = ln.point(ln.projection(QVector3D(0, 0, 0)));
+        return hit;
+
+        
         return hit;
     
     }
-    static bool sprivHitHyper(const QVector3D& center,float r, const QVector3D& viewpoint, const QPlane3D& viewplane, const QLine3D& viewLine, QVector3D* hitP)
+
+    static bool sprivHitHyper(const QVector3D& center, float r, const QVector3D& viewpoint, const QPlane3D& viewplane, const QLine3D& viewLine, QVector3D* hitP)
     {
+
+        /*
+        x=0:0.001:1;
+        r=0.4;
+        vp=1;
+
+        viewLineA = -.44;
+        viewLineB = -viewLineA*vp;
+
+        hyperFuncA=r^5/(vp^3*sqrt(1-r^2/vp));
+        x0=r^2/vp;
+        hyperFuncB=r*sqrt(1-r^2/vp^2)-hyperFuncA*vp/r^2;
+        y1=sqrt(max(0,r^2-x.^2));
+        y2=hyperFuncA./x+hyperFuncB;
+        y3 = viewLineA*x+viewLineB;
+
+        d = (viewLineB-hyperFuncB)^2+4*viewLineA*hyperFuncA;
+
+        xx=(-(viewLineB-hyperFuncB)+sqrt(d))/(2*viewLineA);
+
+
+        plot(x,y1,x,y2,x,y3,xx,viewLineA*xx+viewLineB,'ro');
+        line([vp x0],[0 r*sqrt(1-r^2/vp.^2)],'color','r');
+        set(gca,'ylim',[0 1]);
+        grid minor;
+        % axis equal
+        */
+
         QVector3D hitOnViewplane;  //intersection view plane with point touched
         bool ResPl = viewplane.intersection(viewLine, &hitOnViewplane);
         if (!ResPl)
             return false;
-        float hitplaney = (hitOnViewplane- center).length();
-        float viewpointx = (viewpoint- center).length();
+        float vp = (viewpoint - center).length();
 
-        float a = hitplaney / viewpointx;
-        float b = -hitplaney;
-        float c = r*r / 2.0f;
-        float delta = b * b - 4 * a * c;
-        if (delta < 0)
+        float viewLineA = -(hitOnViewplane - center).length() / viewplane.distance();
+        float viewLineB = -viewLineA*vp;
+        float r2 = r*r;
+
+        float x0 = r2 / vp;
+        float hyperFuncA = r2*r2*r / (std::pow(vp,3) * std::sqrt(1 - x0));
+        float hyperFuncB = r*std::sqrt(1 - x0/vp ) - hyperFuncA/x0;
+        float diffb = (viewLineB - hyperFuncB);
+        float d = diffb*diffb + 4 * viewLineA*hyperFuncA;
+        if (d < 0)
             return false;
-
-        float    xval = (-b - sqrt(delta)) / (2.0f * a);
-        float     yval = c / xval;            //  alternatively it also could be the other part of the equation yval=-(hitplaney/viewpointx)*xval+hitplaney;
-        
-        // Computing the result in 3d space;
-        QVector3D dirRadial = (hitOnViewplane- center).normalized();
+        float xval = 0.5*(-diffb + std::sqrt(d)) / viewLineA;
+        if (xval < 0)
+            return false;
+        if (xval > x0)
+            return false;
+        float yval = viewLineA*xval + viewLineB;
+        QVector3D dirRadial = (hitOnViewplane - center).normalized();
 
         QVector3D dirView = -viewplane.normal();
-        
-        *hitP = center+dirRadial * yval + dirView * xval;
+
+        *hitP = center + dirRadial * yval + dirView * xval;
         return true;
     }
-
+  
 
 };
 
