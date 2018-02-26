@@ -72,7 +72,7 @@ public:
         
         static const int nPoints = Params::trackBallCircleStep();
         static const float twopi = std::acos(0) * 4;
-        static const float radius = Params::trackBallRadius();
+        static const float radius = 1;
         std::vector<Pt> circPoints(nPoints);
         for (int i = 0; i != nPoints; ++i)
         {
@@ -99,7 +99,7 @@ public:
         sphereMVP.setP(mvp.getP());
         sphereMVP.setU(mvp.getU());
         sphereMVP.setT(QVector3D(0, 0, -1));
-        sphereMVP.setS(tanfovH);
+        sphereMVP.setS(tanfovH*Params::trackBallRadius());
     
         return sphereMVP;
     }
@@ -161,7 +161,7 @@ public:
         Qmvp mvp = getShpereMVP(mvp_);
         static const float rad2deg = 90.0 / std::acos(0.0);
         QVector3D sphereT = -mvp.getT();
-        float shpereR = Params::trackBallRadius()*mvp.getS();
+        float shpereR = 1*mvp.getS();
 
         QLine3D ln = mvp.viewLineFromWindow(p);
         QVector3D viewpoint = mvp.getViewPoint();
@@ -192,6 +192,7 @@ public:
     
     }
 
+
     static bool sprivHitHyper(const QVector3D& center, float r, const QVector3D& viewpoint, const QPlane3D& viewplane, const QLine3D& viewLine, QVector3D* hitP)
     {
 
@@ -203,9 +204,9 @@ public:
         viewLineA = -.44;
         viewLineB = -viewLineA*vp;
 
-        hyperFuncA=r^5/(vp^3*sqrt(1-r^2/vp));
-        x0=r^2/vp;
-        hyperFuncB=r*sqrt(1-r^2/vp^2)-hyperFuncA*vp/r^2;
+        hyperFuncA=r^2/2;
+        x0=r/sqrt(2);
+        hyperFuncB=sqrt(r^2-x0^2)-hyperFuncA/x0;
         y1=sqrt(max(0,r^2-x.^2));
         y2=hyperFuncA./x+hyperFuncB;
         y3 = viewLineA*x+viewLineB;
@@ -216,12 +217,12 @@ public:
 
 
         plot(x,y1,x,y2,x,y3,xx,viewLineA*xx+viewLineB,'ro');
-        line([vp x0],[0 r*sqrt(1-r^2/vp.^2)],'color','r');
+
         set(gca,'ylim',[0 1]);
         grid minor;
-        % axis equal
-        */
 
+        */
+        static const float sqrt2 = std::sqrt(2.0f);
         QVector3D hitOnViewplane;  //intersection view plane with point touched
         bool ResPl = viewplane.intersection(viewLine, &hitOnViewplane);
         if (!ResPl)
@@ -230,12 +231,12 @@ public:
 
         float viewLineA = -(hitOnViewplane - center).length() / viewplane.distance();
         float viewLineB = -viewLineA*vp;
-        float r2 = r*r;
+        
 
-        float x0 = r2 / vp;
-        float hyperFuncA = r2*r2*r / (std::pow(vp,3) * std::sqrt(1 - x0));
+        float x0 = r / sqrt2;
+        float hyperFuncA = r*r/2;
         //hyperFuncA *= 2;//make slope less sharp
-        float hyperFuncB = r*std::sqrt(1 - x0/vp ) - hyperFuncA/x0;
+        float hyperFuncB = 0; (r*r - 2) / (r*sqrt2);
         float diffb = (viewLineB - hyperFuncB);
         float d = diffb*diffb + 4 * viewLineA*hyperFuncA;
         if (d < 0)

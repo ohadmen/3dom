@@ -143,9 +143,12 @@ public:
             
             QVector3D hitNew = m_sr->tu.hitSphere(m_pressTrack, QVector2D(xy));
             
-            QVector3D axis = QVector3D::crossProduct(  hitNew - sphereT, m_hitOld - sphereT).normalized();
-            float phi = std::acos(QVector3D::dotProduct(hitNew.normalized(), m_hitOld.normalized()))*rad2deg;
+            QVector3D h1 = (hitNew - sphereT).normalized();
+            QVector3D h2 = (m_hitOld - sphereT).normalized();
 
+            QVector3D axis = QVector3D::crossProduct( h1,h2);
+            float phi = std::acos(QVector3D::dotProduct(h1, h2))*rad2deg;
+ 
             //phi = std::max(phi, (hitNew - m_hitOld).length() / Params::trackBallRadius());
         
 
