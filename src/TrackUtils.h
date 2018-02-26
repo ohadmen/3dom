@@ -236,7 +236,7 @@ public:
         float x0 = r / sqrt2;
         float hyperFuncA = r*r/2;
         //hyperFuncA *= 2;//make slope less sharp
-        float hyperFuncB = 0; (r*r - 2) / (r*sqrt2);
+        float hyperFuncB = 0; 
         float diffb = (viewLineB - hyperFuncB);
         float d = diffb*diffb + 4 * viewLineA*hyperFuncA;
         if (d < 0)

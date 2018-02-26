@@ -138,7 +138,7 @@ public:
         else if (mb.first == Qt::MouseButton::NoButton)
         {
             static const float rad2deg = 90.0/ std::acos(0.0);
-            static const float twopi = 4 * std::acos(0.0);
+
  
             
             QVector3D hitNew = m_sr->tu.hitSphere(m_pressTrack, QVector2D(xy));
