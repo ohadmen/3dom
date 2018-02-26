@@ -139,15 +139,14 @@ public:
         {
             static const float rad2deg = 90.0/ std::acos(0.0);
             static const float twopi = 4 * std::acos(0.0);
-            QVector3D sphereT = -m_sr->tu.getShpereMVP(m_pressTrack).getT();
+ 
             
             QVector3D hitNew = m_sr->tu.hitSphere(m_pressTrack, QVector2D(xy));
             
-            QVector3D h1 = (hitNew - sphereT).normalized();
-            QVector3D h2 = (m_hitOld - sphereT).normalized();
 
-            QVector3D axis = QVector3D::crossProduct( h1,h2);
-            float phi = std::acos(QVector3D::dotProduct(h1, h2))*rad2deg;
+
+            QVector3D axis = QVector3D::crossProduct(hitNew, m_hitOld);
+            float phi = std::acos(QVector3D::dotProduct(hitNew, m_hitOld))*rad2deg;
  
             //phi = std::max(phi, (hitNew - m_hitOld).length() / Params::trackBallRadius());
         

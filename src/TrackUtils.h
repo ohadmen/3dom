@@ -185,8 +185,8 @@ public:
         //?not hitting any, take closest point
         else
             hit = ln.point(ln.projection(QVector3D(0, 0, 0)));
-        return hit;
 
+        hit = (hit - sphereT).normalized();
         
         return hit;
     
