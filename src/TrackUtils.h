@@ -171,10 +171,9 @@ public:
         QVector3D hits1, hits2;
 
         QSphere3D sphere(sphereT, shpereR);//trackball sphere
-        bool resSp = sphere.intersection(ln, &hits1, &hits2);
+       
 
-        QVector3D hs = (viewpoint - hits1).length() < (viewpoint - hits2).length() ? hits1 : hits2;
-
+    
 
         QVector3D    hit;
         //try to hit hyperboloid
@@ -235,6 +234,7 @@ public:
 
         float x0 = r2 / vp;
         float hyperFuncA = r2*r2*r / (std::pow(vp,3) * std::sqrt(1 - x0));
+        //hyperFuncA *= 2;//make slope less sharp
         float hyperFuncB = r*std::sqrt(1 - x0/vp ) - hyperFuncA/x0;
         float diffb = (viewLineB - hyperFuncB);
         float d = diffb*diffb + 4 * viewLineA*hyperFuncA;

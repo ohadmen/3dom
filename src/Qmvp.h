@@ -162,6 +162,7 @@ public:
 
 
         QVector3D xyz = getP().inverted() * QVector3D(uv, 1);
+
         xyz /= -xyz[2];
         return xyz;
     }
@@ -177,12 +178,17 @@ public:
 
     
     
-    QLine3D viewLineFromWindow(const QVector2D& p) const
+    QLine3D viewLineFromWindow(const QVector2D& p,bool toMdel=false) const
     {
         QLine3D line;  // plane perpendicular to view direction and passing through manip center
         QVector3D vp = getViewPoint();
         QVector3D pp = unProject(p);
     
+        if (toMdel)
+        {
+            vp = m_model.matI()*m_view.matI()*vp;
+            pp = m_model.matI()*m_view.matI()*pp;
+        }
         line = QLine3D(vp, pp);
         
         return line;

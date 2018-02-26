@@ -144,12 +144,10 @@ public:
             QVector3D hitNew = m_sr->tu.hitSphere(m_pressTrack, QVector2D(xy));
             
             QVector3D axis = QVector3D::crossProduct(  hitNew - sphereT, m_hitOld - sphereT).normalized();
-            float f = std::acos(QVector3D::dotProduct(hitNew.normalized(), m_hitOld.normalized()))*rad2deg;
+            float phi = std::acos(QVector3D::dotProduct(hitNew.normalized(), m_hitOld.normalized()))*rad2deg;
 
-            //  Figure out how much to rotate around that axis.
-            //  float phi = Distance (hitNew, hitOld) / tb->radius;
-            //  float phi = vcg::Angle(hitNew - center,hitOld - center)*(Distance(hitNew,center)/tb->radius);
-            float phi = std::max(f, (hitNew - m_hitOld).length() / Params::trackBallRadius());
+            //phi = std::max(phi, (hitNew - m_hitOld).length() / Params::trackBallRadius());
+        
 
             m_sr->track = m_pressTrack;
             m_sr->track.applyR(axis, -phi);
@@ -242,10 +240,10 @@ public:
         const Mesh* p = MeshArray::i().getMesh(*m_currentMeshTokenP);
         if (p != nullptr)
         {
-            QVector3D pt = m_sr->tu.hitViewPlane(m_sr->track, QVector2D(xy), false);
+            QLine3D ll = m_sr->track.viewLineFromWindow(QVector2D(xy), true);
 
-            std::array<QVector3D, 2> v = p->closest2ray(QVector3D(), pt);
-            m_sr->track.setT(-v[0], false);
+            std::array<QVector3D, 2> v = p->closest2ray(ll);
+            //m_sr->track.setT(-v[0], false);
         }
      
         
