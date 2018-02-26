@@ -12,6 +12,7 @@
 
 #include <array>
 #include "Shader.h"
+#include "Q3d/QLine3D.h"
 
 class Mesh : protected QOpenGLFunctions
 {
@@ -96,7 +97,7 @@ public:
 
     }
 
-    std::array<QVector3D,2> closest2ray(const QVector3D& c,const QVector3D& ray) const
+    std::array<QVector3D,2> closest2ray(const QLine3D& line) const
     {
         std::vector<QVector3D> ipt(m_indices.size() / 3);
         std::vector<QVector3D> npt(m_indices.size() / 3);
@@ -104,7 +105,7 @@ public:
         
         for (int i = 0; i != m_indices.size() / 3; ++i)
         {
-            r[i] = sprivRayTriIntersect(c, ray, m_vertices[m_indices[i * 3 + 0]] , m_vertices[m_indices[i * 3 + 1]],  m_vertices[m_indices[i * 3 + 2]], &(ipt[i]), &(npt[i]));
+            r[i] = sprivRayTriIntersect(line, m_vertices[m_indices[i * 3 + 0]] , m_vertices[m_indices[i * 3 + 1]],  m_vertices[m_indices[i * 3 + 2]], &(ipt[i]), &(npt[i]));
 
         }
         int ind = (std::min_element(r.begin(), r.end()) - r.begin());
@@ -160,7 +161,7 @@ private:
 
 
 
-    static float sprivRayTriIntersect(const QVector3D& r0,const QVector3D& rd, const QVector3D& t0, const QVector3D& t1, const QVector3D& t2, QVector3D* iptP,  QVector3D* nptP)
+    static float sprivRayTriIntersect(const QLine3D& line, const QVector3D& t0, const QVector3D& t1, const QVector3D& t2, QVector3D* iptP,  QVector3D* nptP)
     {
         QVector3D& ipt = *iptP;
         QVector3D& n = *nptP;
@@ -175,20 +176,20 @@ private:
         if (n.lengthSquared() == 0)             // triangle is degenerate
             return inf;                  // do not deal with this case
 
-        QVector3D w0 = r0 - t0;
+        QVector3D w0 = line.p1() - t0;
         
-        float b = QVector3D::dotProduct(n, rd);;
+        float b = QVector3D::dotProduct(n, line.direction());;
         if (fabs(b) < thr) {     // ray is  parallel to triangle plane
             return inf;
         }
-        float a = -QVector3D::dotProduct(n, r0 - t0);;
+        float a = -QVector3D::dotProduct(n, line.p1() - t0);;
         // get intersect point of ray with triangle plane
         float r = a / b;
         if (r < 0.0)                    // ray goes away from triangle
             return inf;                   // => no intersect
                                         // for a segment, also test if (r > 1.0) => no intersect
 
-        ipt = r0 + r * rd;            // intersect point of ray and plane
+        ipt = line.p1() + r * line.direction();            // intersect point of ray and plane
 
                                         // is I inside T?
 
