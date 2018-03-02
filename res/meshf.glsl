@@ -26,8 +26,8 @@ void main()
     float b = dot(ec_normal, vec3(-0.57, -0.57, 0.57));
     
     
-    //gl_FragColor = vec4(((a*base2 + (1.0-a)*base00) + (b*base3 + (1.0-b)*base00))*0.5, 1.0); 
-    gl_FragColor = vec4(v_rgb[0],v_rgb[1],v_rgb[2], 1.0); 
+    gl_FragColor = vec4(((a*base2 + (1.0-a)*base00) + (b*base3 + (1.0-b)*base00))*0.5, 1.0); 
+    //gl_FragColor = vec4(v_rgb[0],v_rgb[1],v_rgb[2], 1.0); 
     
 }
 //! [0]

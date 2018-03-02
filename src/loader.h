@@ -26,7 +26,11 @@ class Loader : public QThread
 
 public:
 
-    static QString default3DmodelFilename(){        return "./res/horse.stl";    }
+    static QString default3DmodelFilename()
+    {
+        //return "./res/horse.stl";  
+        return "./res/box.stl";
+    }
 
     explicit Loader(QObject* parent =0)
         : QThread(parent)

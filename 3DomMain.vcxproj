@@ -125,7 +125,7 @@
       <IgnoreImportLibrary>true</IgnoreImportLibrary>
       <OutputFile>$(OutDir)\3dom.exe</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Link>
     <Midl>
@@ -156,6 +156,12 @@
   <ItemGroup>
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\Params.h" />
+    <ClInclude Include="src\Q3d\QBitFlags.h" />
+    <ClInclude Include="src\Q3d\QLine3D.h" />
+    <ClInclude Include="src\Q3d\QPlane3D.h" />
+    <ClInclude Include="src\Q3d\QPrimitive3D.h" />
+    <ClInclude Include="src\Q3d\QRay3D.h" />
+    <ClInclude Include="src\Q3d\QSphere3D.h" />
     <ClInclude Include="src\Qmvp.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Trackball.h" />

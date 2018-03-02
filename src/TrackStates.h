@@ -126,12 +126,14 @@ public:
         auto mb = sprivMouseButtonState(mb_);
         if (mb.first == Qt::MouseButton::LeftButton && mb.second)//press
         {
+            
             m_pressTrack = m_sr->track;
             m_hitOld = m_sr->tu.hitSphere(m_pressTrack, QVector2D(xy));
             
         }
         else if (mb.first == Qt::MouseButton::LeftButton && !mb.second)//release
         {
+
             m_sr->currentState=(State::IDLE);
             protCurrentState()->apply(0, kbm, xy, 0);
         }
@@ -149,7 +151,7 @@ public:
             float phi = std::acos(QVector3D::dotProduct(hitNew, m_hitOld))*rad2deg;
  
             //phi = std::max(phi, (hitNew - m_hitOld).length() / Params::trackBallRadius());
-        
+            
 
             m_sr->track = m_pressTrack;
             m_sr->track.applyR(axis, -phi);
@@ -242,9 +244,10 @@ public:
         const Mesh* p = MeshArray::i().getMesh(*m_currentMeshTokenP);
         if (p != nullptr)
         {
-            QLine3D ll = m_sr->track.viewLineFromWindow(QVector2D(xy), true);
+            QLine3D ll = m_sr->track.viewLineFromWindow(QVector2D(xy), false);
 
             std::array<QVector3D, 2> v = p->closest2ray(ll);
+            qDebug() << "ray: " <<ll << "pt" << v[0];
             //m_sr->track.setT(-v[0], false);
         }
      
