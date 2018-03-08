@@ -103,6 +103,9 @@
     <ClInclude Include="src\Q3d\QSphere3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Q3d\ObjGLpainter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\loader.h">

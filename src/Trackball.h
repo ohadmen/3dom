@@ -83,6 +83,7 @@ public:
     void draw()
     {
         m_states[m_sr.currentState]->draw();
+        m_sr.tu.draw(m_sr.track.getMat());
     }
     Qmvp getMVP()const
     {

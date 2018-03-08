@@ -72,11 +72,13 @@ inline QPlane3D::QPlane3D(const QVector3D &normal, float distance)
 }
 
 inline QPlane3D::QPlane3D(const QVector3D &normal, const QVector3D &point)
+    : QPrimitive3D(QPrimitive3D::Plane3D)
 {
     redefine(normal, point);
 }
 
 inline QPlane3D::QPlane3D(const QVector3D &p0, const QVector3D &p1, const QVector3D &p2)
+    : QPrimitive3D(QPrimitive3D::Plane3D)
 {
     redefine(p0, p1, p2);
 }

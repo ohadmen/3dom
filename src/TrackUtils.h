@@ -4,11 +4,13 @@
 #include "Shader.h"
 #include "Params.h"
 #include "Q3d/QSphere3D.h"
+#include "Q3d/ObjGLpainter.h"
 #include "Qmvp.h"
 class TrackUtils: protected QOpenGLFunctions
 {
-    Shader m_ballShader;
+    Shader m_lineShader;
     QOpenGLBuffer m_circBuff;
+    std::vector<ObjGLpainter<QLine3D>> m_drawLines;
 
     struct Pt
     {
@@ -20,14 +22,15 @@ class TrackUtils: protected QOpenGLFunctions
 
     void privDrawCircle(QMatrix4x4 mvp, const QVector4D& col, float lw)
     {
-        m_ballShader.bind();
+        QOpenGLShaderProgram* shader = m_lineShader.get();
+        shader->bind();
         m_circBuff.bind();
         mvp.scale(1);
 
 
-        QOpenGLShaderProgram* shader = m_ballShader.get();
+       
 
-        m_ballShader.setMVP(mvp);
+        m_lineShader.setMVP(mvp);
 
         int vp = shader->attributeLocation("a_xyz");
         shader->enableAttributeArray(vp);
@@ -44,7 +47,7 @@ class TrackUtils: protected QOpenGLFunctions
 
         // Clean up state machine
         shader->disableAttributeArray(vp);
-
+        shader->release();
 
 
     }
@@ -66,7 +69,7 @@ public:
     {
     
     
-        if (!m_ballShader.init("linev", "linef"))
+        if (!m_lineShader.init("linev", "linef"))
             return false;
 
         
@@ -85,8 +88,49 @@ public:
         m_circBuff.release();
 
 
+        //dbg
+        m_drawLines.push_back(QLine3D(QVector3D(-2, -2, -2), QVector3D(2, 2, 2)));
+
+
         return true;
     }
+    std::vector<ObjGLpainter<QLine3D>>& viewLines() { return m_drawLines; }
+    void draw(const QMatrix4x4& mvp)
+    {
+        
+        QOpenGLShaderProgram* shader = m_lineShader.get();
+       
+        for (int i = 0; i != m_drawLines.size(); ++i)
+        {
+            shader->bind();
+            m_lineShader.setMVP(mvp);
+            m_drawLines[i].bind();
+
+            int vp = shader->attributeLocation("a_xyz");
+            shader->enableAttributeArray(vp);
+            shader->setAttributeBuffer(vp, GL_FLOAT, 0, 3, sizeof(QVector3D));
+
+            shader->setUniformValue("u_col", m_drawLines[i].getColor());
+            m_drawLines[i].draw();
+
+            m_drawLines[i].release();
+
+            // Clean up state machine
+            shader->disableAttributeArray(vp);
+        }
+        }
+        
+        
+
+
+       
+
+        
+
+       
+
+
+   
 
     Qmvp  getShpereMVP(const Qmvp& mvp)
     {

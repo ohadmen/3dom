@@ -17,7 +17,7 @@ class Qmvp
         static QMatrix4x4 spriv2mat(QVector3D   v) { QMatrix4x4 m; m.translate(v); return std::move(m); }
 
         QMatrix4x4 mat()const { return spriv2mat(m_t)*spriv2mat(m_s)*spriv2mat(m_r); }
-        QMatrix4x4 matI()const { return spriv2mat(-m_t)*spriv2mat(1/m_s)*spriv2mat(m_r.inverted()); }
+        QMatrix4x4 matI()const { return spriv2mat(m_r.inverted())*spriv2mat(1 / m_s)*spriv2mat(-m_t); }
         void reset()
         {
             m_r = QQuaternion(0, QVector3D(1, 0, 0));
@@ -117,14 +117,14 @@ public:
 
 
    
-    QVector3D getViewPoint() const {         return getP().inverted()*QVector3D(0, 0,  0);    }
+    QVector3D getViewPoint() const {         return m_model.matI()*QVector3D(0, 0,  0);    }
     QPlane3D  getViewPlane() const { return QPlane3D(getViewPoint()- m_view.getT(), 1); }
 
     QPlane3D viewPlaneFromModel(const QVector3D& p)
     {
     
-        QVector3D n = m_view.matI() * QVector3D(0, 0, -1);
-        return QPlane3D(p, n);
+        QVector3D n = m_view.matI() * QVector3D(0, 0, 0);
+        return QPlane3D(n, p);
     }
 
     QRay3D viewRayFromModel(const QVector3D &p)
@@ -161,9 +161,9 @@ public:
         QVector2D uv = pix2uv(pix);
 
 
-        QVector3D xyz = getP().inverted() * QVector3D(uv, 1);
+        QVector3D xyz = getP().inverted() * QVector3D(uv, -1);
 
-        xyz /= -xyz[2];
+        //xyz /= -xyz[2];
         return xyz;
     }
 
@@ -176,20 +176,22 @@ public:
 
     }
 
-    
-    
-    QLine3D viewLineFromWindow(const QVector2D& p,bool toMdel=false) const
+    QLine3D cameraRay(const QVector2D& p)const
     {
-        QLine3D line;  // plane perpendicular to view direction and passing through manip center
+
+        QVector3D vp =m_model.matI()*  m_view.matI()*QVector3D(0,0,0);
+        QVector3D pp =        m_model.matI()*m_view.matI()* unProject(p);
+        
+        return QLine3D(vp, vp+(pp-vp)*1000);
+    }
+    
+    QLine3D viewLineFromWindow(const QVector2D& p) const
+    {
         QVector3D vp = getViewPoint();
         QVector3D pp = unProject(p);
     
-        if (toMdel)
-        {
-            vp = m_model.matI()*m_view.matI()*vp;
-            pp = m_model.matI()*m_view.matI()*pp;
-        }
-        line = QLine3D(vp, pp);
+       
+        QLine3D line(vp, pp);
         
         return line;
     }

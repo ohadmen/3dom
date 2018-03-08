@@ -244,11 +244,12 @@ public:
         const Mesh* p = MeshArray::i().getMesh(*m_currentMeshTokenP);
         if (p != nullptr)
         {
-            QLine3D ll = m_sr->track.viewLineFromWindow(QVector2D(xy), false);
+            QLine3D ll = m_sr->track.cameraRay(QVector2D(xy));
 
             std::array<QVector3D, 2> v = p->closest2ray(ll);
+            m_sr->tu.viewLines().push_back(ObjGLpainter<QLine3D>(ll));
             qDebug() << "ray: " <<ll << "pt" << v[0];
-            //m_sr->track.setT(-v[0], false);
+            //m_sr->track.setT(v[0], false);
         }
      
         
