@@ -97,27 +97,38 @@ public:
 
     }
 
-    std::array<QVector3D,2> closest2ray(const QLine3D& line) const
+    bool closest2ray(const QLine3D& line, QVector3D* ptP) const
     {
+		//std::vector<float> d(m_vertices.size());
+		//std::transform(m_vertices.begin(), m_vertices.end(), d.begin(),[&line](const VertData& v)
+		//{
+		//	QVector3D q = v;
+		//	float f = line.projection(q);
+		//	if (f < 0) return std::numeric_limits<float>::infinity();
+		//	return (line.point(f) - q).length();
+		//}
+		//);
+		//size_t ind = size_t(std::min_element(d.begin(), d.end()) - d.begin());
+		//return m_vertices[ind];
+
         std::vector<QVector3D> ipt(m_indices.size() / 3);
-        std::vector<QVector3D> npt(m_indices.size() / 3);
-        std::vector<float> r(m_indices.size() / 3);
-        
+
+
+		float minr = std::numeric_limits<float>::infinity();
+
         for (int i = 0; i != m_indices.size() / 3; ++i)
         {
-            r[i] = sprivRayTriIntersect(line, m_vertices[m_indices[i * 3 + 0]] , m_vertices[m_indices[i * 3 + 1]],  m_vertices[m_indices[i * 3 + 2]], &(ipt[i]), &(npt[i]));
+			QVector3D pt;
+            float r = sprivRayTriIntersect(line, m_vertices[m_indices[i * 3 + 0]] , m_vertices[m_indices[i * 3 + 1]],  m_vertices[m_indices[i * 3 + 2]], &pt);
+			if (minr > r)
+			{
+				minr = r;
+				*ptP = pt;
+			}
 
         }
-        int ind = (std::min_element(r.begin(), r.end()) - r.begin());
-        std::array<QVector3D, 2> o;
-        if (isinf(r[ind]))
-            o = { QVector3D() ,QVector3D() };
-        else
-        {
-            o = { ipt[ind] ,npt[ind] };
-            o[1].normalize();
-        }
-        return o;
+
+		return !isinf(minr);
     }
 
     bool empty() const
@@ -161,10 +172,10 @@ private:
 
 
 
-    static float sprivRayTriIntersect(const QLine3D& line, const QVector3D& t0, const QVector3D& t1, const QVector3D& t2, QVector3D* iptP,  QVector3D* nptP)
+    static float sprivRayTriIntersect(const QLine3D& line, const QVector3D& t0, const QVector3D& t1, const QVector3D& t2, QVector3D* iptP)
     {
         QVector3D& ipt = *iptP;
-        QVector3D& n = *nptP;
+        
         static const float thr = 1e-9f;
         static const float inf = std::numeric_limits<float>::infinity();
 
@@ -172,7 +183,7 @@ private:
         QVector3D u = t1 - t0;
         QVector3D v = t2 - t0;
         
-        n = QVector3D::crossProduct(u, v);
+		QVector3D n = QVector3D::crossProduct(u, v);
         if (n.lengthSquared() == 0)             // triangle is degenerate
             return inf;                  // do not deal with this case
 
@@ -189,8 +200,8 @@ private:
             return inf;                   // => no intersect
                                         // for a segment, also test if (r > 1.0) => no intersect
 
-        ipt = line.p1() + r * line.direction();            // intersect point of ray and plane
-
+        ipt = line.point(r);            // intersect point of ray and plane
+		
                                         // is I inside T?
 
         float uu = QVector3D::dotProduct(u, u);

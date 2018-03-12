@@ -24,11 +24,11 @@ public:
     void      redefine      (const QVector3D &p1, const QVector3D &p2);
     bool      operator ==   (const QLine3D &line);
     bool      operator !=   (const QLine3D &line);
-	float projection(const QVector3D& p)
+	float projection(const QVector3D& p) const
 	{
 		return QVector3D::dotProduct(p - _p1, _direction);
 	}
-	QVector3D closest(const QVector3D& p)
+	QVector3D closest(const QVector3D& p) const
 	{
 		return point(projection(p));
 	}

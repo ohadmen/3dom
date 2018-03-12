@@ -29,7 +29,7 @@ public:
     static QString default3DmodelFilename()
     {
         //return "./res/horse.stl";  
-        return "./res/box.stl";
+        return "./res/horse.stl";
     }
 
     explicit Loader(QObject* parent =0)

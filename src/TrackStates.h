@@ -97,7 +97,7 @@ public:
             m_sr->currentState = (State::PAN);
 
         }
-        else if (mb.first == Qt::MouseButton::NoButton && kbm == Qt::KeyboardModifier::NoModifier && wheelNotch != 0)
+        else if (mb.first == Qt::MouseButton::NoButton && kbm == Qt::KeyboardModifier::NoModifier  && wheelNotch != 0)
         {
             m_sr->currentState=(State::ZOOM);
         }
@@ -229,6 +229,7 @@ public:
 
             m_sr->currentState = (State::IDLE);
         }
+		
     }
 
 };
@@ -245,11 +246,17 @@ public:
         if (p != nullptr)
         {
             QLine3D ll = m_sr->track.cameraRay(QVector2D(xy));
+			QVector3D pt;
+			if (p->closest2ray(ll, &pt))
+			{
+				pt[0] *= -1; //??????????
+				m_sr->track.setT(pt, false);
+			}
+			
+            //m_sr->tu.viewLines().push_back(ObjGLpainter<QLine3D>(ll));
+            qDebug() << "ray: " <<ll << "pt" << pt;
 
-            std::array<QVector3D, 2> v = p->closest2ray(ll);
-            m_sr->tu.viewLines().push_back(ObjGLpainter<QLine3D>(ll));
-            qDebug() << "ray: " <<ll << "pt" << v[0];
-            //m_sr->track.setT(v[0], false);
+           
         }
      
         
