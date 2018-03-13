@@ -29,14 +29,10 @@ public:
     static QString default3DmodelFilename()
     {
         //return "./res/horse.stl";  
-        return "./res/horse.stl";
+        return "./res/box.stl";
     }
 
-    explicit Loader(QObject* parent =0)
-        : QThread(parent)
-    {
-        // Nothing to do here
-    }
+   
 
     int load(const QString& filename)
     {
@@ -58,6 +54,14 @@ public:
 
     }
     
+    static Loader& i()
+    {
+        static Loader    instance; // Guaranteed to be destroyed.
+
+        return instance;
+    }
+private:
+    explicit Loader():QThread(nullptr) {}                    // Constructor? (the {} brackets) are needed here.
 
 protected:
     int loadSTL(const QString& filename)

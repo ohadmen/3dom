@@ -28,7 +28,9 @@ public:
     explicit Canvas(QWidget *parent=0) :
         QOpenGLWidget(parent),
         m_currentMeshToken(-1)
-    {}
+    {
+      //  setAcceptDrops(true);
+    }
     ~Canvas()
     {
 
@@ -121,7 +123,22 @@ protected:
 
 
     }
+    //void dragEnterEvent(QDragEnterEvent *event)
+    //{
 
+    //    if (event->mimeData()->hasUrls())
+    //    {
+    //        auto urls = event->mimeData()->urls();
+    //        if (urls.size() == 1 && urls.front().path().endsWith(".stl"))
+    //            event->acceptProposedAction();
+    //    }
+    //}
+    //void dropEvent(QDropEvent *event)
+    //{
+    //    QString meshfn = event->mimeData()->urls().front().toLocalFile();
+    //    //loadMeshFromFile(meshfn);
+
+    //}
 
 private:
 

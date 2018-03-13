@@ -88,8 +88,7 @@ public:
         m_circBuff.release();
 
 
-        //dbg
-        m_drawLines.push_back(QLine3D(QVector3D(-2, -2, -2), QVector3D(2, 2, 2)));
+       
 
 
         return true;
