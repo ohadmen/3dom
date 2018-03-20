@@ -3,7 +3,7 @@
 
 #include <QApplication>
 #include <QFileOpenEvent>
-#include <QSurfaceFormat>
+    
 #include <QDebug>
 #include "loader.h"
 #include "Window.h"
@@ -27,13 +27,16 @@ public:
 		setOrganizationDomain("www.ohad.co");
 	
 		QString meshfn = Loader::default3DmodelFilename();
-		if (argc > 1)
+        
+        if (argc > 1)
 			meshfn=(argv[1]);
-		int token = Loader::i().load(meshfn);
-        m_window.canvas().show();
-		m_window.canvas().setToken(token);
-		m_window.canvas().cam2geometry();
-		//m_window.show();
+        
+		
+        
+        m_window.loadMeshFromFile(meshfn);
+		
+	
+
 	}
 
 protected:
