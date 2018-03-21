@@ -11,7 +11,6 @@
 #include <map>
 
 #include <array>
-#include "Shader.h"
 #include "Q3d/QLine3D.h"
 
 class Mesh : protected QOpenGLFunctions
@@ -25,6 +24,7 @@ public:
         float r;
         float g;
         float b;
+
         VertData() : x(0), y(0), z(0),r(0),g(0),b(0) {}
         VertData(float x, float y, float z) : x(x), y(y), z(z),r(0),g(0),b(0) {}
         operator QVector3D() const { return QVector3D(x, y, z); }
@@ -44,13 +44,14 @@ private:
 
     
     std::vector<VertData> m_vertices;
-    std::vector<GLuint> m_indices;//concatenated tri indices
+    std::vector<std::array<unsigned int, 3>> m_indices;//concatenated tri indices
+    std::vector<QVector3D> m_normal;
     QVector3D m_objCenter;
     float     m_objcontainerRadius;
-    QOpenGLBuffer m_vBuff;
-    QOpenGLBuffer m_iBuff;
+    QOpenGLBuffer m_vBuff; //vertices 3xn
+    QOpenGLBuffer m_iBuff; //indices 3xm
     bool m_glInitialized;
-    Shader m_meshShader;
+    QOpenGLShaderProgram m_meshShader;
 public:
     Mesh():m_vBuff(QOpenGLBuffer::VertexBuffer), m_iBuff(QOpenGLBuffer::IndexBuffer), m_glInitialized(false), m_meshShader(){
         
@@ -62,7 +63,7 @@ public:
         if (m_iBuff.isCreated())
             m_iBuff.destroy();
     }
-    void set(const std::vector<VertData>&& v, const std::vector<GLuint>&& i)
+    void set(const std::vector<VertData>& v, const std::vector<std::array<unsigned int, 3>>& i)
     {
 
         m_vertices = v;
@@ -70,6 +71,7 @@ public:
         m_objCenter = std::accumulate(m_vertices.begin(), m_vertices.end(), QVector3D(), [](const QVector3D& s,const VertData& v) {return s + v; }) / float(v.size());
         auto p = std::max_element(m_vertices.begin(), m_vertices.end(), [&](const VertData& a, const VertData&b) {return (a - m_objCenter).length() < (b - m_objCenter).length(); });
         m_objcontainerRadius = (*p - m_objCenter).length();
+        privCalcNormal();
     }
     QVector3D getCenter() const {return m_objCenter; }
     float getContainmentRadius() const {return m_objcontainerRadius; }
@@ -81,19 +83,60 @@ public:
         m_vBuff.create();
         m_iBuff.create();
 
+
         m_vBuff.setUsagePattern(QOpenGLBuffer::StaticDraw);
         m_iBuff.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
+        
+        //create unindex vertex data;
+        std::vector<std::array<float, 9>> vFlat(m_indices.size()*3);
+        std::vector<unsigned int> iFlat(m_indices.size() * 3);
+        for (int i = 0; i != m_indices.size()*3; ++i)
+        {
+            iFlat[i ] = i ;
+            vFlat[i] = {
+                m_vertices[m_indices[i / 3][i % 3]].x,
+                m_vertices[m_indices[i / 3][i % 3]].y,
+                m_vertices[m_indices[i / 3][i % 3]].z,
+                m_vertices[m_indices[i / 3][i % 3]].r,
+                m_vertices[m_indices[i / 3][i % 3]].g,
+                m_vertices[m_indices[i / 3][i % 3]].b,
+                m_normal[i/3].x(),
+                m_normal[i/3].y(),
+                m_normal[i/3].z()
+            };
+        }
+
 
         m_vBuff.bind();
-        m_vBuff.allocate(m_vertices.data(), int(m_vertices.size() * sizeof(VertData)));
+        m_vBuff.allocate(vFlat.data(), int(vFlat.size() * sizeof(float)*9));
         m_vBuff.release();
 
         m_iBuff.bind();
-        m_iBuff.allocate(m_indices.data(), int(m_indices.size() * sizeof(uint32_t)));
+        m_iBuff.allocate(iFlat.data(), int(iFlat.size() * sizeof(unsigned int)));
         m_iBuff.release();
+
+
+
         m_glInitialized = true;
-        m_meshShader.init("meshv", "meshf");
+        initShader("meshv", "meshf");
+
+    }
+
+    bool initShader(const QString& vshader, const QString& fshader)
+    {
+        // Compile vertex shader
+        if (!m_meshShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/" + vshader + ".glsl"))
+            return false;
+
+        // Compile fragment shader
+        if (!m_meshShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/" + fshader + ".glsl"))
+            return false;
+
+        // Link shader pipeline
+        if (!m_meshShader.link())
+            return false;
+        return true;
 
     }
 
@@ -111,7 +154,7 @@ public:
 		//size_t ind = size_t(std::min_element(d.begin(), d.end()) - d.begin());
 		//return m_vertices[ind];
 
-        std::vector<QVector3D> ipt(m_indices.size() / 3);
+        std::vector<QVector3D> ipt(m_indices.size() );
 
 
 		float minr = std::numeric_limits<float>::infinity();
@@ -119,7 +162,7 @@ public:
         for (int i = 0; i != m_indices.size() / 3; ++i)
         {
 			QVector3D pt;
-            float r = sprivRayTriIntersect(line, m_vertices[m_indices[i * 3 + 0]] , m_vertices[m_indices[i * 3 + 1]],  m_vertices[m_indices[i * 3 + 2]], &pt);
+            float r = sprivRayTriIntersect(line, m_vertices[m_indices[i][0]] , m_vertices[m_indices[i][1]],  m_vertices[m_indices[i][2]], &pt);
 			if (minr > r)
 			{
 				minr = r;
@@ -138,24 +181,32 @@ public:
 
 
     
-    void draw(const QMatrix4x4& mvp)
+    void draw(const QMatrix4x4& mvp,int textureType)
     {
         m_meshShader.bind();
-        m_meshShader.setMVP(mvp);
-        auto shader = m_meshShader.get();
+        m_meshShader.setUniformValue("mvp_matrix", mvp); 
+        m_meshShader.setUniformValue("rot_matrix", mvp);
+        
         m_vBuff.bind();
         m_iBuff.bind();
 
-        int vp = shader->attributeLocation("a_xyz");
-        shader->enableAttributeArray(vp);
-        shader->setAttributeBuffer(vp, GL_FLOAT, 0, 3, sizeof(VertData));
+        int vp = m_meshShader.attributeLocation("a_xyz");
+        m_meshShader.enableAttributeArray(vp);
+        m_meshShader.setAttributeBuffer(vp, GL_FLOAT, 0 * sizeof(float), 3, sizeof(float)*9);
         
 
-        int vc = shader->attributeLocation("a_rgb");
-        shader->enableAttributeArray(vc);
-        shader->setAttributeBuffer(vc, GL_FLOAT, 3 * sizeof(float), 3, sizeof(VertData));
+        int vc = m_meshShader.attributeLocation("a_rgb");
+        m_meshShader.enableAttributeArray(vc);
+        m_meshShader.setAttributeBuffer(vc, GL_FLOAT, 3 * sizeof(float), 3, sizeof(float)*9);
 
+        int vn = m_meshShader.attributeLocation("a_nrml");
+        m_meshShader.enableAttributeArray(vn);
+        m_meshShader.setAttributeBuffer(vn, GL_FLOAT, 6 * sizeof(float), 3, sizeof(float) * 9);
+
+
+        m_meshShader.setUniformValue("u_txt", textureType);
         
+
         //glVertexAttribPointer(vc, 3, GL_UNSIGNED_INT8_NV, false, 3 * sizeof(uint8_t), NULL);
         glDrawElements(GL_TRIANGLES, m_iBuff.size() / sizeof(uint32_t), GL_UNSIGNED_INT, NULL);
 
@@ -163,13 +214,26 @@ public:
         m_iBuff.release();
 
         // Clean up state machine
-        shader->disableAttributeArray(vp);
-        shader->disableAttributeArray(vc);
+        m_meshShader.disableAttributeArray(vp);
+        m_meshShader.disableAttributeArray(vc);
         
     }
 
 private:
 
+    void privCalcNormal()
+    {
+        size_t n = m_indices.size() ;
+        m_normal.resize(n);
+        for (size_t i = 0; i != n; ++i)
+        {
+            const QVector3D& a = m_vertices[m_indices[i][0]];
+            const QVector3D& b = m_vertices[m_indices[i][1]];
+            const QVector3D& c = m_vertices[m_indices[i][2]];
+            m_normal[i] = QVector3D::crossProduct(b - a, c - b).normalized();
+
+        }
+    }
 
 
     static float sprivRayTriIntersect(const QLine3D& line, const QVector3D& t0, const QVector3D& t1, const QVector3D& t2, QVector3D* iptP)

@@ -118,7 +118,8 @@ protected:
         }
 
         // Extract vertices into an array of xyz, unsigned pairs
-        QVector<Vertex> verts(tri_count * 3);
+        //QVector<Vertex> verts(tri_count * 3);
+        std::vector<Mesh::VertData> verts(tri_count * 3);
 
         // Dummy array, because readRawData is faster than skipRawData
         std::unique_ptr<uint8_t> buffer(new uint8_t[tri_count * 50]);
@@ -146,9 +147,17 @@ protected:
             b += 3 * sizeof(float) + sizeof(uint16_t);
         }
 
-    
 
-        return mesh_from_verts(tri_count, verts);
+        std::vector<std::array<unsigned int, 3>> indices(tri_count );
+        for (int i = 0; i != indices.size()*3; ++i)
+            indices[i/3][i%3] = i;
+
+        Mesh* p;
+        int token = MeshArray::i().allocate(p);
+        p->set(verts, indices);
+        return token;
+
+        //return mesh_from_verts(tri_count, verts);
     }
 
     int read_stl_ascii(QFile& file)
@@ -245,11 +254,15 @@ private:
 
     int mesh_from_verts(uint32_t tri_count, QVector<Vertex>& verts)
     {
+        
         // Save indicies as the second element in the array
         // (so that we can reconstruct triangle order after sorting)
+        std::vector<std::array<unsigned int, 3>> indices(tri_count * 3);
+       
         for (int i = 0; i != tri_count * 3; ++i)
         {
             verts[i].i = i;
+           
         }
 
         // Check how many threads the hardware can safely support. This may return
@@ -265,32 +278,38 @@ private:
         parallel_sort(verts.begin(), verts.end(), threads);
 
         // This vector will store triangles as sets of 3 indices
-        std::vector<GLuint> indices(tri_count * 3);
+        
 
         // Go through the sorted vertex list, deduplicating and creating
         // an indexed geometry representation for the triangles.
         // Unique vertices are moved so that they occupy the first vertex_count
         // positions in the verts array.
         int vertex_count = 0;
-        for (auto v : verts)
-        {
-            if (!vertex_count || v != verts[vertex_count - 1])
-            {
-                verts[vertex_count++] = v;
-            }
-            indices[v.i] = vertex_count - 1;
-        }
-        verts.resize(vertex_count);
-
+        std::vector<unsigned int> indexSwitcher(verts.size());
         std::vector<Mesh::VertData> flat_verts(verts.size());
-        
-        for (int i=0;i!=verts.size();++i)
+        for (int jj=0;jj!=verts.size();++jj)
         {
-            flat_verts[i] = verts[i];
+           
+
+            if (!vertex_count || verts[jj] != verts[vertex_count - 1])
+            {
+                flat_verts[vertex_count++] = verts[jj];
+            }
+            indexSwitcher[verts[jj].i] = vertex_count-1;
         }
+        unsigned int* dd = &indices[0][0];
+        for (int i = 0; i != tri_count * 3; ++i)
+        {
+            //dd[i] = i;//linear
+            dd[i] = indexSwitcher[i];
+        }
+        flat_verts.resize(vertex_count);
+
+       
+     
         Mesh* p;
         int token =  MeshArray::i().allocate(p);
-        p->set(std::move(flat_verts), std::move(indices));
+        p->set(flat_verts, indices);
         return token;
     }
 

@@ -1,14 +1,14 @@
 #pragma once
 #include <vector>
 #include <QOpenGLFunctions>
-#include "Shader.h"
+
 #include "Params.h"
 #include "Q3d/QSphere3D.h"
 #include "Q3d/ObjGLpainter.h"
 #include "Qmvp.h"
 class TrackUtils: protected QOpenGLFunctions
 {
-    Shader m_lineShader;
+    QOpenGLShaderProgram m_lineShader;
     QOpenGLBuffer m_circBuff;
     std::vector<ObjGLpainter<QLine3D>> m_drawLines;
 
@@ -22,21 +22,21 @@ class TrackUtils: protected QOpenGLFunctions
 
     void privDrawCircle(QMatrix4x4 mvp, const QVector4D& col, float lw)
     {
-        QOpenGLShaderProgram* shader = m_lineShader.get();
-        shader->bind();
+        
+        m_lineShader.bind();
         m_circBuff.bind();
         mvp.scale(1);
 
 
        
+        m_lineShader.setUniformValue("mvp_matrix", mvp);
+        
 
-        m_lineShader.setMVP(mvp);
+        int vp = m_lineShader.attributeLocation("a_xyz");
+        m_lineShader.enableAttributeArray(vp);
+        m_lineShader.setAttributeBuffer(vp, GL_FLOAT, 0, 3, sizeof(Pt));
 
-        int vp = shader->attributeLocation("a_xyz");
-        shader->enableAttributeArray(vp);
-        shader->setAttributeBuffer(vp, GL_FLOAT, 0, 3, sizeof(Pt));
-
-        shader->setUniformValue("u_col", col);
+        m_lineShader.setUniformValue("u_col", col);
         
         
 
@@ -46,8 +46,8 @@ class TrackUtils: protected QOpenGLFunctions
         m_circBuff.release();
 
         // Clean up state machine
-        shader->disableAttributeArray(vp);
-        shader->release();
+        m_lineShader.disableAttributeArray(vp);
+        m_lineShader.release();
 
 
     }
@@ -65,11 +65,29 @@ public:
     {
         
     }
+
+    bool initShader(const QString& vshader, const QString& fshader)
+    {
+        // Compile vertex shader
+        if (!m_lineShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/" + vshader + ".glsl"))
+            return false;
+
+        // Compile fragment shader
+        if (!m_lineShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/" + fshader + ".glsl"))
+            return false;
+
+        // Link shader pipeline
+        if (!m_lineShader.link())
+            return false;
+        return true;
+
+    }
+
     bool init()
     {
     
     
-        if (!m_lineShader.init("linev", "linef"))
+        if (!initShader("linev", "linef"))
             return false;
 
         
@@ -97,25 +115,26 @@ public:
     void draw(const QMatrix4x4& mvp)
     {
         
-        QOpenGLShaderProgram* shader = m_lineShader.get();
+
        
         for (int i = 0; i != m_drawLines.size(); ++i)
         {
-            shader->bind();
-            m_lineShader.setMVP(mvp);
+            m_lineShader.bind();
+            
+            m_lineShader.setUniformValue("mvp_matrix", mvp);
             m_drawLines[i].bind();
 
-            int vp = shader->attributeLocation("a_xyz");
-            shader->enableAttributeArray(vp);
-            shader->setAttributeBuffer(vp, GL_FLOAT, 0, 3, sizeof(QVector3D));
+            int vp = m_lineShader.attributeLocation("a_xyz");
+            m_lineShader.enableAttributeArray(vp);
+            m_lineShader.setAttributeBuffer(vp, GL_FLOAT, 0, 3, sizeof(QVector3D));
 
-            shader->setUniformValue("u_col", m_drawLines[i].getColor());
+            m_lineShader.setUniformValue("u_col", m_drawLines[i].getColor());
             m_drawLines[i].draw();
 
             m_drawLines[i].release();
 
             // Clean up state machine
-            shader->disableAttributeArray(vp);
+            m_lineShader.disableAttributeArray(vp);
         }
         }
         

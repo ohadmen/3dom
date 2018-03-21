@@ -27,6 +27,7 @@ class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 public:
     explicit Canvas(QWidget *parent=0) :
         QOpenGLWidget(parent),
+        m_textureType(0),
         m_currentMeshToken(-1)
     {
       //  setAcceptDrops(true);
@@ -65,6 +66,10 @@ public:
         m_tb.applyT(-p->getCenter(),false);
         m_tb.applyS(s);
         return true;
+    }
+    void setTextureType(int v)
+    {
+        m_textureType = v;
     }
 protected:
 
@@ -116,13 +121,15 @@ protected:
         Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
         if (p == nullptr)
             return;
-        //p->draw(m_mvp.getMat());
-        p->draw(m_tb.getMVP().getMat());
+        
+        p->draw(m_tb.getMVP().getMat(), m_textureType);
 
 
 
 
     }
+
+
     //void dragEnterEvent(QDragEnterEvent *event)
     //{
 
@@ -145,8 +152,10 @@ private:
 
     int m_currentMeshToken;
     
+    int m_textureType;
     Trackball m_tb;
 
 };
 
 #endif // Canvas_H
+

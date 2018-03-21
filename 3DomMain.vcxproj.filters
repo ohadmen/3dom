@@ -37,9 +37,6 @@
     <ClInclude Include="src\mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\TrackUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>

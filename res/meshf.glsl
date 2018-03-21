@@ -4,8 +4,8 @@ precision mediump int;
 precision mediump float;
 #endif
 
-
-
+uniform int u_txt;
+varying vec3 v_nrml;
 varying vec4 v_xyz;
 varying vec3 v_rgb;
 
@@ -25,9 +25,23 @@ void main()
     float a = dot(ec_normal, vec3(0.0, 0.0, 1.0));
     float b = dot(ec_normal, vec3(-0.57, -0.57, 0.57));
     
+    if(u_txt==0)
+		gl_FragColor = vec4(v_rgb[0],v_rgb[1],v_rgb[2], 1.0); 
+	else if(u_txt==1)
+	{
+		float p = 1.0;
+		float q = 1.0-p;
+		vec3 col;
+		
+		col += (v_nrml[0]>0.0? vec3(p,q,q):-vec3(q,p,p) )*v_nrml[0];
+		col += (v_nrml[1]>0.0? vec3(q,q,p):-vec3(p,p,q) )*v_nrml[1];
+		//col += (v_nrml[2]>0.0? vec3(q,p,q):-vec3(p,q,p) )*v_nrml[2];
+		
+		gl_FragColor = vec4(col  ,1.0);
+	}
+	else
+		gl_FragColor = vec4(((a*base2 + (1.0-a)*base00) + (b*base3 + (1.0-b)*base00))*0.5, 1.0); 
     
-    gl_FragColor = vec4(((a*base2 + (1.0-a)*base00) + (b*base3 + (1.0-b)*base00))*0.5, 1.0); 
-    //gl_FragColor = vec4(v_rgb[0],v_rgb[1],v_rgb[2], 1.0); 
     
 }
 //! [0]
