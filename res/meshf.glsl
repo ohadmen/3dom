@@ -33,9 +33,9 @@ void main()
 		float q = 1.0-p;
 		vec3 col;
 		
-		col += (v_nrml[0]>0.0? vec3(p,q,q):-vec3(q,p,p) )*v_nrml[0];
-		col += (v_nrml[1]>0.0? vec3(q,q,p):-vec3(p,p,q) )*v_nrml[1];
-		//col += (v_nrml[2]>0.0? vec3(q,p,q):-vec3(p,q,p) )*v_nrml[2];
+		col += vec3(p,q,q)*(1.0-v_nrml[0])*0.5;
+		col += vec3(q,p,q)*(1.0-v_nrml[1])*0.5;
+		col += vec3(q,q,p)*(1.0-v_nrml[2])*0.5;
 		
 		gl_FragColor = vec4(col  ,1.0);
 	}

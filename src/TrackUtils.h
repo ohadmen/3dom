@@ -115,7 +115,7 @@ public:
     void draw(const QMatrix4x4& mvp)
     {
         
-
+        static const QVector4D colB(.40f, .40f, .4f, 1.0f);
        
         for (int i = 0; i != m_drawLines.size(); ++i)
         {
@@ -129,6 +129,7 @@ public:
             m_lineShader.setAttributeBuffer(vp, GL_FLOAT, 0, 3, sizeof(QVector3D));
 
             m_lineShader.setUniformValue("u_col", m_drawLines[i].getColor());
+            m_lineShader.setUniformValue("u_bcol", colB);
             m_drawLines[i].draw();
 
             m_drawLines[i].release();

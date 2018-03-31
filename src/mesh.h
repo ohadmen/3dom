@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <vector>
 #include <map>
-
+#include "Qmvp.h"
 #include <array>
 #include "Q3d/QLine3D.h"
 
@@ -181,11 +181,14 @@ public:
 
 
     
-    void draw(const QMatrix4x4& mvp,int textureType)
+    void draw(const Qmvp& mvp,int textureType)
     {
         m_meshShader.bind();
-        m_meshShader.setUniformValue("mvp_matrix", mvp); 
-        m_meshShader.setUniformValue("rot_matrix", mvp);
+        m_meshShader.setUniformValue("mvp_matrix", mvp.getMat()); 
+        //QMatrix3x3 rotMat;
+        //rotMat.setToIdentity();
+
+        m_meshShader.setUniformValue("rot_matrix", mvp.getR().toRotationMatrix());
         
         m_vBuff.bind();
         m_iBuff.bind();

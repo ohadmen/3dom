@@ -122,7 +122,7 @@ protected:
         if (p == nullptr)
             return;
         
-        p->draw(m_tb.getMVP().getMat(), m_textureType);
+        p->draw(m_tb.getMVP(), m_textureType);
 
 
 
