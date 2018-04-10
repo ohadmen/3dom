@@ -179,16 +179,21 @@ public:
         return m_vertices.size() == 0;
     }
 
-
+    size_t getNfaces() const { return m_indices.size(); }
+    size_t getNverts() const { return m_vertices.size(); }
     
-    void draw(const Qmvp& mvp,int textureType)
+    void draw(const QMatrix4x4& mvp,int textureType)
     {
         m_meshShader.bind();
-        m_meshShader.setUniformValue("mvp_matrix", mvp.getMat()); 
+        m_meshShader.setUniformValue("mvp_matrix", mvp); 
         //QMatrix3x3 rotMat;
         //rotMat.setToIdentity();
 
-        m_meshShader.setUniformValue("rot_matrix", mvp.getR().toRotationMatrix());
+
+
+
+
+        
         
         m_vBuff.bind();
         m_iBuff.bind();
@@ -221,8 +226,18 @@ public:
         m_meshShader.disableAttributeArray(vc);
         
     }
-
+    QLine3D getNormal(int faceind)const
+    {
+        const VertData& v1 = m_vertices[m_indices[faceind][0]];
+        const VertData& v2 = m_vertices[m_indices[faceind][1]];
+        const VertData& v3 = m_vertices[m_indices[faceind][2]];
+        QVector3D p1 = QVector3D(v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z) / 3;
+        QVector3D p2 = p1 + m_normal[faceind];
+        return QLine3D(p1, p2);
+    }
 private:
+
+   
 
     void privCalcNormal()
     {

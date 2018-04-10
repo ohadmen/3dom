@@ -41,12 +41,17 @@ public:
     }
     void setToken(int token) { 
         m_currentMeshToken = token;
-        MeshArray::i().getMesh(m_currentMeshToken)->initGL();
+         auto p = MeshArray::i().getMesh(m_currentMeshToken);
+        p->initGL();
+       //draw normals 
+      /*  for(int i=0;i!= p->getNfaces();++i)
+        {
+            auto line = p->getNormal(i);
+            m_tb.tu().viewLines().push_back(ObjGLpainter<QLine3D>(line));
+
+        }*/
     }
-    void loadMesh(int token)
-    {
-        MeshArray::i().getMesh(token)->initGL();
-    }
+    
     bool cam2geometry()
     {
         static const float deg2rad = std::acos(0.0f) / 90.0f;
@@ -122,7 +127,7 @@ protected:
         if (p == nullptr)
             return;
         
-        p->draw(m_tb.getMVP(), m_textureType);
+        p->draw(m_tb.getMVP().getMat(), m_textureType);
 
 
 
