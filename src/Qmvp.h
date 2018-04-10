@@ -90,14 +90,19 @@ public:
     void setU(const QVector2D& u) { m_uv2pix = u; }
     
 
-
+    void recalcProjMat()
+    {
+        float ar = float(m_uv2pix[0]) / float(m_uv2pix[1] ? m_uv2pix[1] : 1);
+        m_proj.setToIdentity();
+        m_proj.perspective(Params::camFOV() / ar, ar, Params::camZnear(), Params::camZfar());
+    }
 
     void setWinSize(int w, int h)
     {
-        float ar = float(w) / float(h ? h : 1);
-        m_uv2pix = QVector2D(w / 2.0, h / 2.0);
-        m_proj.setToIdentity();
-        m_proj.perspective(Params::camFOV()/ar, ar, Params::camZnear(), Params::camZfar());
+        
+        m_uv2pix = QVector2D(w , h ) / 2.0;
+        recalcProjMat();
+        
     }
     float getAspectRatio() const 
     {

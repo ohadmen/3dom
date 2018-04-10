@@ -23,7 +23,9 @@ public:
         ROTATE,
         PAN,
         ZOOM,
+        FOV,
         RETARGET,
+        ZNEAR,
     };
 
     struct SharedRes
@@ -100,6 +102,14 @@ public:
         else if (mb.first == Qt::MouseButton::NoButton && kbm == Qt::KeyboardModifier::NoModifier  && wheelNotch != 0)
         {
             m_sr->currentState=(State::ZOOM);
+        }
+        else if (mb.first == Qt::MouseButton::NoButton && kbm == Qt::KeyboardModifier::ShiftModifier  && wheelNotch != 0)
+        {
+            m_sr->currentState = (State::ZNEAR);
+        }
+        else if (mb.first == Qt::MouseButton::NoButton && kbm == Qt::KeyboardModifier::ControlModifier  && wheelNotch != 0)
+        {
+            m_sr->currentState = (State::FOV);
         }
         else if (mb.first == Qt::MouseButton::ExtraButton10 && kbm == Qt::KeyboardModifier::NoModifier )
         {
@@ -212,7 +222,7 @@ public:
 class TrackIState_zoom :public TrackState {
 public:
     TrackIState_zoom(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList) :TrackState(sharedRes, stateList) {}
-    const char *Name() { return "TrackIState_none"; };
+    const char *Name() { return "TrackIState_zoom"; };
     void apply(int mb_, Qt::KeyboardModifiers kbm, const QPointF& , float wheelNotch)
     {
         auto mb = sprivMouseButtonState(mb_);
@@ -221,7 +231,7 @@ public:
             //Qmvp mvp = m_sr->tu.getShpereMVP(m_sr->track);
 
             static const float scaleinc = 1.1f;
-            static const float scaledec = 1 / scaleinc;
+            static const float scaledec = 1.0f / scaleinc;
             float s = wheelNotch > 0 ? scaleinc : scaledec;
             
        
@@ -234,7 +244,7 @@ public:
 
 };
 
-//----------------------TrackIState_zoom----------------------------
+//----------------------TrackIState_retarget----------------------------
 class TrackIState_retarget :public TrackState {
     int* m_currentMeshTokenP;
 public:
@@ -266,6 +276,52 @@ public:
     }
 
 };
+
+//----------------------TrackIState_znear----------------------------
+class TrackIState_znear :public TrackState {
+
+public:
+    TrackIState_znear(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList) :TrackState(sharedRes, stateList) {}
+    const char *Name() { return "TrackIState_znear"; };
+    void apply(int , Qt::KeyboardModifiers , const QPointF&, float wheelNotch)
+    {
+        const float scaleinc = 1.01f;
+        const float scaledec = 1.0f / scaleinc;
+        float s = wheelNotch > 0 ? scaleinc : scaledec;
+
+        float ov = Params::camZnear()*s;
+        
+        Params::camZnear(ov);
+        //qDebug() << "znear " << ov << endl;
+        m_sr->currentState = (State::IDLE);
+        m_sr->track.recalcProjMat();
+    }
+
+};
+
+//----------------------TrackIState_fov----------------------------
+class TrackIState_fov :public TrackState {
+
+public:
+    TrackIState_fov(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList) :TrackState(sharedRes, stateList) {}
+    const char *Name() { return "TrackIState_fov"; };
+    void apply(int , Qt::KeyboardModifiers , const QPointF&, float wheelNotch)
+    {
+        const float scaleinc = 1.05f;
+        const float scaledec = 1.0f / scaleinc;
+        float s = wheelNotch > 0 ? scaleinc : scaledec;
+
+        float ov = Params::camFOV()*s;
+        ov = std::max(1.0f, std::min(90.0f, ov));
+        Params::camFOV(ov);
+        //qDebug() << "znear " << ov << endl;
+        m_sr->currentState = (State::IDLE);
+        m_sr->track.recalcProjMat();
+    }
+
+};
+
+
 
 
 //----------------------TrackIState_none----------------------------

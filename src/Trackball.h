@@ -24,7 +24,9 @@ class Trackball
         m_states[TrackState::IDLE] = new TrackIState_idle(&m_sr, m_states);
         m_states[TrackState::ROTATE] = new TrackIState_rotate(&m_sr, m_states);
         m_states[TrackState::ZOOM] = new TrackIState_zoom(&m_sr, m_states);
+        m_states[TrackState::ZNEAR] = new TrackIState_znear(&m_sr, m_states);
         m_states[TrackState::PAN] = new TrackIState_pan(&m_sr, m_states);
+        m_states[TrackState::FOV] = new TrackIState_fov(&m_sr, m_states);
         m_states[TrackState::RETARGET] = new TrackIState_retarget(&m_sr, m_states,m_currentMeshTokenP);
     }
     void privClearStates()
