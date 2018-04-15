@@ -10,7 +10,7 @@ class TrackUtils: protected QOpenGLFunctions
 {
     QOpenGLShaderProgram m_lineShader;
     QOpenGLBuffer m_circBuff;
-    std::vector<ObjGLpainter<QLine3D>> m_drawLines;
+
 
     struct Pt
     {
@@ -112,40 +112,6 @@ public:
 
         return true;
     }
-    std::vector<ObjGLpainter<QLine3D>>& viewLines() { return m_drawLines; }
-    void draw(const QMatrix4x4& mvp)
-    {
-        
-       
-        for (int i = 0; i != m_drawLines.size(); ++i)
-        {
-            m_lineShader.bind();
-            
-            m_lineShader.setUniformValue("mvp_matrix", mvp);
-            m_drawLines[i].bind();
-
-            int vp = m_lineShader.attributeLocation("a_xyz");
-            m_lineShader.enableAttributeArray(vp);
-            m_lineShader.setAttributeBuffer(vp, GL_FLOAT, 0, 3, sizeof(QVector3D));
-
-            m_lineShader.setUniformValue("u_col", m_drawLines[i].getColor());
-            m_drawLines[i].draw();
-
-            m_drawLines[i].release();
-
-            // Clean up state machine
-            m_lineShader.disableAttributeArray(vp);
-        }
-        }
-        
-        
-
-
-       
-
-        
-
-       
 
 
    

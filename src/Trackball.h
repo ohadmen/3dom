@@ -5,6 +5,7 @@
 #include "TrackStates.h"
 #include "Qmvp.h"
 #include <vector>
+
 class Trackball
 {
 
@@ -85,7 +86,7 @@ public:
     void draw()
     {
         m_states[m_sr.currentState]->draw();
-        m_sr.tu.draw(m_sr.track.getMat());
+        
     }
     Qmvp getMVP()const
     {

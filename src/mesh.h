@@ -224,6 +224,9 @@ public:
         // Clean up state machine
         m_meshShader.disableAttributeArray(vp);
         m_meshShader.disableAttributeArray(vc);
+
+
+
         
     }
     QLine3D getNormal(int faceind)const

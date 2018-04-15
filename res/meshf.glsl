@@ -32,7 +32,7 @@ void main()
    // vec3 ec_pos=vec3(v_xyz[0]/v_xyz[3],v_xyz[1]/v_xyz[3],v_xyz[2])/v_xyz[3];
    // vec3 ec_normal = normalize(cross(dFdx(ec_pos), dFdy(ec_pos)));
     
-    ec_normal = normalize(ec_normal);
+    //ec_normal = normalize(ec_normal);
     
     float a = dot(v_nrml, va);
     float b = dot(v_nrml, vb);

@@ -5,7 +5,7 @@
 #include "Qmvp.h"
 #include "TrackUtils.h"
 #include "mesh.h"
-
+#include "GLpainter.h"
 
 /*
 track state is the general state in the state machine of the current control state.
@@ -262,9 +262,10 @@ public:
 				pt[0] *= -1; //??????????
 				m_sr->track.setT(pt, false);
 			}
-			
+            
+            GLpainter::i().setStatus("point " + QString::number(pt[0]));
             //m_sr->tu.viewLines().push_back(ObjGLpainter<QLine3D>(ll));
-            qDebug() << "ray: " <<ll << "pt" << pt;
+            //qDebug() << "ray: " <<ll << "pt" << pt;
 
            
         }

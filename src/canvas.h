@@ -14,7 +14,8 @@
 #include "loader.h"
 #include "TrackUtils.h"
 #include "TrackBall.h"
-
+#include "GLpainter.h"
+#include "Backdrop.h"
 #include "Params.h"
 
 
@@ -44,12 +45,16 @@ public:
          auto p = MeshArray::i().getMesh(m_currentMeshToken);
         p->initGL();
        //draw normals 
-      /*  for(int i=0;i!= p->getNfaces();++i)
+        if (0)
         {
-            auto line = p->getNormal(i);
-            m_tb.tu().viewLines().push_back(ObjGLpainter<QLine3D>(line));
+            GLpainter& painter = GLpainter::i();
+            for (int i = 0; i != p->getNfaces(); ++i)
+            {
+                auto line = p->getNormal(i);
+                painter.addDrawLine(line);
 
-        }*/
+            }
+        }
     }
     
     bool cam2geometry()
@@ -101,9 +106,8 @@ protected:
 
         
         m_tb.init(&m_currentMeshToken);
-//        auto t = MeshArray::i().getTokenList();
-//        for (auto zz : t)
-//            MeshArray::i().getMesh(zz)->initGL();
+        GLpainter::i().init(this);
+        m_bg.init();
 
     }
 
@@ -117,17 +121,24 @@ protected:
     }
     void paintGL()
     {
-        // Clear color and depth buffer
+        
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Clear color and depth buffer
+        
 
     
-        m_tb.draw();
+        
 
         Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
         if (p == nullptr)
             return;
+        QMatrix4x4 mvp = m_tb.getMVP().getMat();
+        //m_bg.draw();
+        m_tb.draw();
+        p->draw(mvp, m_textureType);
+        GLpainter::i().draw(mvp);
+
         
-        p->draw(m_tb.getMVP().getMat(), m_textureType);
 
 
 
@@ -159,6 +170,7 @@ private:
     
     int m_textureType;
     Trackball m_tb;
+    Backdrop m_bg;
 
 };
 
