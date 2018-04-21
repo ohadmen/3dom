@@ -10,6 +10,7 @@
 #include <QQuaternion>
 #include <QVector2D>
 #include <QBasicTimer>
+#include <qevent.h>
 #include "Qmvp.h"
 #include "loader.h"
 #include "TrackUtils.h"
@@ -31,7 +32,7 @@ public:
         m_textureType(0),
         m_currentMeshToken(-1)
     {
-      //  setAcceptDrops(true);
+        setAcceptDrops(true);
     }
     ~Canvas()
     {
@@ -81,14 +82,23 @@ public:
     {
         m_textureType = v;
     }
+    void loadMeshFromFile(const QString& meshfn)
+    {
+
+        int token = Loader::i().load(meshfn);
+        setToken(token);
+        cam2geometry();
+        update();
+    }
 protected:
 
-    //void keyPressEvent    (QKeyEvent   *event){m_tb.keyPressEvent    (event); update();}
     void wheelEvent           (QWheelEvent *event){m_tb.wheelEvent       (event); update();}
     void mousePressEvent      (QMouseEvent *event){m_tb.mousePressEvent  (event); update();}
     void mouseReleaseEvent    (QMouseEvent *event){m_tb.mouseReleaseEvent(event); update();}
     void mouseMoveEvent       (QMouseEvent *event){m_tb.mouseMoveEvent   (event); update();}
     void mouseDoubleClickEvent(QMouseEvent *event){m_tb.mouseDoubleClickEvent(event); update(); }
+    void keyPressEvent(QKeyEvent *e) { m_tb.keyPressEvent(e); }
+    void keyReleaseEvent(QKeyEvent *e) { m_tb.keyReleaseEvent(e); }
 
     
     void initializeGL()
@@ -96,6 +106,7 @@ protected:
 
         initializeOpenGLFunctions();
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        setFocusPolicy(Qt::StrongFocus);
         glEnable(GL_BLEND);
         glEnable(GL_LINE_SMOOTH);
         glClearColor(0, 0, 0, 1);
@@ -160,23 +171,23 @@ protected:
     }
 
 
-    //void dragEnterEvent(QDragEnterEvent *event)
-    //{
+   void dragEnterEvent(QDragEnterEvent *event)
+   {
 
-    //    if (event->mimeData()->hasUrls())
-    //    {
-    //        auto urls = event->mimeData()->urls();
-    //        if (urls.size() == 1 && urls.front().path().endsWith(".stl"))
-    //            event->acceptProposedAction();
-    //    }
-    //}
-    //void dropEvent(QDropEvent *event)
-    //{
-    //    QString meshfn = event->mimeData()->urls().front().toLocalFile();
-    //    //loadMeshFromFile(meshfn);
+       if (event->mimeData()->hasUrls())
+       {
+           auto urls = event->mimeData()->urls();
+           if (urls.size() == 1 && urls.front().path().endsWith(".stl"))
+               event->acceptProposedAction();
+       }
+   }
+   void dropEvent(QDropEvent *event)
+   {
+       QString meshfn = event->mimeData()->urls().front().toLocalFile();
+       loadMeshFromFile(meshfn);
 
-    //}
-
+   }
+  
 private:
 
 
