@@ -26,6 +26,7 @@ public:
         FOV,
         RETARGET,
         ZNEAR,
+        MEASURE_DISTANCE
     };
 
     struct SharedRes
@@ -58,6 +59,7 @@ public:
 
     //virtual void apply(int mb, Qt::KeyboardModifiers kbm,const QPointF& xy,float wheelNotch) { return; }
     virtual void apply(int ,Qt::KeyboardModifiers, const QPointF& , float ) { return; }
+    virtual void apply() { return; }
 
     virtual void reset() {}
 
@@ -110,6 +112,10 @@ public:
         else if (mb.first == Qt::MouseButton::NoButton && kbm == Qt::KeyboardModifier::ControlModifier  && wheelNotch != 0)
         {
             m_sr->currentState = (State::FOV);
+        }
+        else if (mb.first == Qt::MouseButton::ExtraButton10 && kbm == Qt::KeyboardModifier::NoModifier )
+        {
+            m_sr->currentState = (State::RETARGET);
         }
         else if (mb.first == Qt::MouseButton::ExtraButton10 && kbm == Qt::KeyboardModifier::NoModifier )
         {
@@ -262,10 +268,8 @@ public:
 				pt[0] *= -1; //??????????
 				m_sr->track.setT(pt, false);
 			}
-            
-            GLpainter::i().setStatus("point " + QString::number(pt[0]));
-            //m_sr->tu.viewLines().push_back(ObjGLpainter<QLine3D>(ll));
-            //qDebug() << "ray: " <<ll << "pt" << pt;
+            //GLpainter::i().addDrawLine(ll);
+            GLpainter::i().setStatus(pt);
 
            
         }
@@ -318,6 +322,29 @@ public:
         Params::camFOV(ov);
         GLpainter::i().setStatus("FOV " + QString::number(ov));
         
+        m_sr->currentState = (State::IDLE);
+        m_sr->track.recalcProjMat();
+    }
+
+};
+
+//----------------------TrackIState_measureDistance----------------------------
+class TrackIState_measureDistance :public TrackState {
+
+public:
+    TrackIState_measureDistance(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList) :TrackState(sharedRes, stateList) {}
+    const char *Name() { return "TrackIState_measureDistance"; };
+    void apply(int, Qt::KeyboardModifiers, const QPointF&, float wheelNotch)
+    {
+        const float scaleinc = 1.05f;
+        const float scaledec = 1.0f / scaleinc;
+        float s = wheelNotch > 0 ? scaleinc : scaledec;
+
+        float ov = Params::camFOV()*s;
+        ov = std::max(1.0f, std::min(90.0f, ov));
+        Params::camFOV(ov);
+        GLpainter::i().setStatus("FOV " + QString::number(ov));
+
         m_sr->currentState = (State::IDLE);
         m_sr->track.recalcProjMat();
     }

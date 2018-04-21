@@ -98,9 +98,8 @@ public:
     }
     void loadMeshFromFile(const QString& meshfn)
     {
-        int token = Loader::i().load(meshfn);
-        m_canvas.setToken(token);
-        m_canvas.cam2geometry();
+        m_canvas.loadMeshFromFile(meshfn);
+        
     }
 protected:
 
