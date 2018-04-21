@@ -47,16 +47,16 @@ public:
         privInitStates();
     }
 
-    /*void keyPressEvent(QKeyEvent *e)
+    void keyPressEvent(QKeyEvent *e)
     {
 
-        m_states[m_sr.currentState]->applyKeyEvent(e);
+        e;
     }
     void keyReleaseEvent(QKeyEvent *e)
     {
 
-        m_states[m_sr.currentState]->applyKeyEvent(e);
-    }*/
+        e;
+    }
     void mouseReleaseEvent(QMouseEvent *e)
     {
         int buttonChange = int(m_prevMouseState) ^ int(e->buttons());
