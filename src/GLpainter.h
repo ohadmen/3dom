@@ -75,30 +75,19 @@ public:
         if (m_parent)
         {
 
-            //QPainterPath path;
-            //QFont font("Arial", 40);
-            //path.addText(QPointF(0, 0), QFont("Arial", 40), QString(("This is a test")));
-            //QList<QPolygonF> poly = path.toSubpathPolygons();
-
-
-             QPainter painter(m_parent);
-       
-            painter.setPen(Qt::red);
-            //painter.setFont(QFont("Helvetica", 8));
-            //painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-            painter.drawText(100, 100, "hello"); 
-        
-          
+              
+            static const QFont font("Courier", 8);
+            static const int fh = QFontMetrics(font).height()+3;
+                
+            QPainter painter(m_parent);
+            painter.setPen(Qt::gray);
+            painter.setFont(font);
+            painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+            for (int i = 0; i != m_status.size(); ++i)
+            painter.drawText(10, m_parent->height()-10-fh*i, *(m_status.end()-1-i));
+            painter.end();
         }
-        //static QFont font("monospace", 24);
-        //QFontMetrics fm(font);
-        //int fh = fm.height();
-        //QPainter painter(m_parent);
-        //painter.setFont(font);
-        //painter.setRenderHint(QPainter::Antialiasing);
-        ////for(int i=0;i!= m_status.size();++i)
-        //painter.drawText(10, 10, "HELLO");
-        //painter.end();
+      
     }
 
 

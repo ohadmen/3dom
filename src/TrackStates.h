@@ -293,7 +293,8 @@ public:
         float ov = Params::camZnear()*s;
         
         Params::camZnear(ov);
-        //qDebug() << "znear " << ov << endl;
+        GLpainter::i().setStatus("Z-near " + QString::number(ov));
+        
         m_sr->currentState = (State::IDLE);
         m_sr->track.recalcProjMat();
     }
@@ -315,7 +316,8 @@ public:
         float ov = Params::camFOV()*s;
         ov = std::max(1.0f, std::min(90.0f, ov));
         Params::camFOV(ov);
-        //qDebug() << "znear " << ov << endl;
+        GLpainter::i().setStatus("FOV " + QString::number(ov));
+        
         m_sr->currentState = (State::IDLE);
         m_sr->track.recalcProjMat();
     }
