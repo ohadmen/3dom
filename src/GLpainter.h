@@ -92,6 +92,11 @@ public:
 
 
 
+    void setStatus(const QVector3D& v)
+    {
+        QString s = QString::number(v[0]) + "," + QString::number(v[1]) + "," + QString::number(v[2]);
+        setStatus(s);
+    }
     void setStatus(const QString& s)
     {
         m_status.push_front(s);
