@@ -24,7 +24,7 @@ void main()
 
 
     v_xyz = a_xyz;
-	float a =  min(1.0,max(0.0,2.0*(gl_Position[2]-0.5)));
+	float a =  min(1.0,max(0.0,10.0*(gl_Position[2])));
     v_col=u_bcol*a+u_col*(1.0-a);
 	
 }
