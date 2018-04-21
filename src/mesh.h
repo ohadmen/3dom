@@ -68,6 +68,7 @@ public:
 
         m_vertices = v;
         m_indices = i;
+        
         m_objCenter = std::accumulate(m_vertices.begin(), m_vertices.end(), QVector3D(), [](const QVector3D& s,const VertData& v) {return s + v; }) / float(v.size());
         auto p = std::max_element(m_vertices.begin(), m_vertices.end(), [&](const VertData& a, const VertData&b) {return (a - m_objCenter).length() < (b - m_objCenter).length(); });
         m_objcontainerRadius = (*p - m_objCenter).length();
@@ -159,7 +160,7 @@ public:
 
 		float minr = std::numeric_limits<float>::infinity();
 
-        for (int i = 0; i != m_indices.size() / 3; ++i)
+        for (int i = 0; i != m_indices.size() ; ++i)
         {
 			QVector3D pt;
             float r = sprivRayTriIntersect(line, m_vertices[m_indices[i][0]] , m_vertices[m_indices[i][1]],  m_vertices[m_indices[i][2]], &pt);
@@ -272,7 +273,7 @@ private:
         if (n.lengthSquared() == 0)             // triangle is degenerate
             return inf;                  // do not deal with this case
 
-        QVector3D w0 = line.p1() - t0;
+
         
         float b = QVector3D::dotProduct(n, line.direction());;
         if (fabs(b) < thr) {     // ray is  parallel to triangle plane
