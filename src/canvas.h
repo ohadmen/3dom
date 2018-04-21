@@ -122,9 +122,23 @@ protected:
     void paintGL()
     {
         
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // Clear color and depth buffer
+
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Clear color and depth buffer
+        glEnable(GL_DEPTH_TEST);
         
+        
+
+        // Blended points, lines, and polygons.
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //
+        //glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+        //glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        //glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+        //
+        //glEnable(GL_POINT_SMOOTH);
+        //glEnable(GL_LINE_SMOOTH);
+        //glEnable(GL_POLYGON_SMOOTH);
 
     
         
@@ -133,12 +147,12 @@ protected:
         if (p == nullptr)
             return;
         QMatrix4x4 mvp = m_tb.getMVP().getMat();
-        //m_bg.draw();
+        m_bg.draw();
         m_tb.draw();
         p->draw(mvp, m_textureType);
         GLpainter::i().draw(mvp);
 
-        
+     
 
 
 
