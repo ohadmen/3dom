@@ -59,6 +59,7 @@ public:
 
     //virtual void apply(int mb, Qt::KeyboardModifiers kbm,const QPointF& xy,float wheelNotch) { return; }
     virtual void apply(int ,Qt::KeyboardModifiers, const QPointF& , float ) { return; }
+    virtual void apply(QKeyEvent*,  const QPointF&) { return; }
     virtual void apply() { return; }
 
     virtual void reset() {}
@@ -90,6 +91,7 @@ public:
     void apply(int mb_, Qt::KeyboardModifiers kbm,const QPointF& xy, float wheelNotch)
     { 
         auto mb = sprivMouseButtonState(mb_);
+        
         if (0) {}//tidy :)
         else if (mb.first == Qt::MouseButton::LeftButton && mb.second && kbm == Qt::KeyboardModifier::NoModifier)
         {
@@ -127,6 +129,10 @@ public:
 
     }
 
+    void apply(QKeyEvent* e, const QPointF& xy)
+    {
+
+    }
 };
 
 //----------------------TrackIState_rotate----------------------------

@@ -15,7 +15,7 @@ class Trackball
 
     //press/release callback tells us the current state *after* the event
     //to know which button was pressed/released, we need to save the previous state.
-    Qt::MouseButtons m_prevMouseState;
+    
 
 
 
@@ -29,6 +29,8 @@ class Trackball
         m_states[TrackState::PAN] = new TrackIState_pan(&m_sr, m_states);
         m_states[TrackState::FOV] = new TrackIState_fov(&m_sr, m_states);
         m_states[TrackState::RETARGET] = new TrackIState_retarget(&m_sr, m_states,m_currentMeshTokenP);
+        m_states[TrackState::MEASURE_DISTANCE] = new TrackIState_measureDistance(&m_sr, m_states);
+        
     }
     void privClearStates()
     {
@@ -38,7 +40,7 @@ class Trackball
 
 public:
     ~Trackball() { privClearStates(); }
-    Trackball():m_prevMouseState(Qt::MouseButton::NoButton), m_currentMeshTokenP(nullptr){  }
+    Trackball(): m_currentMeshTokenP(nullptr){  }
 
     void init(int* currentMeshTokenP)
     {
@@ -49,7 +51,7 @@ public:
 
     void keyPressEvent(QKeyEvent *e)
     {
-
+        qDebug() << e->key();
         e;
     }
     void keyReleaseEvent(QKeyEvent *e)
@@ -59,15 +61,11 @@ public:
     }
     void mouseReleaseEvent(QMouseEvent *e)
     {
-        int buttonChange = int(m_prevMouseState) ^ int(e->buttons());
-        m_prevMouseState = e->buttons();
-        m_states[m_sr.currentState]->apply(-buttonChange, e->modifiers(), e->localPos(), 0);
+        m_states[m_sr.currentState]->apply(-int(e->button()), e->modifiers(), e->localPos(), 0);
     }
     void mousePressEvent(QMouseEvent *e)
     {
-        int buttonChange = int(m_prevMouseState) ^ int(e->buttons());
-        m_prevMouseState = e->buttons();
-        m_states[m_sr.currentState]->apply(buttonChange, e->modifiers(), e->localPos(), 0);
+        m_states[m_sr.currentState]->apply(int(e->button()), e->modifiers(), e->localPos(), 0);
     }
     void mouseDoubleClickEvent(QMouseEvent *e)
     {

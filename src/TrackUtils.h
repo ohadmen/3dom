@@ -42,7 +42,8 @@ class TrackUtils: protected QOpenGLFunctions
         
 
         glLineWidth(lw);
-        glDrawArrays(GL_LINE_LOOP, 0, m_circBuff.size() / sizeof(Pt));
+        int sz = m_circBuff.size() / sizeof(Pt);
+        glDrawArrays(GL_LINE_LOOP, 0, sz);
 
         m_circBuff.release();
 

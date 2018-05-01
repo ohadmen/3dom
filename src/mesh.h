@@ -50,6 +50,7 @@ private:
     float     m_objcontainerRadius;
     QOpenGLBuffer m_vBuff; //vertices 3xn
     QOpenGLBuffer m_iBuff; //indices 3xm
+    std::vector<std::array<float, 9>> m_vFlat;
     bool m_glInitialized;
     QOpenGLShaderProgram m_meshShader;
 public:
@@ -85,17 +86,17 @@ public:
         m_iBuff.create();
 
 
-        m_vBuff.setUsagePattern(QOpenGLBuffer::StaticDraw);
+        m_vBuff.setUsagePattern(QOpenGLBuffer::StreamDraw);
         m_iBuff.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
         
         //create unindex vertex data;
-        std::vector<std::array<float, 9>> vFlat(m_indices.size()*3);
+        m_vFlat.resize(m_indices.size()*3);
         std::vector<unsigned int> iFlat(m_indices.size() * 3);
         for (int i = 0; i != m_indices.size()*3; ++i)
         {
             iFlat[i ] = i ;
-            vFlat[i] = {
+            m_vFlat[i] = {
                 m_vertices[m_indices[i / 3][i % 3]].x,
                 m_vertices[m_indices[i / 3][i % 3]].y,
                 m_vertices[m_indices[i / 3][i % 3]].z,
@@ -110,7 +111,7 @@ public:
 
 
         m_vBuff.bind();
-        m_vBuff.allocate(vFlat.data(), int(vFlat.size() * sizeof(float)*9));
+        m_vBuff.allocate(m_vFlat.data(), int(m_vFlat.size() * sizeof(float)*9));
         m_vBuff.release();
 
         m_iBuff.bind();
@@ -197,7 +198,12 @@ public:
         
         
         m_vBuff.bind();
+        m_vBuff.write(0, m_vFlat.data(), int(m_vFlat.size() * sizeof(float) * 9));
+
+
         m_iBuff.bind();
+
+        
 
         int vp = m_meshShader.attributeLocation("a_xyz");
         m_meshShader.enableAttributeArray(vp);

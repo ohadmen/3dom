@@ -17,6 +17,7 @@
 #include "TrackBall.h"
 #include "GLpainter.h"
 #include "Backdrop.h"
+#include "MeasurmentGrid.h"
 #include "Params.h"
 
 
@@ -119,6 +120,7 @@ protected:
         m_tb.init(&m_currentMeshToken);
         GLpainter::i().init(this);
         m_bg.init();
+        m_mg.init();
 
     }
 
@@ -159,10 +161,11 @@ protected:
             return;
         QMatrix4x4 mvp = m_tb.getMVP().getMat();
         m_bg.draw();
+        //m_mg.draw(mvp);
         m_tb.draw();
         p->draw(mvp, m_textureType);
         GLpainter::i().draw(mvp);
-
+        
      
 
 
@@ -196,6 +199,7 @@ private:
     int m_textureType;
     Trackball m_tb;
     Backdrop m_bg;
+    MeasurmentGrid m_mg;
 
 };
 
