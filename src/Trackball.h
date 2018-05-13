@@ -12,6 +12,7 @@ class Trackball
     TrackState::SharedRes m_sr;
     std::map<TrackState::State, TrackState*> m_states;
     int* m_currentMeshTokenP;
+    QPointF m_mousepos;
 
     //press/release callback tells us the current state *after* the event
     //to know which button was pressed/released, we need to save the previous state.
@@ -29,7 +30,7 @@ class Trackball
         m_states[TrackState::PAN] = new TrackIState_pan(&m_sr, m_states);
         m_states[TrackState::FOV] = new TrackIState_fov(&m_sr, m_states);
         m_states[TrackState::RETARGET] = new TrackIState_retarget(&m_sr, m_states,m_currentMeshTokenP);
-        m_states[TrackState::MEASURE_DISTANCE] = new TrackIState_measureDistance(&m_sr, m_states);
+        m_states[TrackState::MEASURE_DISTANCE] = new TrackIState_measureDistance(&m_sr, m_states, m_currentMeshTokenP);
         
     }
     void privClearStates()
@@ -40,7 +41,7 @@ class Trackball
 
 public:
     ~Trackball() { privClearStates(); }
-    Trackball(): m_currentMeshTokenP(nullptr){  }
+    Trackball(): m_currentMeshTokenP(nullptr), m_mousepos(0,0){  }
 
     void init(int* currentMeshTokenP)
     {
@@ -51,34 +52,40 @@ public:
 
     void keyPressEvent(QKeyEvent *e)
     {
-        qDebug() << e->key();
-        e;
+        m_states[m_sr.currentState]->apply(QInputEvent::KeyPress,e, m_mousepos);
+    
     }
     void keyReleaseEvent(QKeyEvent *e)
     {
+        
+        m_states[m_sr.currentState]->apply(QInputEvent::KeyRelease ,e, m_mousepos);
 
-        e;
+
     }
     void mouseReleaseEvent(QMouseEvent *e)
     {
-        m_states[m_sr.currentState]->apply(-int(e->button()), e->modifiers(), e->localPos(), 0);
+        
+        m_states[m_sr.currentState]->apply(QInputEvent::MouseButtonRelease,e, 0);
     }
     void mousePressEvent(QMouseEvent *e)
     {
-        m_states[m_sr.currentState]->apply(int(e->button()), e->modifiers(), e->localPos(), 0);
+        m_states[m_sr.currentState]->apply(QInputEvent::MouseButtonPress, e, 0);
     }
     void mouseDoubleClickEvent(QMouseEvent *e)
     {
+        
         //map double click to ExtraButton10 
-        m_states[m_sr.currentState]->apply(int(Qt::MouseButton::ExtraButton10), e->modifiers(), e->localPos(), 0);
+        m_states[m_sr.currentState]->apply(QInputEvent::MouseButtonDblClick, e, 0);
     }
     void mouseMoveEvent(QMouseEvent *e)
     {
-        m_states[m_sr.currentState]->apply(Qt::MouseButton::NoButton, e->modifiers(), e->localPos(), 0);
+        m_mousepos = e->localPos();
+        m_states[m_sr.currentState]->apply(QInputEvent::MouseMove, e, 0);
     }
     void wheelEvent(QWheelEvent *e)
     {
-        m_states[m_sr.currentState]->apply(e->buttons(), e->modifiers(), e->posF(), e->delta());
+        QMouseEvent ee(QMouseEvent::Wheel, e->posF(), Qt::NoButton, e->buttons(), e->modifiers());
+        m_states[m_sr.currentState]->apply(QInputEvent::Wheel,&ee, e->delta());
     }
 
     void draw()
