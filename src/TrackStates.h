@@ -353,6 +353,11 @@ public:
         m_sr->currentState = (State::IDLE);
         if (e->key() != Qt::Key_D || t!= QInputEvent::KeyPress)
             return;
+        if (e->modifiers() == Qt::ShiftModifier)
+        {
+            GLpainter::i().popDrawLine();
+            return;
+        }
 
         const Mesh* p = MeshArray::i().getMesh(*m_currentMeshTokenP);
         if (p == nullptr)
@@ -361,24 +366,28 @@ public:
         QLine3D ll = m_sr->track.cameraRay(QVector2D(xy));
         QVector3D pt;
         if (!p->closest2ray(ll, &pt))
+        {
             return;
+        }
+            
 
         if (m_measuring)
         {
             m_measuring = false;
             float dist = (pt - m_origin).length();
             GLpainter::i().setStatus("Distance="+ QString::number(dist));
-            m_sr->currentState = (State::IDLE);
             
+            GLpainter::i().addDrawLine(QLine3D(m_origin, pt));
+          
         }
         else
         {
             m_measuring = true;
             m_origin = pt;
-            m_sr->currentState = (State::MEASURE_DISTANCE);
+           
+            
         }
-        
-        m_sr->track.recalcProjMat();
+      
     }
 
 };

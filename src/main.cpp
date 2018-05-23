@@ -9,11 +9,12 @@
 
 #include "Canvas.h"
 #include "loader.h"
-
+#include "VertMap.h"
 
 
 int main(int argc, char *argv[])
 {
+    VertMap v;
     App app(argc, argv);
    // QApplication app(argc, argv);
    // QSurfaceFormat format;

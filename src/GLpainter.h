@@ -40,6 +40,12 @@ public:
     {
         m_drawLines.push_back(ObjGLpainter<QLine3D>(l));
     }
+    void popDrawLine()
+    {
+        if (m_drawLines.empty())
+            return;
+        m_drawLines.pop_back();
+    }
     bool init(QPaintDevice * parent)
     {
         m_parent = parent;

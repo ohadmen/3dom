@@ -26,14 +26,16 @@ public:
 		setOrganizationName("Ohad");
 		setOrganizationDomain("www.ohad.co");
 	
-		QString meshfn = Loader::default3DmodelFilename();
+		
         
         if (argc > 1)
-			meshfn=(argv[1]);
+            m_window.loadMeshFromFile(argv[1]);
+        //else
+        //    m_window.loadMeshFromFile(Loader::default3DmodelFilename());
         
 		
         
-        m_window.loadMeshFromFile(meshfn);
+        
 		
 	
 

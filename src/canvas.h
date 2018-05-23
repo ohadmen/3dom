@@ -34,6 +34,7 @@ public:
         m_currentMeshToken(-1)
     {
         setAcceptDrops(true);
+        setMouseTracking(true);
     }
     ~Canvas()
     {
@@ -44,7 +45,7 @@ public:
     }
     void setToken(int token) { 
         m_currentMeshToken = token;
-         auto p = MeshArray::i().getMesh(m_currentMeshToken);
+        auto p = MeshArray::i().getMesh(m_currentMeshToken);
         p->initGL();
        //draw normals 
         if (0)
@@ -87,6 +88,9 @@ public:
     {
 
         int token = Loader::i().load(meshfn);
+        if (token == -1)
+            //load failed
+            return;
         setToken(token);
         cam2geometry();
         update();
@@ -96,10 +100,10 @@ protected:
     void wheelEvent           (QWheelEvent *event){m_tb.wheelEvent       (event); update();}
     void mousePressEvent      (QMouseEvent *event){m_tb.mousePressEvent  (event); update();}
     void mouseReleaseEvent    (QMouseEvent *event){m_tb.mouseReleaseEvent(event); update();}
-    void mouseMoveEvent       (QMouseEvent *event){m_tb.mouseMoveEvent   (event); update();}
+    void mouseMoveEvent       (QMouseEvent *event)    {        m_tb.mouseMoveEvent   (event); update();}
     void mouseDoubleClickEvent(QMouseEvent *event){m_tb.mouseDoubleClickEvent(event); update(); }
-    void keyPressEvent(QKeyEvent *e) { m_tb.keyPressEvent(e); }
-    void keyReleaseEvent(QKeyEvent *e) { m_tb.keyReleaseEvent(e); }
+    void keyPressEvent(QKeyEvent *e) { m_tb.keyPressEvent(e); update();}
+    void keyReleaseEvent(QKeyEvent *e) { m_tb.keyReleaseEvent(e);update(); }
 
     
     void initializeGL()

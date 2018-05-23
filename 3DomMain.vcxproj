@@ -14,7 +14,7 @@
     <ProjectGuid>{5ADBADAF-3544-3E24-BF08-64D6B45E9093}</ProjectGuid>
     <RootNamespace>3dom</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
-    <ProjectName>Zviewer</ProjectName>
+    <ProjectName>3dom</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -192,6 +192,8 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="src\Array2d.h" />
     <QtMoc Include="src\Window.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\.;.\GeneratedFiles;.\src;$(QTDIR)\include;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtCore;.\debug;$(QTDIR)\mkspecs\win32-msvc2015</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\.;.\GeneratedFiles;.\src;$(QTDIR)\include;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtCore;.\release;$(QTDIR)\mkspecs\win32-msvc2015</IncludePath>
@@ -212,6 +214,7 @@
     <ClInclude Include="src\Q3d\QPrimitive3D.h" />
     <ClInclude Include="src\Q3d\QRay3D.h" />
     <ClInclude Include="src\Q3d\QSphere3D.h" />
+    <ClInclude Include="src\Q3d\QText3D.h" />
     <ClInclude Include="src\Qmvp.h" />
     <ClInclude Include="src\Trackball.h" />
     <ClInclude Include="src\TrackStates.h" />
@@ -242,6 +245,12 @@
     <None Include="res\linev.glsl" />
     <None Include="res\meshf.glsl" />
     <None Include="res\meshv.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="3dom.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\main.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
