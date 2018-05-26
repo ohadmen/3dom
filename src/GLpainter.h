@@ -1,15 +1,17 @@
 #pragma once
 #include <QOpenGLFunctions>
 #include <qopenglshaderprogram.h>
-#include "Q3d/ObjGLpainter.h"
+
 #include "Q3d/QLine3D.h"
+#include "Q3d/QText3D.h"
 #include <deque>
 #include <QPainter>
 #include "Params.h"
 class GLpainter: protected QOpenGLFunctions
 {
     QOpenGLShaderProgram m_lineShader;
-    std::vector<ObjGLpainter<QLine3D>> m_drawLines;
+    std::vector<QLine3D> m_drawLines;
+    std::vector<QText3D> m_drawText;
     std::deque<QString> m_status;
     QPaintDevice * m_parent;
 public:
@@ -38,7 +40,8 @@ public:
     }
     void addDrawLine(const QLine3D& l)
     {
-        m_drawLines.push_back(ObjGLpainter<QLine3D>(l));
+        m_drawLines.push_back(QLine3D(l));
+        m_drawLines.back().init();
     }
     void popDrawLine()
     {
@@ -57,7 +60,7 @@ public:
 
     void draw(const QMatrix4x4& mvp)
     {
-       
+       //drawlines
         for (int i = 0; i != m_drawLines.size(); ++i)
         {
             m_lineShader.bind();
@@ -77,6 +80,26 @@ public:
             // Clean up state machine
             m_lineShader.disableAttributeArray(vp);
             m_lineShader.release();
+        }
+        //drawText
+        for (int i = 0; i != m_drawText.size(); ++i)
+        {
+            m_lineShader.bind();
+
+            m_lineShader.setUniformValue("mvp_matrix", mvp);
+            m_drawText[i].bind();
+
+            int vp = m_lineShader.attributeLocation("a_xyz");
+            m_lineShader.enableAttributeArray(vp);
+            m_lineShader.setAttributeBuffer(vp, GL_FLOAT, 0, 3, sizeof(QVector3D));
+
+            m_lineShader.setUniformValue("u_col", m_drawText[i].getColor());
+            m_drawText[i].draw();
+
+            m_drawText[i].release();
+
+            // Clean up state machine
+            m_lineShader.disableAttributeArray(vp);
         }
         if (m_parent)
         {
@@ -106,7 +129,11 @@ public:
     void setStatus(const QString& s)
     {
         m_status.push_front(s);
+        
         m_status.pop_back();
+
+        m_drawText.push_back(s);
+        m_drawText.back().init();
     }
 
 

@@ -32,6 +32,27 @@ public:
 	{
 		return point(projection(p));
 	}
+
+    void init()
+    {
+        m_buff.create();
+        m_buff.setUsagePattern(QOpenGLBuffer::StaticDraw);
+        m_buff.bind();
+
+        QVector3D data[2];
+        data[0] = p1();
+        data[1] = p2();
+        m_buff.allocate(data, 2 * sizeof(QVector3D));
+        m_buff.release();
+
+    }
+    void draw()
+    {
+        initializeOpenGLFunctions();
+        glLineWidth(3);
+        glDrawArrays(GL_LINE_LOOP, 0, m_buff.size() / sizeof(QVector3D));
+    }
+
 protected:
     const enum dirtyFlag{dirtyDirection, dirtyLength, dirtyLengthSquared};
     QVector3D                   _p1;

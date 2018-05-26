@@ -207,7 +207,6 @@
     <ClInclude Include="src\MeasurmentGrid.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\Params.h" />
-    <ClInclude Include="src\Q3d\ObjGLpainter.h" />
     <ClInclude Include="src\Q3d\QBitFlags.h" />
     <ClInclude Include="src\Q3d\QLine3D.h" />
     <ClInclude Include="src\Q3d\QPlane3D.h" />

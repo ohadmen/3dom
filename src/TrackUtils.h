@@ -4,7 +4,7 @@
 
 #include "Params.h"
 #include "Q3d/QSphere3D.h"
-#include "Q3d/ObjGLpainter.h"
+
 #include "Qmvp.h"
 class TrackUtils: protected QOpenGLFunctions
 {
