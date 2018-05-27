@@ -50,7 +50,7 @@ public:
     {
         initializeOpenGLFunctions();
         glLineWidth(3);
-        glDrawArrays(GL_LINE_LOOP, 0, m_buff.size() / sizeof(QVector3D));
+        glDrawArrays(GL_LINE_LOOP, 0, 2);
     }
 
 protected:

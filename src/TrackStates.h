@@ -350,12 +350,14 @@ public:
     void apply(QInputEvent::Type t,QKeyEvent* e, const QPointF& xy)
     
     {
+        static const float rad2deg = 90.0 / std::acos(0.0);
         m_sr->currentState = (State::IDLE);
         if (e->key() != Qt::Key_D || t!= QInputEvent::KeyPress)
             return;
         if (e->modifiers() == Qt::ShiftModifier)
         {
             GLpainter::i().popDrawLine();
+            GLpainter::i().popDrawText();
             return;
         }
 
@@ -375,9 +377,17 @@ public:
         {
             m_measuring = false;
             float dist = (pt - m_origin).length();
-            GLpainter::i().setStatus("Distance="+ QString::number(dist));
+            QString distStr = QString::number(dist);
+            GLpainter::i().setStatus("Distance="+ distStr);
             
             GLpainter::i().addDrawLine(QLine3D(m_origin, pt));
+            
+            QMatrix4x4 t;
+            t.translate((pt + m_origin) / 2);
+            QVector3D dir = (pt - m_origin).normalized();
+            QVector3D v = QVector3D::crossProduct(dir, QVector3D(1, 0, 0));
+            t.rotate(-std::acos(dir.x())*rad2deg, v);
+            GLpainter::i().addDrawText(distStr, t);
           
         }
         else

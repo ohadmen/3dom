@@ -40,7 +40,7 @@ public:
     }
     void addDrawLine(const QLine3D& l)
     {
-        m_drawLines.push_back(QLine3D(l));
+        m_drawLines.push_back(l);
         m_drawLines.back().init();
     }
     void popDrawLine()
@@ -48,6 +48,17 @@ public:
         if (m_drawLines.empty())
             return;
         m_drawLines.pop_back();
+    }
+    void popDrawText()
+    {
+        if (m_drawText.empty())
+            return;
+        m_drawText.pop_back();
+    }
+    void addDrawText(const QString& s, const QMatrix4x4 & t)
+    {
+        m_drawText.emplace_back(QText3D(s, t));
+        m_drawText.back().init();
     }
     bool init(QPaintDevice * parent)
     {
@@ -86,7 +97,7 @@ public:
         {
             m_lineShader.bind();
 
-            m_lineShader.setUniformValue("mvp_matrix", mvp);
+            m_lineShader.setUniformValue("mvp_matrix", mvp*m_drawText[i].getT());
             m_drawText[i].bind();
 
             int vp = m_lineShader.attributeLocation("a_xyz");
@@ -132,8 +143,8 @@ public:
         
         m_status.pop_back();
 
-        m_drawText.push_back(s);
-        m_drawText.back().init();
+        
+        
     }
 
 
