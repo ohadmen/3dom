@@ -20,7 +20,7 @@ and keyboard inputs, apply the transformation, and alters the state if needed
 */
 class TrackState {
 public:
-    
+
     enum State
     {
         IDLE,
@@ -39,37 +39,37 @@ public:
         Qmvp    track;
         State   currentState;
         TrackUtils tu;
-    
-        SharedRes():currentState(State::IDLE){}
-        
+
+        SharedRes() :currentState(State::IDLE) {}
+
     };
-     
+
 
 protected:
     SharedRes* m_sr;
-    
+
     const std::map<TrackState::State, TrackState*>& m_statesList;
-    
-    TrackState* protCurrentState()const  {
+
+    TrackState* protCurrentState()const {
         //should be unique!
         //https://stackoverflow.com/questions/1474894/why-isnt-the-operator-const-for-stl-maps
         std::map<TrackState::State, TrackState*>& tt = const_cast<std::map<TrackState::State, TrackState*>&>(m_statesList);
         return tt[m_sr->currentState];
     }
 public:
-    TrackState(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList):m_sr(sharedRes), m_statesList(stateList){}
+    TrackState(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList) :m_sr(sharedRes), m_statesList(stateList) {}
 
     virtual ~TrackState() {
     }
 
     //virtual void apply(int mb, Qt::KeyboardModifiers kbm,const QPointF& xy,float wheelNotch) { return; }
-    virtual void apply(QInputEvent::Type , QMouseEvent* , float ) { return; }
-    virtual void apply(QInputEvent::Type t, QKeyEvent*,  const QPointF&) { return; }
+    virtual void apply(QInputEvent::Type, QMouseEvent*, float) { return; }
+    virtual void apply(QInputEvent::Type t, QKeyEvent*, const QPointF&) { return; }
     virtual void apply() { return; }
 
     virtual void reset() {}
 
-    virtual const char* name() {return "TrackState";    };
+    virtual const char* name() { return "TrackState"; };
 
     virtual void draw() { m_sr->tu.drawSphereIcon(m_sr->track, true); }
 
@@ -84,23 +84,23 @@ static std::pair<Qt::MouseButton, bool> sprivMouseButtonState(int mb)
 //----------------------TrackIState_idle----------------------------
 class TrackIState_idle :public TrackState {
 public:
-    TrackIState_idle(SharedRes* sharedRes,const std::map<TrackState::State, TrackState*>& stateList) :TrackState(sharedRes, stateList) {}
-    const char *Name() {return "TrackIState_idle";    };
+    TrackIState_idle(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList) :TrackState(sharedRes, stateList) {}
+    const char *Name() { return "TrackIState_idle"; };
 
     void draw()
     {
-        
-        m_sr->tu.drawSphereIcon(m_sr->track,false);
+
+        m_sr->tu.drawSphereIcon(m_sr->track, false);
     }
 
-    void apply(QInputEvent::Type t,QMouseEvent* e,float wheelNotch)
-    { 
-      
-        
+    void apply(QInputEvent::Type t, QMouseEvent* e, float wheelNotch)
+    {
+
+
         if (0) {}//tidy :)
         else if (e->button() == Qt::MouseButton::LeftButton && t == QInputEvent::MouseButtonPress && e->modifiers() == Qt::KeyboardModifier::NoModifier)
         {
-            m_sr->currentState=(State::ROTATE);
+            m_sr->currentState = (State::ROTATE);
 
         }
         else if (e->button() == Qt::MouseButton::MidButton && t == QInputEvent::MouseButtonPress && e->modifiers() == Qt::KeyboardModifier::NoModifier)
@@ -108,9 +108,14 @@ public:
             m_sr->currentState = (State::PAN);
 
         }
+        else if (e->button() == Qt::MouseButton::RightButton && t == QInputEvent::MouseButtonPress && e->modifiers() == Qt::KeyboardModifier::NoModifier)
+        {
+            m_sr->currentState = (State::PAN);
+
+        }
         else if (e->button() == Qt::MouseButton::NoButton&& e->modifiers() == Qt::KeyboardModifier::NoModifier  && wheelNotch != 0)
         {
-            m_sr->currentState=(State::ZOOM);
+            m_sr->currentState = (State::ZOOM);
         }
         else if (e->button() == Qt::MouseButton::NoButton&& e->modifiers() == Qt::KeyboardModifier::ShiftModifier  && wheelNotch != 0)
         {
@@ -120,21 +125,21 @@ public:
         {
             m_sr->currentState = (State::FOV);
         }
-        else if (t == QInputEvent::MouseButtonDblClick && e->modifiers() == Qt::KeyboardModifier::NoModifier )
+        else if (t == QInputEvent::MouseButtonDblClick && e->modifiers() == Qt::KeyboardModifier::NoModifier)
         {
             m_sr->currentState = (State::RETARGET);
         }
-     
+
         else
             return;//no state change, do not run apply on next state (e.g. next state is idle)
-        protCurrentState()->apply(t,e,wheelNotch);
+        protCurrentState()->apply(t, e, wheelNotch);
 
     }
 
-    void apply(QInputEvent::Type t,QKeyEvent* e, const QPointF& xy)
+    void apply(QInputEvent::Type t, QKeyEvent* e, const QPointF& xy)
     {
         if (0) {}
-        else if (e->key() == Qt::Key_D && t== QInputEvent::KeyPress)
+        else if (e->key() == Qt::Key_D && t == QInputEvent::KeyPress)
         {
             m_sr->currentState = (State::MEASURE_DISTANCE);
         }
@@ -144,7 +149,7 @@ public:
         }
         else
             return;//no state change, do not run apply on next state (e.g. next state is idle)
-        protCurrentState()->apply(t,e,xy);
+        protCurrentState()->apply(t, e, xy);
     }
 };
 
@@ -155,47 +160,47 @@ class TrackIState_rotate :public TrackState {
 public:
     TrackIState_rotate(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList) :TrackState(sharedRes, stateList) {}
     const char *Name() { return "TrackIState_shpere"; };
-    void apply(QInputEvent::Type t,QMouseEvent* e,float wheelNotch)
+    void apply(QInputEvent::Type t, QMouseEvent* e, float wheelNotch)
     {
-        
-        
+
+
         if (e->button() == Qt::MouseButton::LeftButton && t == QInputEvent::MouseButtonPress)//press
         {
-            
+
             m_pressTrack = m_sr->track;
             m_hitOld = m_sr->tu.hitSphere(m_pressTrack, QVector2D(e->localPos()));
-            
+
         }
         else if (e->button() == Qt::MouseButton::LeftButton && t == QInputEvent::MouseButtonRelease)//release
         {
 
-            m_sr->currentState=(State::IDLE);
-            protCurrentState()->apply(t,e, 0);
+            m_sr->currentState = (State::IDLE);
+            protCurrentState()->apply(t, e, 0);
         }
         else if (e->button() == Qt::MouseButton::NoButton)
         {
-            static const float rad2deg = 90.0/ std::acos(0.0);
+            static const float rad2deg = 90.0 / std::acos(0.0);
 
- 
-            
+
+
             QVector3D hitNew = m_sr->tu.hitSphere(m_pressTrack, QVector2D(e->localPos()));
-            
+
 
 
             QVector3D axis = QVector3D::crossProduct(hitNew, m_hitOld);
             float phi = std::acos(QVector3D::dotProduct(hitNew, m_hitOld))*rad2deg;
- 
+
             //phi = std::max(phi, (hitNew - m_hitOld).length() / Params::trackBallRadius());
-            
+
 
             m_sr->track = m_pressTrack;
             m_sr->track.applyR(axis, -phi);
         }
-            
 
-        
+
+
     }
-    
+
     void draw()
     {
         m_sr->tu.drawSphereIcon(m_sr->track, true);
@@ -209,28 +214,32 @@ class TrackIState_pan :public TrackState {
 public:
     TrackIState_pan(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList) :TrackState(sharedRes, stateList) {}
     const char *Name() { return "TrackIState_pan"; };
-    void apply(QInputEvent::Type t,QMouseEvent* e,float wheelNotch)
+    void apply(QInputEvent::Type t, QMouseEvent* e, float wheelNotch)
     {
 
-        
-        if (e->button() == Qt::MouseButton::MidButton && t == QInputEvent::MouseButtonPress)//press
+        switch (t)
+        {
+        case QInputEvent::MouseButtonPress:
         {
             m_pressTrack = m_sr->track;
-            m_hitOld = m_sr->tu.hitViewPlane(m_pressTrack, QVector2D(e->localPos()),false);
+            m_hitOld = m_sr->tu.hitViewPlane(m_pressTrack, QVector2D(e->localPos()), false);
+            break;
 
         }
-        else if (e->button() == Qt::MouseButton::MidButton && t == QInputEvent::MouseButtonRelease)//release
+        case QInputEvent::MouseButtonRelease:
         {
             m_sr->currentState = (State::IDLE);
-            protCurrentState()->apply(t,e, 0);
+            protCurrentState()->apply(t, e, 0);
+            break;
         }
-        else if (e->button() == Qt::MouseButton::NoButton)
+        case QInputEvent::MouseMove:
         {
-
-            QVector3D hitNew = m_sr->tu.hitViewPlane(m_pressTrack, QVector2D(e->localPos()),false);
+            QVector3D hitNew = m_sr->tu.hitViewPlane(m_pressTrack, QVector2D(e->localPos()), false);
 
             m_sr->track = m_pressTrack;
-            m_sr->track.applyT((m_hitOld- hitNew),false);
+            m_sr->track.applyT((m_hitOld - hitNew), false);
+            break;
+        }
         }
 
 
@@ -250,21 +259,21 @@ public:
     const char *Name() { return "TrackIState_zoom"; };
     void apply(QInputEvent::Type t, QMouseEvent* e, float wheelNotch)
     {
-       
-        if (e->button() == Qt::MouseButton::NoButton&& e->modifiers()==Qt::KeyboardModifier::NoModifier)
+
+        if (e->button() == Qt::MouseButton::NoButton&& e->modifiers() == Qt::KeyboardModifier::NoModifier)
         {
             //Qmvp mvp = m_sr->tu.getShpereMVP(m_sr->track);
 
             static const float scaleinc = 1.1f;
             static const float scaledec = 1.0f / scaleinc;
             float s = wheelNotch > 0 ? scaleinc : scaledec;
-            
-       
+
+
             m_sr->track.applyS(s);
 
             m_sr->currentState = (State::IDLE);
         }
-		
+
     }
 
 };
@@ -273,7 +282,7 @@ public:
 class TrackIState_retarget :public TrackState {
     int* m_currentMeshTokenP;
 public:
-    TrackIState_retarget(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList,int* currentMeshTokenP) :TrackState(sharedRes, stateList), m_currentMeshTokenP(currentMeshTokenP){}
+    TrackIState_retarget(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList, int* currentMeshTokenP) :TrackState(sharedRes, stateList), m_currentMeshTokenP(currentMeshTokenP) {}
     const char *Name() { return "TrackIState_retarget"; };
     void apply(QInputEvent::Type t, QMouseEvent* e, float wheelNotch)
     {
@@ -281,22 +290,22 @@ public:
         if (p != nullptr)
         {
             QLine3D ll = m_sr->track.cameraRay(QVector2D(e->localPos()));
-			QVector3D pt;
-			if (p->closest2ray(ll, &pt))
-			{
-				pt[0] *= -1; //??????????
-				m_sr->track.setT(pt, false);
-			}
+            QVector3D pt;
+            if (p->closest2ray(ll, &pt))
+            {
+                pt[0] *= -1; //??????????
+                m_sr->track.setT(pt, false);
+            }
             //GLpainter::i().addDrawLine(ll);
             GLpainter::i().setStatus(pt);
 
-           
-        }
-     
-        
 
-            m_sr->currentState = (State::IDLE);
-        
+        }
+
+
+
+        m_sr->currentState = (State::IDLE);
+
     }
 
 };
@@ -314,10 +323,10 @@ public:
         float s = wheelNotch > 0 ? scaleinc : scaledec;
 
         float ov = Params::camZnear()*s;
-        
+
         Params::camZnear(ov);
         GLpainter::i().setStatus("Z-near " + QString::number(ov));
-        
+
         m_sr->currentState = (State::IDLE);
         m_sr->track.recalcProjMat();
     }
@@ -340,7 +349,7 @@ public:
         ov = std::max(1.0f, std::min(90.0f, ov));
         Params::camFOV(ov);
         GLpainter::i().setStatus("FOV " + QString::number(ov));
-        
+
         m_sr->currentState = (State::IDLE);
         m_sr->track.recalcProjMat();
     }
@@ -353,14 +362,14 @@ class TrackIState_measureDistance :public TrackState {
     QVector3D m_origin;
     int* m_currentMeshTokenP;
 public:
-    TrackIState_measureDistance(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList, int* currentMeshTokenP) :TrackState(sharedRes, stateList), m_currentMeshTokenP(currentMeshTokenP), m_measuring(false),m_origin(0,0,0){}
+    TrackIState_measureDistance(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList, int* currentMeshTokenP) :TrackState(sharedRes, stateList), m_currentMeshTokenP(currentMeshTokenP), m_measuring(false), m_origin(0, 0, 0) {}
     const char *Name() { return "TrackIState_measureDistance"; };
-    void apply(QInputEvent::Type t,QKeyEvent* e, const QPointF& xy)
-    
+    void apply(QInputEvent::Type t, QKeyEvent* e, const QPointF& xy)
+
     {
         static const float rad2deg = 90.0 / std::acos(0.0);
         m_sr->currentState = (State::IDLE);
-        if (e->key() != Qt::Key_D || t!= QInputEvent::KeyPress)
+        if (e->key() != Qt::Key_D || t != QInputEvent::KeyPress)
             return;
         if (e->modifiers() == Qt::ShiftModifier)
         {
@@ -372,44 +381,44 @@ public:
         const Mesh* p = MeshArray::i().getMesh(*m_currentMeshTokenP);
         if (p == nullptr)
             return;
-        
+
         QLine3D ll = m_sr->track.cameraRay(QVector2D(xy));
         QVector3D pt;
         if (!p->closest2ray(ll, &pt))
         {
             return;
         }
-            
-        static const float colormapLines[] = { 0.0f,0.447f,0.741f,0.85f,0.325f,0.098f,0.929f,0.694f,0.125f,0.494f,0.184f,0.556f,0.466f,0.674f,0.188f,0.301f,0.745f,0.933f,0.635f,0.078f,0.184f,0.0f,0.447f,0.741f};
+
+        static const float colormapLines[] = { 0.0f,0.447f,0.741f,0.85f,0.325f,0.098f,0.929f,0.694f,0.125f,0.494f,0.184f,0.556f,0.466f,0.674f,0.188f,0.301f,0.745f,0.933f,0.635f,0.078f,0.184f,0.0f,0.447f,0.741f };
 
         if (m_measuring)
         {
             m_measuring = false;
             float dist = (pt - m_origin).length();
             QString distStr = QString::number(dist);
-            GLpainter::i().setStatus("Distance="+ distStr);
+            GLpainter::i().setStatus("Distance=" + distStr);
             size_t ii = GLpainter::i().nDrawLines();
-            QVector4D color(colormapLines[ii*3+0], colormapLines[ii * 3 + 1], colormapLines[ii * 3 + 2], 0);
+            QVector4D color(colormapLines[ii * 3 + 0], colormapLines[ii * 3 + 1], colormapLines[ii * 3 + 2], 0);
 
             QLine3D l(m_origin, pt);
-            
-            
+
+
             l.setColor(color);
 
             GLpainter::i().addDrawLine(l);
-            
+
             QVector3D t = (pt + m_origin) / 2;
-            GLpainter::i().addDrawText(distStr, t,color);
-          
+            GLpainter::i().addDrawText(distStr, t, color);
+
         }
         else
         {
             m_measuring = true;
             m_origin = pt;
-           
-            
+
+
         }
-      
+
     }
 
 };
@@ -419,12 +428,12 @@ public:
 class TrackIState_printScreen :public TrackState {
     QOpenGLWidget* m_parentCanvas;
 public:
-    TrackIState_printScreen(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList, QOpenGLWidget* parentCanvas) :TrackState(sharedRes, stateList),m_parentCanvas(parentCanvas) {}
+    TrackIState_printScreen(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList, QOpenGLWidget* parentCanvas) :TrackState(sharedRes, stateList), m_parentCanvas(parentCanvas) {}
     const char *Name() { return "TrackIState_printScreen"; };
     void apply(QInputEvent::Type t, QKeyEvent* e, const QPointF& xy)
 
     {
-        
+
         QImage im = m_parentCanvas->grabFramebuffer();
         QClipboard *clipboard = QApplication::clipboard();
         clipboard->setImage(im);

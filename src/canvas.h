@@ -158,17 +158,17 @@ protected:
         //glEnable(GL_POLYGON_SMOOTH);
 
 
-
+        QMatrix4x4 mvp = m_tb.getMVP().getMat();
 
         Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
-        if (p == nullptr)
-            return;
-        QMatrix4x4 mvp = m_tb.getMVP().getMat();
+        if (p != nullptr)
+            p->draw(mvp, m_textureType);
+       
         m_bg.draw();
         //m_mg.draw(mvp);
        
         m_tb.draw();
-        p->draw(mvp, m_textureType);
+        
         GLpainter::i().draw(m_tb.getMVP());
     }
    
