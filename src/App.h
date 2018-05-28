@@ -27,7 +27,7 @@ public:
 		setApplicationVersion(ver);
 		setOrganizationName("Ohad");
 		setOrganizationDomain("www.ohad.co");
-        setWindowIcon(QIcon("main.ico"));
+    
     /*    QList<QScreen *> screens = QGuiApplication::screens();
         QList<QPixmap> pixmapsList;
         for (int i = 0; i<screens.size(); i++)
