@@ -33,7 +33,6 @@ int main(int argc, char *argv[])
    // 
    // widget.setToken(token);
    // widget.cam2geometry();
-
-
+   
     return app.exec();
 }

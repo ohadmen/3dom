@@ -6,6 +6,7 @@
 #include "Qmvp.h"
 #include <vector>
 
+
 class Trackball
 {
 
@@ -13,6 +14,7 @@ class Trackball
     std::map<TrackState::State, TrackState*> m_states;
     int* m_currentMeshTokenP;
     QPointF m_mousepos;
+    QOpenGLWidget* m_parent;
 
     //press/release callback tells us the current state *after* the event
     //to know which button was pressed/released, we need to save the previous state.
@@ -31,6 +33,7 @@ class Trackball
         m_states[TrackState::FOV] = new TrackIState_fov(&m_sr, m_states);
         m_states[TrackState::RETARGET] = new TrackIState_retarget(&m_sr, m_states,m_currentMeshTokenP);
         m_states[TrackState::MEASURE_DISTANCE] = new TrackIState_measureDistance(&m_sr, m_states, m_currentMeshTokenP);
+        m_states[TrackState::PRINT_SCREEN] = new TrackIState_printScreen(&m_sr, m_states,m_parent);
         
     }
     void privClearStates()
@@ -40,8 +43,8 @@ class Trackball
     }
 
 public:
-    ~Trackball() { privClearStates(); }
-    Trackball(): m_currentMeshTokenP(nullptr), m_mousepos(0,0){  }
+    ~Trackball(){ privClearStates(); }
+    Trackball(QOpenGLWidget* parent):m_parent(parent) , m_currentMeshTokenP(nullptr), m_mousepos(0,0){  }
 
     void init(int* currentMeshTokenP)
     {

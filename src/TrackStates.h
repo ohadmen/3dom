@@ -7,6 +7,9 @@
 #include "TrackUtils.h"
 #include "mesh.h"
 #include "GLpainter.h"
+#include <qclipboard.h>
+#include <qapplication.h>
+
 
 /*
 track state is the general state in the state machine of the current control state.
@@ -27,7 +30,8 @@ public:
         FOV,
         RETARGET,
         ZNEAR,
-        MEASURE_DISTANCE
+        MEASURE_DISTANCE,
+        PRINT_SCREEN
     };
 
     struct SharedRes
@@ -133,6 +137,10 @@ public:
         else if (e->key() == Qt::Key_D && t== QInputEvent::KeyPress)
         {
             m_sr->currentState = (State::MEASURE_DISTANCE);
+        }
+        else if (e->key() == Qt::Key_P && t == QInputEvent::KeyPress)
+        {
+            m_sr->currentState = (State::PRINT_SCREEN);
         }
         else
             return;//no state change, do not run apply on next state (e.g. next state is idle)
@@ -372,6 +380,7 @@ public:
             return;
         }
             
+        static const float colormapLines[] = { 0.0f,0.447f,0.741f,0.85f,0.325f,0.098f,0.929f,0.694f,0.125f,0.494f,0.184f,0.556f,0.466f,0.674f,0.188f,0.301f,0.745f,0.933f,0.635f,0.078f,0.184f,0.0f,0.447f,0.741f};
 
         if (m_measuring)
         {
@@ -379,15 +388,18 @@ public:
             float dist = (pt - m_origin).length();
             QString distStr = QString::number(dist);
             GLpainter::i().setStatus("Distance="+ distStr);
+            size_t ii = GLpainter::i().nDrawLines();
+            QVector4D color(colormapLines[ii*3+0], colormapLines[ii * 3 + 1], colormapLines[ii * 3 + 2], 0);
+
+            QLine3D l(m_origin, pt);
             
-            GLpainter::i().addDrawLine(QLine3D(m_origin, pt));
             
-            QMatrix4x4 t;
-            t.translate((pt + m_origin) / 2);
-            QVector3D dir = (pt - m_origin).normalized();
-            QVector3D v = QVector3D::crossProduct(dir, QVector3D(1, 0, 0));
-            t.rotate(-std::acos(dir.x())*rad2deg, v);
-            GLpainter::i().addDrawText(distStr, t);
+            l.setColor(color);
+
+            GLpainter::i().addDrawLine(l);
+            
+            QVector3D t = (pt + m_origin) / 2;
+            GLpainter::i().addDrawText(distStr, t,color);
           
         }
         else
@@ -398,6 +410,27 @@ public:
             
         }
       
+    }
+
+};
+
+
+//----------------------TrackIState_none----------------------------
+class TrackIState_printScreen :public TrackState {
+    QOpenGLWidget* m_parentCanvas;
+public:
+    TrackIState_printScreen(SharedRes* sharedRes, const std::map<TrackState::State, TrackState*>& stateList, QOpenGLWidget* parentCanvas) :TrackState(sharedRes, stateList),m_parentCanvas(parentCanvas) {}
+    const char *Name() { return "TrackIState_printScreen"; };
+    void apply(QInputEvent::Type t, QKeyEvent* e, const QPointF& xy)
+
+    {
+        
+        QImage im = m_parentCanvas->grabFramebuffer();
+        QClipboard *clipboard = QApplication::clipboard();
+        clipboard->setImage(im);
+        m_sr->currentState = (State::IDLE);
+        GLpainter::i().setStatus("screenshot copied to clipboard");
+
     }
 
 };

@@ -38,7 +38,7 @@ class TrackUtils: protected QOpenGLFunctions
 
         m_lineShader.setUniformValue("u_col", col);
         m_lineShader.setUniformValue("u_bcol", colB);
-        
+        m_lineShader.setUniformValue("u_doVarCol", 1.0f);
         
 
         glLineWidth(lw);

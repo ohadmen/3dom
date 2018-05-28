@@ -151,9 +151,15 @@ public:
 
     QVector2D project(const QVector3D &xyz) const {
         QVector3D uv = getMat() * xyz; //[-1 1]
-        QVector2D pix = QVector2D(uv[0] / uv[2], uv[1] / uv[2])*m_uv2pix + m_uv2pix;;
-        
+        QVector2D uv_(uv[0], uv[1]);
+        QVector2D pix = uv2pix(uv_);
         return  pix;
+    }
+
+    QVector2D uv2pix( QVector2D uv) const {
+        uv[1] *= -1;//inverse Y
+        QVector2D pix = uv*m_uv2pix + m_uv2pix;
+        return pix;
     }
 
     QVector2D pix2uv(const QVector2D &pix) const {

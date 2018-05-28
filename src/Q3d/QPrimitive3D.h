@@ -25,6 +25,7 @@ public:
     virtual void draw() {};
 public:
     Type type() const {return _type;}
+    void setColor(const QVector4D& c) { m_color = c; }
 protected:
     Type _type;
     

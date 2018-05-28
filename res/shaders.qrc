@@ -4,5 +4,6 @@
         <file>meshf.glsl</file>
         <file>linev.glsl</file>
         <file>linef.glsl</file>
+		<file>main.ico</file>
     </qresource>
 </RCC>

@@ -9,6 +9,8 @@
 #include <QMenuBar>  
 #include <list>
 #include "Canvas.h"
+
+
 class Window : public QMainWindow
 {
 	Q_OBJECT

@@ -21,8 +21,6 @@
 #include "Params.h"
 
 
-
-
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
     /*Q_OBJECT*/ //REMOVE AFTER THE FIRST SLOT IS INSERTED
@@ -31,7 +29,8 @@ public:
     explicit Canvas(QWidget *parent=0) :
         QOpenGLWidget(parent),
         m_textureType(0),
-        m_currentMeshToken(-1)
+        m_currentMeshToken(-1),
+        m_tb(this)
     {
         setAcceptDrops(true);
         setMouseTracking(true);
@@ -59,6 +58,7 @@ public:
             }
         }
     }
+
     
     bool cam2geometry()
     {
@@ -94,6 +94,7 @@ public:
         setToken(token);
         cam2geometry();
         update();
+
     }
 protected:
 
@@ -101,7 +102,8 @@ protected:
     void mousePressEvent      (QMouseEvent *event){m_tb.mousePressEvent  (event); update();}
     void mouseReleaseEvent    (QMouseEvent *event){m_tb.mouseReleaseEvent(event); update();}
     void mouseMoveEvent       (QMouseEvent *event)    {        m_tb.mouseMoveEvent   (event); update();}
-    void mouseDoubleClickEvent(QMouseEvent *event){m_tb.mouseDoubleClickEvent(event); update(); }
+    void mouseDoubleClickEvent(QMouseEvent *event) {
+        m_tb.mouseDoubleClickEvent(event); update();    }
     void keyPressEvent(QKeyEvent *e) { m_tb.keyPressEvent(e); update();}
     void keyReleaseEvent(QKeyEvent *e) { m_tb.keyReleaseEvent(e);update(); }
 
@@ -138,12 +140,10 @@ protected:
     }
     void paintGL()
     {
-        
-
         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Clear color and depth buffer
         glEnable(GL_DEPTH_TEST);
-        
-        
+
+
 
         // Blended points, lines, and polygons.
         //glEnable(GL_BLEND);
@@ -157,8 +157,8 @@ protected:
         //glEnable(GL_LINE_SMOOTH);
         //glEnable(GL_POLYGON_SMOOTH);
 
-    
-        
+
+
 
         Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
         if (p == nullptr)
@@ -166,17 +166,12 @@ protected:
         QMatrix4x4 mvp = m_tb.getMVP().getMat();
         m_bg.draw();
         //m_mg.draw(mvp);
+       
         m_tb.draw();
         p->draw(mvp, m_textureType);
-        GLpainter::i().draw(mvp);
-        
-     
-
-
-
-
+        GLpainter::i().draw(m_tb.getMVP());
     }
-
+   
 
    void dragEnterEvent(QDragEnterEvent *event)
    {
