@@ -28,8 +28,8 @@ class Array2d
 
     void privReset()
     {
-        //if(m_data!=nullptr && m_isDataOwner)
-        //    delete[] m_data;
+       if(m_data!=nullptr )
+            delete[] m_data;
      m_rows = m_cols = 0;
     }
 
