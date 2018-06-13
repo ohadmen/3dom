@@ -19,6 +19,7 @@
 #include "Backdrop.h"
 #include "MeasurmentGrid.h"
 #include "Params.h"
+#include "Zstream.h"
 
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
@@ -86,8 +87,8 @@ public:
     }
     void loadMeshFromFile(const QString& meshfn)
     {
-
-        int token = Loader::i().load(meshfn);
+        int token = m_zstream.load(meshfn);
+        //int token = Loader::i().load(meshfn);
         if (token == -1)
             //load failed
             return;
@@ -199,6 +200,7 @@ private:
     Trackball m_tb;
     Backdrop m_bg;
     MeasurmentGrid m_mg;
+    Zsteam m_zstream;
 
 };
 

@@ -79,10 +79,10 @@
     <ClInclude Include="src\MeasurmentGrid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Array2d.h">
+    <ClInclude Include="src\Q3d\QText3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Q3d\QText3D.h">
+    <ClInclude Include="src\Zstream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

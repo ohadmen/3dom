@@ -47,7 +47,7 @@ public:
         privReset();
     }
 
-    Array2d ():m_rows(0),m_cols(0),m_data(){}                  // default c-tor
+    Array2d ():m_rows(0),m_cols(0),m_data(nullptr){}                  // default c-tor
     Array2d (int r,int c):m_rows(r),m_cols(c),m_data(new T[r*c]){}
     Array2d (int r,int c, T initVal):m_rows(r),m_cols(c),m_data(new T[r*c])
     {
