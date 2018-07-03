@@ -17,7 +17,6 @@
 #include "TrackBall.h"
 #include "GLpainter.h"
 #include "Backdrop.h"
-#include "MeasurmentGrid.h"
 #include "Params.h"
 #include "Zstream.h"
 
@@ -45,55 +44,69 @@ public:
     }
     void setToken(int token) { 
         m_currentMeshToken = token;
-        auto p = MeshArray::i().getMesh(m_currentMeshToken);
-        p->initGL();
+        
        //draw normals 
-        if (0)
-        {
-            GLpainter& painter = GLpainter::i();
-            for (int i = 0; i != p->getNfaces(); ++i)
-            {
-                auto line = p->getNormal(i);
-                painter.addDrawLine(line);
-
-            }
-        }
+       
     }
 
     
-    bool cam2geometry()
-    {
-        static const float deg2rad = std::acos(0.0f) / 90.0f;
-        
-        Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
-        if (p == nullptr)
-            return false;
-        //m_mvp.resetView(width(),height());
-
-        //fit object s.t. if camera is at 0,0,-1 all is visible
-        float tanfovH = std::tan(Params::camFOV() / 2 * deg2rad);
-        float s = tanfovH / (p->getContainmentRadius()*(1+ tanfovH));
-
-
-        
-        m_tb.resetView(width(), height());
-        m_tb.applyT(-p->getCenter(),false);
-        m_tb.applyS(s);
-        return true;
-    }
+    //bool cam2geometry()
+    //{
+    //    static const float deg2rad = std::acos(0.0f) / 90.0f;
+    //    
+    //    Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
+    //    if (p == nullptr)
+    //        return false;
+    //    //m_mvp.resetView(width(),height());
+    //
+    //    //fit object s.t. if camera is at 0,0,-1 all is visible
+    //    float tanfovH = std::tan(Params::camFOV() / 2 * deg2rad);
+    //    float s = tanfovH / (p->getContainmentRadius()*(1+ tanfovH));
+    //
+    //
+    //    
+    //    m_tb.resetView(width(), height());
+    //    m_tb.applyT(-p->getCenter(),false);
+    //    m_tb.applyS(s);
+    //    return true;
+    //}
     void setTextureType(int v)
     {
         m_textureType = v;
     }
     void loadMeshFromFile(const QString& meshfn)
     {
-        int token = m_zstream.load(meshfn);
-        //int token = Loader::i().load(meshfn);
-        if (token == -1)
-            //load failed
-            return;
-        setToken(token);
-        cam2geometry();
+        m_zstream.load(meshfn);
+        
+        QString meshfn_ = "./res/horse.stl";
+        
+        //int token = Loader::i().load(meshfn_);
+        //if (token == -1)
+        //    //load failed
+        //    return;
+        //setToken(token);
+        //MeshArray::i().getMesh(m_currentMeshToken)->initGL();
+        m_zstream.initGL();
+
+
+        //if (0)
+        //{
+        //    GLpainter& painter = GLpainter::i();
+        //    for (int i = 0; i != p->getNfaces(); ++i)
+        //    {
+        //        auto line = p->getNormal(i);
+        //        painter.addDrawLine(line);
+
+        //    }
+        //}
+
+        //cam2geometry();
+
+        m_tb.resetView(width(), height());
+        m_tb.applyT(QVector3D(0,0,0), false);
+        m_tb.applyR(QVector3D(0, 1, 0), 180);
+        
+
         update();
 
     }
@@ -127,7 +140,6 @@ protected:
         m_tb.init(&m_currentMeshToken);
         GLpainter::i().init(this);
         m_bg.init();
-        m_mg.init();
 
     }
 
@@ -159,17 +171,20 @@ protected:
         //glEnable(GL_POLYGON_SMOOTH);
 
 
+
         QMatrix4x4 mvp = m_tb.getMVP().getMat();
 
-        Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
-        if (p != nullptr)
-            p->draw(mvp, m_textureType);
-       
+        //Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
+        //if (p != nullptr)
+        //    p->draw(mvp, m_textureType);
+        if(m_zstream.isValid())
+            m_zstream.draw(mvp, m_textureType);
         m_bg.draw();
-        //m_mg.draw(mvp);
-       
-        m_tb.draw();
         
+
+        m_tb.draw();
+
+        GLpainter::i().draw(m_tb.getMVP());
         GLpainter::i().draw(m_tb.getMVP());
     }
    
@@ -199,7 +214,7 @@ private:
     int m_textureType;
     Trackball m_tb;
     Backdrop m_bg;
-    MeasurmentGrid m_mg;
+
     Zsteam m_zstream;
 
 };

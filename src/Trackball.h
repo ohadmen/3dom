@@ -106,5 +106,6 @@ public:
     }
     void applyT(const QVector3D& t,bool view=true) { m_sr.track.applyT(t,view); }
     void applyS(float s,bool view = true)            { m_sr.track.applyS(s,view); }
+    void applyR(const QVector3D& axis, float angle, bool view = true) { m_sr.track.applyR(axis, angle, view); }
     void setWinSize(int w, int h) { m_sr.track.setWinSize(w,h); }
 };

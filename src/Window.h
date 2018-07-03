@@ -55,7 +55,7 @@ private:
                 "<p align=\"center\"><b>3DOM</b></p>"
                 "<p>A 3D object measurment<br>"
                 "<a href=\"https://github.com/ohad.menashe/3dom\""
-                "   style=\"color: #93a1a1;\">https://github.com/ohad.menashe/3dom</a></p>"
+                "   style=\"color: #93a1a1;\">https://github.com/ohadmen/3dom</a></p>"
                 "<p>© 2018 Ohad Menashe<br>"
                 "<a href=\"mailto:ohad@menashe.co\""
                 "   style=\"color: #93a1a1;\">ohad@menashe.co</a></p>");

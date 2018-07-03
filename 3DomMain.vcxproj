@@ -203,7 +203,6 @@
     </QtMoc>
     <ClInclude Include="src\Backdrop.h" />
     <ClInclude Include="src\GLpainter.h" />
-    <ClInclude Include="src\MeasurmentGrid.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\Params.h" />
     <ClInclude Include="src\Q3d\QBitFlags.h" />
@@ -243,6 +242,8 @@
     <None Include="res\linev.glsl" />
     <None Include="res\meshf.glsl" />
     <None Include="res\meshv.glsl" />
+    <None Include="res\zmeshf.glsl" />
+    <None Include="res\zmeshv.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="3dom.rc" />
