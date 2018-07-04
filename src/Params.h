@@ -18,7 +18,7 @@ public:
     paramsStaticParameter(trackBallLineWidthStill , float, 0.9f);
     paramsStaticParameter(trackBallLineWidthMoving, float, 3.8f);
     paramsStaticParameter(camZnear, float, 0.5f);
-    paramsStaticParameter(camZfar, float, 99.0f);
+    paramsStaticParameter(camZfar, float, 1e2f);
     paramsStaticParameter(camFOV, float, 60.0f);
     
 private:

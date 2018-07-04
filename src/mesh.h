@@ -97,9 +97,9 @@ public:
         {
             iFlat[i ] = i ;
             m_vFlat[i] = {
-                m_vertices[m_indices[i / 3][i % 3]].x,
-                m_vertices[m_indices[i / 3][i % 3]].y,
-                m_vertices[m_indices[i / 3][i % 3]].z,
+                m_vertices[m_indices[i / 3][i % 3]].x*2000,
+                m_vertices[m_indices[i / 3][i % 3]].y*2000,
+                m_vertices[m_indices[i / 3][i % 3]].z*2000,
                 m_vertices[m_indices[i / 3][i % 3]].r,
                 m_vertices[m_indices[i / 3][i % 3]].g,
                 m_vertices[m_indices[i / 3][i % 3]].b,

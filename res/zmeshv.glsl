@@ -13,8 +13,7 @@ uniform mat3 u_kinv;
 attribute vec3 a_rgb;
 attribute vec3 a_nrml;
 
-attribute float a_u;
-attribute float a_v;
+attribute vec2 a_uv;
 attribute float a_z;
 
 varying vec4 v_xyz;
@@ -30,8 +29,8 @@ void main()
 
 	
 	vec4  xyz;
-	xyz[0]=u_kinv[0][0]*a_u+u_kinv[0][1]*a_v+u_kinv[0][2];
-	xyz[1]=u_kinv[1][0]*a_u+u_kinv[1][1]*a_v+u_kinv[1][2];
+	xyz[0]=(u_kinv[0][0]*a_uv[0]+u_kinv[0][1]*a_uv[1]+u_kinv[0][2])*a_z;
+	xyz[1]=(u_kinv[1][0]*a_uv[0]+u_kinv[1][1]*a_uv[1]+u_kinv[1][2])*a_z;
 	xyz[2]=a_z;
 	xyz[3]=1.0;
     // Calculate vertex position in screen space
@@ -40,7 +39,7 @@ void main()
 	
 
     v_xyz = xyz;
-    v_rgb = vec3(a_u/639.0,a_v/479.0,a_z);
+    v_rgb = a_rgb;
 	v_nrml= normalize(u_mvp*vec4(a_nrml,0.0));
 
 

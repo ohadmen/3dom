@@ -50,26 +50,31 @@ public:
     }
 
     
-    //bool cam2geometry()
-    //{
-    //    static const float deg2rad = std::acos(0.0f) / 90.0f;
-    //    
-    //    Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
-    //    if (p == nullptr)
-    //        return false;
-    //    //m_mvp.resetView(width(),height());
-    //
-    //    //fit object s.t. if camera is at 0,0,-1 all is visible
-    //    float tanfovH = std::tan(Params::camFOV() / 2 * deg2rad);
-    //    float s = tanfovH / (p->getContainmentRadius()*(1+ tanfovH));
-    //
-    //
-    //    
-    //    m_tb.resetView(width(), height());
-    //    m_tb.applyT(-p->getCenter(),false);
-    //    m_tb.applyS(s);
-    //    return true;
-    //}
+    bool cam2geometry()
+    {
+        static const float deg2rad = std::acos(0.0f) / 90.0f;
+        
+        Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
+        if (p == nullptr)
+            return false;
+        //m_mvp.resetView(width(),height());
+    
+        //fit object s.t. if camera is at 0,0,-1 all is visible
+        float tanfovH = std::tan(Params::camFOV() / 2 * deg2rad);
+        
+        //float s = tanfovH / (p->getContainmentRadius()*(1+ tanfovH));
+        float s = tanfovH / (m_zstream.getContainmentRadius()*(1 + tanfovH));
+        
+
+    
+        
+        m_tb.resetView(width(), height());
+        //m_tb.applyT(-p->getCenter(),false);
+        //m_tb.applyT(m_zstream.getCenter(), false);
+        m_tb.applyR(QVector3D(0, 1, 0), 180);
+        m_tb.applyS(s);
+        return true;
+    }
     void setTextureType(int v)
     {
         m_textureType = v;
@@ -80,12 +85,12 @@ public:
         
         QString meshfn_ = "./res/horse.stl";
         
-        //int token = Loader::i().load(meshfn_);
-        //if (token == -1)
-        //    //load failed
-        //    return;
-        //setToken(token);
-        //MeshArray::i().getMesh(m_currentMeshToken)->initGL();
+        int token = Loader::i().load(meshfn_);
+        if (token == -1)
+            //load failed
+            return;
+        setToken(token);
+        MeshArray::i().getMesh(m_currentMeshToken)->initGL();
         m_zstream.initGL();
 
 
@@ -100,11 +105,11 @@ public:
         //    }
         //}
 
-        //cam2geometry();
+        cam2geometry();
 
-        m_tb.resetView(width(), height());
-        m_tb.applyT(QVector3D(0,0,0), false);
-        m_tb.applyR(QVector3D(0, 1, 0), 180);
+        //m_tb.resetView(width(), height());
+        //m_tb.applyT(QVector3D(0,0,10), false);
+        //m_tb.applyR(QVector3D(0, 1, 0), 180);
         
 
         update();
@@ -174,9 +179,9 @@ protected:
 
         QMatrix4x4 mvp = m_tb.getMVP().getMat();
 
-        //Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
-        //if (p != nullptr)
-        //    p->draw(mvp, m_textureType);
+        Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
+        if (p != nullptr)
+            p->draw(mvp, m_textureType);
         if(m_zstream.isValid())
             m_zstream.draw(mvp, m_textureType);
         m_bg.draw();
