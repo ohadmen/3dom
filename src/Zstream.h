@@ -102,8 +102,8 @@ public:
         m_fd.width = wh[0];
         m_fd.height = wh[1];
         QMatrix3x3 k;
-        std::copy(buffer_f + 4, buffer_f + 13, k.data());
-        
+        //std::copy(buffer_f + 4, buffer_f + 13, k.data());
+        std::memcpy(k.data(), buffer_f + 4, sizeof(float) * 9);
 
        
         
