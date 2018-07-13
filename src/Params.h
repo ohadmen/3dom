@@ -20,6 +20,7 @@ public:
     paramsStaticParameter(camZnear, float, 0.5f);
     paramsStaticParameter(camZfar, float, 1e2f);
     paramsStaticParameter(camFOV, float, 60.0f);
+    paramsStaticParameter(viewTrackball, int, 1);
     
 private:
     Params() {}                    // namespace

@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>zmeshv.glsl</file>
+        <file>zmeshf.glsl</file>
+        <file>meshv.glsl</file>
+        <file>meshf.glsl</file>
+        <file>linev.glsl</file>
+        <file>linef.glsl</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file alias="pause">pause.png</file>
+        <file alias="play">play.png</file>
+        <file alias="stop">stop.png</file>
+        <file alias="record">record.png</file>
+        <file alias="recordStop">recordStop.png</file>
+    </qresource>
+</RCC>

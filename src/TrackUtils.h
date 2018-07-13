@@ -144,6 +144,8 @@ public:
         //fixedView.scale(tanfovH);
         //
         //
+        if (Params::viewTrackball() == 0)
+            return;
 
         QMatrix4x4 sphereMVP = getShpereMVP(mvp).getMat();
         initializeOpenGLFunctions();

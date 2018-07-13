@@ -31,12 +31,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="..\..\res\shaders.qrc">
-      <Filter>Resource Files</Filter>
-    </QtRcc>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Zviewer.rc" />
+    <ResourceCompile Include="RSviewer.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Q3d\QBitFlags.h">
@@ -69,9 +64,6 @@
     <ClInclude Include="..\..\src\Canvas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\GLpainter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,6 +85,10 @@
     <ClInclude Include="..\..\src\Zstream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GLpainter.h" />
+    <ClInclude Include="..\..\src\IOStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="..\..\src\App.h">
@@ -112,17 +108,22 @@
     <None Include="..\..\res\zmeshf.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\res\meshv.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\res\meshf.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\..\res\linev.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\res\linef.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\..\res\meshf.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\res\meshv.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="..\..\res\resources.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
   </ItemGroup>
 </Project>

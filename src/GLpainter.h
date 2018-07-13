@@ -1,12 +1,13 @@
 #pragma once
-#include <QOpenGLFunctions>
-#include <qopenglshaderprogram.h>
-
-#include "Q3d/QLine3D.h"
-
 #include <deque>
 #include <tuple>
+
+
+#include <QOpenGLFunctions>
+#include <qopenglshaderprogram.h>
 #include <QPainter>
+#include "Qmvp.h"
+#include "Q3d/QLine3D.h"
 #include "Params.h"
 class GLpainter: protected QOpenGLFunctions
 {
@@ -149,12 +150,17 @@ public:
         QString s = QString::number(v[0]) + "," + QString::number(v[1]) + "," + QString::number(v[2]);
         setStatus(s);
     }
-    void setStatus(const QString& s)
+    void setStatus(const QString& s,bool newline=true)
     {
-        m_status.push_front(s);
-        
-        m_status.pop_back();
-
+        if (newline)
+        {
+            m_status.push_front(s);
+            m_status.pop_back();
+        }
+        else
+        {
+            m_status.front() += s;
+        }
         
         
     }

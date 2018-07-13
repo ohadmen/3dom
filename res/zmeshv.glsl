@@ -11,14 +11,14 @@ uniform mat3 u_kinv;
 
 
 attribute vec3 a_rgb;
-attribute vec3 a_nrml;
+//attribute vec3 a_nrml;
 
 attribute vec2 a_uv;
 attribute float a_z;
 
 varying vec4 v_xyz;
 varying vec3 v_rgb;
-varying vec4 v_nrml;
+//varying vec4 v_nrml;
 
 
 
@@ -40,7 +40,12 @@ void main()
 
     v_xyz = xyz;
     v_rgb = a_rgb;
-	v_nrml= normalize(u_mvp*vec4(a_nrml,0.0));
+
+    
+   
+
+	
+	//v_nrml= normalize(u_mvp*vec4(a_nrml,0.0));
 
 
 }

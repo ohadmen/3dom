@@ -50,7 +50,7 @@ public:
     }
 
     
-    bool cam2geometry()
+    bool resetView()
     {
         static const float deg2rad = std::acos(0.0f) / 90.0f;
         
@@ -63,54 +63,25 @@ public:
         float tanfovH = std::tan(Params::camFOV() / 2 * deg2rad);
         
         //float s = tanfovH / (p->getContainmentRadius()*(1+ tanfovH));
-        float s = tanfovH / (m_zstream.getContainmentRadius()*(1 + tanfovH));
+        
+        float s = tanfovH / (Zstream::i().getContainmentRadius()*(1 + tanfovH));
         
 
     
         
         m_tb.resetView(width(), height());
         //m_tb.applyT(-p->getCenter(),false);
-        //m_tb.applyT(m_zstream.getCenter(), false);
-        m_tb.applyR(QVector3D(0, 1, 0), 180);
+        //m_tb.applyT(Zstream::i().getCenter(), false);
+        m_tb.applyR(QVector3D(1, 0, 0), 180);
         m_tb.applyS(s);
+        update();
         return true;
     }
     void setTextureType(int v)
     {
         m_textureType = v;
     }
-    void loadMeshFromFile(const QString& meshfn)
-    {
-        m_zstream.load(meshfn);
-        
-        //QString meshfn_ = "./res/horse.stl";
-        //
-        //int token = Loader::i().load(meshfn_);
-        //if (token == -1)
-        //    //load failed
-        //    return;
-        //setToken(token);
-        //MeshArray::i().getMesh(m_currentMeshToken)->initGL();
-        m_zstream.initGL();
-
-
-        //if (0)
-        //{
-        //    GLpainter& painter = GLpainter::i();
-        //    for (int i = 0; i != p->getNfaces(); ++i)
-        //    {
-        //        auto line = p->getNormal(i);
-        //        painter.addDrawLine(line);
-
-        //    }
-        //}
-
-        cam2geometry();
-
-
-        update();
-
-    }
+  
 protected:
 
     void wheelEvent           (QWheelEvent *event){m_tb.wheelEvent       (event); update();}
@@ -141,6 +112,8 @@ protected:
         m_tb.init(&m_currentMeshToken);
         GLpainter::i().init(this);
         m_bg.init();
+        Zstream::i().setDrawingWidget(this);
+        
 
     }
 
@@ -178,14 +151,14 @@ protected:
         //Mesh* p = MeshArray::i().getMesh(m_currentMeshToken);
         //if (p != nullptr)
         //    p->draw(mvp, m_textureType);
-        if(m_zstream.isValid())
-            m_zstream.draw(mvp, m_textureType);
+        if(Zstream::i().isValid())
+            Zstream::i().draw(mvp, m_textureType);
         m_bg.draw();
         
 
         m_tb.draw();
 
-        GLpainter::i().draw(m_tb.getMVP());
+        //GLpainter::i().draw(m_tb.getMVP());
         GLpainter::i().draw(m_tb.getMVP());
     }
    
@@ -203,12 +176,13 @@ protected:
    void dropEvent(QDropEvent *event)
    {
        QString meshfn = event->mimeData()->urls().front().toLocalFile();
-       loadMeshFromFile(meshfn);
+       
 
    }
   
 private:
 
+ 
 
     int m_currentMeshToken;
     
@@ -216,7 +190,7 @@ private:
     Trackball m_tb;
     Backdrop m_bg;
 
-    Zsteam m_zstream;
+    
 
 };
 

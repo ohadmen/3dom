@@ -14,11 +14,18 @@
 class App : public QApplication
 {
 	Q_OBJECT
+
+
+  
 public:
+
+
+
+
 	explicit App(int& argc, char *argv[]) :	QApplication(argc, argv),m_window()
 	{
 
-        QString ver("0.6");
+        QString ver("0.7");
         QSurfaceFormat format;
 		format.setDepthBufferSize(24);
 		QSurfaceFormat::setDefaultFormat(format);
@@ -41,8 +48,10 @@ public:
         clipboard->setPixmap(pixmapsList[1]);*/
         
         if (argc > 1)
+        {
+
             m_window.loadMeshFromFile(argv[1]);
-       
+        }
         
 		
         
