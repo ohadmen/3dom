@@ -57,6 +57,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -88,6 +89,7 @@
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,7 +143,6 @@
     <ClInclude Include="..\..\src\Q3d\QPlane3D.h" />
     <ClInclude Include="..\..\src\Q3d\QPrimitive3D.h" />
     <ClInclude Include="..\..\src\Q3d\QRay3D.h" />
-    <ClInclude Include="..\..\src\Q3d\QSphere3D.h" />
     <ClInclude Include="..\..\src\Q3d\QText3D.h" />
   </ItemGroup>
   <ItemGroup>

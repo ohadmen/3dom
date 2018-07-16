@@ -49,9 +49,6 @@
     <ClInclude Include="..\..\src\Q3d\QRay3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Q3d\QSphere3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Q3d\QText3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>

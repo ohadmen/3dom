@@ -22,6 +22,7 @@ private:
 
 	Canvas m_canvas;
     const QObject m_parent;
+    std::string m_recordOutpuDir;
 
     
     std::map<std::string,QAction*> m_menuActions;
@@ -108,8 +109,21 @@ private:
 
     void privStream_realSense() {
         InputStream& cs = InputStream::i();
-            cs.load<InputStream::RealSenseStream>();
-            cs.start<InputStream::RealSenseStream>();
+        bool ok;
+        ok = cs.load<InputStream::RealSenseStream>();
+        if (!ok)
+        {
+            GLpainter::i().setStatus("Failed to start stream");
+            return;
+        }
+        ok = cs.start<InputStream::RealSenseStream>();
+        if (!ok)
+        {
+            GLpainter::i().setStatus("Failed to start stream");
+            return;
+        }
+
+        
     }
 
     void privOpen3DS_callback() {
@@ -117,11 +131,42 @@ private:
         loadMeshFromFile(str);
        
     }
-
-    void prviStreamRecord()
+  
+    std::string privGetFileName()
     {
+        if (m_recordOutpuDir.empty())
+            m_recordOutpuDir = QFileDialog::getExistingDirectory(this, "set output dirctory").toStdString();
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+        std::stringstream ss;
+        ss << m_recordOutpuDir << "/";
+        ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d_%H-%M-%S");
+        ss << ".3ds";
+        return ss.str();
 
     }
+    void prviStreamRecord()
+    {
+        QAction& p = *m_menuActions["Record"];
+        
+        auto& os = OutputStream::i();
+       
+        if (os.isOpen())
+        {
+            os.stop();
+            p.setIcon(QIcon::fromTheme(":/icons/record"));
+        }
+        else
+        {        //build file name
+            
+
+            std::string fn = privGetFileName();
+            os.start(fn);
+          
+            p.setIcon(QIcon::fromTheme(":/icons/recordStop"));
+        }
+    }
+        
 
 public:
 
@@ -142,8 +187,9 @@ public:
         //-----------------stream menu-----------------
         {
             auto menuH = menuBar()->addMenu(tr("&stream"));
-            menuH->addAction(privAddAction("source:: RealSense", &Window::privStream_realSense));
             menuH->addAction(privAddAction("source::file", &Window::privOpen3DS_callback, QKeySequence::Open));
+            menuH->addAction(privAddAction("source:: RealSense", &Window::privStream_realSense));
+           
         }
         //-----------------view menu-----------------
         {
