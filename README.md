@@ -1,7 +1,7 @@
 # Zviewer
 Generic 3D object viewer
 
-Installer download: https://github.com/ohadmen/zviewer/raw/master/deploy/Output/3domInstaller.exe
+Installer download: https://github.com/ohadmen/Zviewer/raw/ohad/zBuffer/deploy/Output/ZviewerInstaller.exe
 
 
 
