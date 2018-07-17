@@ -25,7 +25,7 @@ public:
 	explicit App(int& argc, char *argv[]) :	QApplication(argc, argv),m_window()
 	{
 
-        QString ver("0.7");
+        QString ver("0.8");
         QSurfaceFormat format;
 		format.setDepthBufferSize(24);
 		QSurfaceFormat::setDefaultFormat(format);
