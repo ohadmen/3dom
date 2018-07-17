@@ -243,3 +243,4 @@ ModelManifest.xml
 /projFiles/TrackMode_OLD.h
 /GeneratedFiles/qrc_shaders.cpp
 /proj/RSviewer/GeneratedFiles
+*.3ds
