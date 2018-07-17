@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{944A3D3B-BEA1-4418-AB4E-463F7515A4DC}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
+    <ProjectName>Zviewer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">

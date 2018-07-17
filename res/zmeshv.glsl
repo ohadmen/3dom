@@ -29,8 +29,13 @@ void main()
 
 	
 	vec4  xyz;
-	xyz[0]=(u_kinv[0][0]*a_uv[0]+u_kinv[0][1]*a_uv[1]+u_kinv[0][2])*a_z;
-	xyz[1]=(u_kinv[1][0]*a_uv[0]+u_kinv[1][1]*a_uv[1]+u_kinv[1][2])*a_z;
+	//xyz[0]=(u_kinv[0][0]*a_uv[0]+u_kinv[0][1]*a_uv[1]+u_kinv[0][2])*a_z;//QMATRIX MEMORY IS TRANSPOSED???
+	//xyz[1]=(u_kinv[1][0]*a_uv[0]+u_kinv[1][1]*a_uv[1]+u_kinv[1][2])*a_z;//QMATRIX MEMORY IS TRANSPOSED???
+
+	xyz[0]=(u_kinv[0][0]*a_uv[0]+u_kinv[1][0]*a_uv[1]+u_kinv[2][0])*a_z;
+	xyz[1]=(u_kinv[0][1]*a_uv[0]+u_kinv[1][1]*a_uv[1]+u_kinv[2][1])*a_z;
+
+
 	xyz[2]=a_z;
 	xyz[3]=1.0;
     // Calculate vertex position in screen space

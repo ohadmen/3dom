@@ -6,27 +6,27 @@
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{4D24E365-B225-4EAE-A2DE-827BBBF5F9AD}
-AppName=3dom
+AppName=Zviewer
 AppVersion=1.0
-;AppVerName=3dom 1.0
-AppPublisher=3dom
-AppPublisherURL=https://github.com/ohadmen/3dom
-AppSupportURL=https://github.com/ohadmen/3dom
-AppUpdatesURL=https://github.com/ohadmen/3dom
-DefaultDirName={pf}\3dom
+;AppVerName=Zviewer 1.0
+AppPublisher=Zviewer
+AppPublisherURL=https://github.com/ohadmen/Zviewer
+AppSupportURL=https://github.com/ohadmen/Zviewer
+AppUpdatesURL=https://github.com/ohadmen/Zviewer
+DefaultDirName={pf}\Zviewer
 DisableProgramGroupPage=yes
-OutputBaseFilename=3domInstaller
-SetupIconFile=C:\Dropbox\envC\source\3dom\res\main.ico
+OutputBaseFilename=ZviewerInstaller
+SetupIconFile=C:\Dropbox\envC\source\3dom\proj\RSviewer\Zviewer.ico
 Compression=lzma
 SolidCompression=yes
 ChangesAssociations = yes
 
 
 [Registry]
-Root: HKCR; Subkey: ".stl";                             ValueData: "3dom";          Flags: uninsdeletevalue; ValueType: string;  ValueName: ""
-Root: HKCR; Subkey: "3dom";                     ValueData: "Program 3dom";  Flags: uninsdeletekey;   ValueType: string;  ValueName: ""
-Root: HKCR; Subkey: "3dom\DefaultIcon";             ValueData: "{app}\3dom.exe,0";               ValueType: string;  ValueName: ""
-Root: HKCR; Subkey: "3dom\shell\open\command";  ValueData: """{app}\3dom.exe"" ""%1""";  ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: ".3ds";                             ValueData: "Zviewer";          Flags: uninsdeletevalue; ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "Zviewer";                     ValueData: "Program Zviewer";  Flags: uninsdeletekey;   ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "Zviewer\DefaultIcon";             ValueData: "{app}\Zviewer.exe,0";               ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "Zviewer\shell\open\command";  ValueData: """{app}\Zviewer.exe"" ""%1""";  ValueType: string;  ValueName: ""
 
 
 
@@ -37,22 +37,19 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Dropbox\envC\source\3dom\release\3dom.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dropbox\envC\source\3dom\release\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dropbox\envC\source\3dom\release\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dropbox\envC\source\3dom\release\libGLESV2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dropbox\envC\source\3dom\release\opengl32sw.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dropbox\envC\source\3dom\release\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dropbox\envC\source\3dom\release\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dropbox\envC\source\3dom\release\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dropbox\envC\source\3dom\release\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Dropbox\envC\source\3dom\release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Dropbox\envC\source\3dom\x64\release\Zviewer.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Dropbox\envC\source\3dom\x64\release\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Dropbox\envC\source\3dom\x64\release\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Dropbox\envC\source\3dom\x64\release\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Dropbox\envC\source\3dom\x64\release\realsense2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Dropbox\envC\source\3dom\x64\release\platforms\qwindows.dll"; DestDir: "{app}\platforms\"; Flags: ignoreversion
+;Source: "C:\Dropbox\envC\source\3dom\x65\release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{commonprograms}\3dom"; Filename: "{app}\3dom.exe"
-Name: "{commondesktop}\3dom"; Filename: "{app}\3dom.exe"; Tasks: desktopicon
+Name: "{commonprograms}\Zviewer"; Filename: "{app}\Zviewer.exe"
+Name: "{commondesktop}\Zviewer"; Filename: "{app}\Zviewer.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\3dom.exe"; Description: "{cm:LaunchProgram,3dom}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\Zviewer.exe"; Description: "{cm:LaunchProgram,Zviewer}"; Flags: nowait postinstall skipifsilent
 

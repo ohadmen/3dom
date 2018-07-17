@@ -90,17 +90,19 @@ private:
         InputStream& cs = InputStream::i();
         if (!cs.isLoaded())
         {
-            p.setIcon(QIcon::fromTheme(":/icons/pause"));
+            //no stream
+            p.setIcon(QIcon::fromTheme(":/icons/play"));
             return;
         }
         if (cs.get()->isPaused())
         {
+            //play stream
             p.setIcon(QIcon::fromTheme(":/icons/pause"));
             cs.get()->start();
         }
         else
         {
-
+            //pause stream
             p.setIcon(QIcon::fromTheme(":/icons/play"));
             cs.get()->pause();
         }
@@ -116,6 +118,7 @@ private:
             GLpainter::i().setStatus("Failed to start stream");
             return;
         }
+        m_canvas.resetView();
         ok = cs.start<InputStream::RealSenseStream>();
         if (!ok)
         {
@@ -167,6 +170,11 @@ private:
         }
     }
         
+    void privExportSTL_callback()
+    {
+        QString str = QFileDialog::getSaveFileName(this, "save .stl file", QString(), "*.stl");
+        Zstream::i().writeSTL(str.toStdString());
+    }
 
 public:
 
@@ -186,9 +194,11 @@ public:
         setCentralWidget(&m_canvas);
         //-----------------stream menu-----------------
         {
-            auto menuH = menuBar()->addMenu(tr("&stream"));
-            menuH->addAction(privAddAction("source::file", &Window::privOpen3DS_callback, QKeySequence::Open));
-            menuH->addAction(privAddAction("source:: RealSense", &Window::privStream_realSense));
+            auto menuH = menuBar()->addMenu(tr("&Stream"));
+            menuH->addAction(privAddAction("From file", &Window::privOpen3DS_callback, QKeySequence::Open));
+            menuH->addAction(privAddAction("From RealSense camera", &Window::privStream_realSense));
+            auto exportMenu = menuH->addMenu("Export");
+            exportMenu->addAction(privAddAction("to stl", &Window::privExportSTL_callback, tr("CTRL+S")));
            
         }
         //-----------------view menu-----------------

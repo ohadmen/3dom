@@ -138,7 +138,7 @@ public:
     void setK(float *v)
     {
         m_fd.k = QMatrix3x3(v);
-        m_fd.kinv = privInv3x3(m_fd.k.transposed());
+        m_fd.kinv = privInv3x3(m_fd.k);
     }
     void setFPS(float fps) { m_fd.fps = fps; }
     float getFPS()const { return m_fd.fps; }
@@ -164,6 +164,21 @@ public:
 
     int getWidth() const { return m_fd.width; }
     int getHeight() const { return m_fd.height; }
+
+
+
+    void  copyZdata(float* dst)const
+    {
+        std::lock_guard<std::mutex> grd(m_zmtx);
+        memcpy(dst, m_zdata.data(), m_zdata.size() * sizeof(float));
+
+    }
+    void  copyZdata(Col* dst)const
+    {
+        std::lock_guard<std::mutex> grd(m_zmtx);
+        memcpy(dst, m_cdata.data(), m_cdata.size() * sizeof(Col));
+
+    }
 
     void  copyZdata(uint16_t* dst)const
     {
@@ -445,4 +460,67 @@ public:
 
          }
      */
+
+
+    void writeSTL(const std::string& str)const
+    {
+        std::ofstream s(str,std::ios::out | std::ios::binary);
+        char header[80];
+        strcpy(header, ".stl Zviewer");
+        s.write(header, 80);
+        
+        
+
+        const QMatrix3x3& m = m_fd.kinv;
+        auto krowdot = [&m](int i,const QVector3D& v)->float 
+
+        {
+            QVector3D krow(m(i, 0), m(i, 1), m(i, 2));
+            float d= QVector3D::dotProduct(krow,v); 
+            return d;
+        };
+        
+        //count number of non-nan facets
+        uint32_t nfacets = 0;
+        for (int i = 0; i != m_fd.indices.size() - 2; ++i)
+        {
+            if (!isnan(m_zdata[m_fd.indices[i + 0]]) &&
+                !isnan(m_zdata[m_fd.indices[i + 1]]) &&
+                !isnan(m_zdata[m_fd.indices[i + 2]])
+                )
+                ++nfacets;
+        }
+        std::array<float, 3> nrml = { 0,0,0 };
+        s.write(reinterpret_cast<char*>(&nfacets), sizeof(uint32_t));
+        for (int i = 0; i != m_fd.indices.size() - 2; ++i)
+        {
+            if (isnan(m_zdata[m_fd.indices[i + 0]]) ||
+                isnan(m_zdata[m_fd.indices[i + 1]]) ||
+                isnan(m_zdata[m_fd.indices[i + 2]])
+                )
+                continue;
+            
+            s.write(reinterpret_cast<char*>(&nrml), sizeof(nrml));
+            std::array<float, 3> col = { 0,0,0 };
+            for (int j = 0; j != 3; ++j)
+            {
+                int indx = i%2? m_fd.indices[i +2- j]: m_fd.indices[i + j];
+                QVector3D uvz(m_fd.xy[indx][0], m_fd.xy[indx][1], 1);
+                std::array<float, 3> v = { krowdot(0,uvz)*m_zdata[indx], krowdot(1, uvz)*m_zdata[indx], m_zdata[indx] };
+                s.write(reinterpret_cast<char*>(&v), sizeof(v));
+                col[0] += m_cdata[indx][0]/3;
+                col[1] += m_cdata[indx][1]/3;
+                col[2] += m_cdata[indx][2]/3;
+
+            }
+            uint16_t  attrib = uint16_t(col[0] * 31) + (uint16_t(col[1] * 31) << 5) + (uint16_t(col[2] * 31) << 10);
+            s.write(reinterpret_cast<char*>(&attrib), sizeof(uint16_t));
+
+
+
+        }
+        s.close();
+
+
+    }
 };
