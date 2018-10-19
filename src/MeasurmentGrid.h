@@ -31,7 +31,7 @@ public:
 
     bool init()
     {
-        if (!initShader("linev", "linef"))
+        if (!initShader("lineV", "lineF"))
             return false;
         static const float z = 0.9f;
         QVector3D data[]=

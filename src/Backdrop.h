@@ -1,6 +1,4 @@
-#ifndef BACKDROP_H
-#define BACKDROP_H
-
+#pragma once
 
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
@@ -15,7 +13,7 @@ public:
         void init()
 	{
         initializeOpenGLFunctions();
-        initShader("meshv", "meshf");
+        initShader("meshV", "meshF");
 		m_meshShader.link();
 
         float vbuf[] = {
@@ -81,4 +79,4 @@ private:
     QOpenGLBuffer m_verts;
 };
 
-#endif // BACKDROP_H
+

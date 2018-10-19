@@ -89,7 +89,7 @@ public:
     {
     
     
-        if (!initShader("linev", "linef"))
+        if (!initShader("lineV", "lineF"))
             return false;
 
         

@@ -66,7 +66,7 @@ public:
     {
         m_parent = parent;
 
-        if (!initShader("linev", "linef"))
+        if (!initShader("lineV", "lineF"))
             return false;
         return true;
     }

@@ -122,7 +122,7 @@ public:
 
 
         m_glInitialized = true;
-        initShader("meshv", "meshf");
+        initShader("meshV", "meshF");
 
     }
 
