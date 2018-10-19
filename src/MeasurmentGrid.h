@@ -13,11 +13,11 @@ class MeasurmentGrid: protected QOpenGLFunctions
     bool initShader(const QString& vshader, const QString& fshader)
     {
         // Compile vertex shader
-        if (!m_lineShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/" + vshader + ".glsl"))
+        if (!m_lineShader.addShaderFromSourceFile(QOpenGLShader::Vertex, "res/" + vshader + ".glsl"))
             return false;
 
         // Compile fragment shader
-        if (!m_lineShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/" + fshader + ".glsl"))
+        if (!m_lineShader.addShaderFromSourceFile(QOpenGLShader::Fragment, "res/" + fshader + ".glsl"))
             return false;
 
         // Link shader pipeline
