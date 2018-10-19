@@ -1,5 +1,5 @@
 #pragma once
-#include <QtCore\qglobal.h>
+#include <QtCore/qglobal.h>
 
 template<typename bits>
 class QBitFlags

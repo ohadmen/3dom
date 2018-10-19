@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 #include <map>
+#include <math.h>
 #include "Qmvp.h"
 #include <array>
 #include "Q3d/QLine3D.h"
@@ -173,7 +174,7 @@ public:
 
         }
 
-		return !isinf(minr);
+		return !std::isinf(minr);
     }
 
     bool empty() const

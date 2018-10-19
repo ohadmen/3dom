@@ -5,7 +5,7 @@
 #include <qfiledialog.h>
 #include <QMainWindow>
 #include <QSurfaceFormat>
-#include <QtCore\qmimedata.h>
+#include <QtCore/qmimedata.h>
 #include <QMenuBar>  
 #include <list>
 #include "Canvas.h"

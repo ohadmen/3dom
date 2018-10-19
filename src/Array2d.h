@@ -63,9 +63,9 @@ public:
         ,m_cols(obj.m_cols)
         ,m_data(obj.m_data)
     {
-        size_t sz = m_row*m_cols;
+        size_t sz = m_rows*m_cols;
         m_data = new T[sz];
-        std::copy(obj.m_data,obj.m_data+sz,m_data)
+        std::copy(obj.m_data,obj.m_data+sz,m_data);
     }
 
 
