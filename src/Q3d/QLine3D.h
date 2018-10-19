@@ -54,7 +54,7 @@ public:
     }
 
 protected:
-    const enum dirtyFlag{dirtyDirection, dirtyLength, dirtyLengthSquared};
+    enum dirtyFlag{dirtyDirection, dirtyLength, dirtyLengthSquared};
     QVector3D                   _p1;
     QVector3D                   _p2;
     mutable QVector3D           _direction;

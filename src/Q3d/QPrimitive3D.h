@@ -9,7 +9,7 @@ class QPrimitive3D : protected QOpenGLFunctions
   
 
 public:
-    const enum Type{Vector3D, Ray3D, Line3D, Plane3D, Sphere3D,Text3D};
+    enum Type{Vector3D, Ray3D, Line3D, Plane3D, Sphere3D,Text3D};
     QPrimitive3D():m_color(1, 1, 1, 1) {};
     QPrimitive3D(Type type) : _type(type), m_color(1, 1, 1, 1) {};
     QVector4D getColor()const { return m_color; }

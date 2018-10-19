@@ -5,7 +5,7 @@ template<typename bits>
 class QBitFlags
 {
 public:
-    QBitFlags::QBitFlags  (bool up = true) : _flag(up ? 0x1 | -0x1 : 0), _bitsSize(sizeof(bits) << 3){}
+    QBitFlags  (bool up = true) : _flag(up ? 0x1 | -0x1 : 0), _bitsSize(sizeof(bits) << 3){}
     inline bits flag      () const        {return _flag;}
     inline void up        (quint8 value)  {if(value < _bitsSize)_flag |= bt(value);}
     inline void upAll     ()              {_flag |= ~_flag;}

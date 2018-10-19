@@ -53,7 +53,7 @@ public:
 protected:
     virtual void update(){}
 protected:
-    const enum dirtyFlag{dirtyDirection, dirtyOrigin};
+    enum dirtyFlag{dirtyDirection, dirtyOrigin};
     QVector3D                 _normal;
     float                     _distance;
     mutable QBitFlags<quint8> _dirty;
