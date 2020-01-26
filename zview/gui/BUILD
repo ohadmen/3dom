@@ -20,6 +20,6 @@ qt_cc_library(
     name = "canvas",
     src = "canvas.cpp",
     hdr = "canvas.h",
-    deps = qtdeps ,
+    deps = qtdeps+["//zview/gui/drawables:backdrop"] ,
     visibility = ["//zview:__subpackages__"],
 )

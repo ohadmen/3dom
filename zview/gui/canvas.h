@@ -8,6 +8,7 @@
 #include <QtGui/QVector2D>
 #include <QtCore/QBasicTimer>
 #include <QtGui/qevent.h>
+#include "zview/gui/drawables/backdrop.h"
 
 // #include "libcurie/common/common_types.h"
 // #include "libcurie/drawables/backdrop.h"
@@ -43,7 +44,7 @@ private:
 
 	
 	
-	// Backdrop m_bg;
+	Backdrop* m_bg;
     int m_textureType;
 	
 	

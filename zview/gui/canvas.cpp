@@ -1,4 +1,5 @@
 #include "zview/gui/canvas.h"
+
 // #include "drawables/drawables_buffer.h"
 // #include "drawables/drawable_basic_shapes.h"
 
@@ -47,6 +48,7 @@ void  Canvas::initializeGL()
     glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	m_bg = new Backdrop;
 	// m_bg.initializeGL();
 	// drawableBasicShapes.initializeGL();
 	
@@ -57,8 +59,8 @@ void  Canvas::initializeGL()
 
 void Canvas::paintGL()
 {
-	//glEnable(GL_DEPTH_TEST);
-	// m_bg.paintGL();
+	glEnable(GL_DEPTH_TEST);
+	m_bg->paintGL();
 	// QMatrix4x4 vp = vpmat();
 	// for (auto& d : drawablesBuffer)
 	// {
@@ -72,7 +74,7 @@ void Canvas::paintGL()
 }
 void Canvas::resizeGL(int w, int h)
 {
-	// m_bg.resizeGL(w, h);
+	//m_bg->resizeGL(w, h);
 	// vpmat.setWinSize(w, h);
 	
 
