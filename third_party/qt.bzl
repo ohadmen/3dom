@@ -1,3 +1,4 @@
+
 def qt_cc_library(name, src, hdr, normal_hdrs=[], deps=None, ui=None,
                   ui_deps=None, **kwargs):
   """Compiles a QT library and generates the MOC for it.
@@ -30,5 +31,35 @@ def qt_cc_library(name, src, hdr, normal_hdrs=[], deps=None, ui=None,
       srcs = srcs,
       hdrs = hdrs,
       deps = deps,
+      **kwargs
+  )
+
+
+def qt_resource(name,file_list, **kwargs):
+  
+  # fid = open('%s.qrc' % name, 'w')
+  # fid.write("<RCC>\n")
+  # fid.write("\t<qresource prefix=\"/%s\">\n" % name)
+  # for x in file_list:
+  #   fid.write("\t\t<file>%s</file>\n" % x)
+  # fid.write("\t</qresource>\n")
+  # fid.write("</RCC>\n")
+  # fid.close()
+  native.genrule(
+      name = "%s_resource" % name,
+      srcs=["%s.qrc"%name]+file_list,
+      outs = ["rcc_%s.cpp" % name],
+      # cmd =  "rcc %s/%s.qrc -o $@"%(native.package_name(),name) ,
+      cmd="generate_qrc 111.qrc %s"%','.join(file_list),
+      tools=["//third_party:generate_qrc"]
+  )
+  srcs = [":rcc_%s.cpp" % name]
+
+
+  native.cc_library(
+      name = name,
+      srcs = srcs,
+      hdrs = [],
+      deps = [],
       **kwargs
   )
