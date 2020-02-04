@@ -36,24 +36,26 @@ def qt_cc_library(name, src, hdr, normal_hdrs=[], deps=None, ui=None,
 
 
 def qt_resource(name,file_list, **kwargs):
-  
-  # fid = open('%s.qrc' % name, 'w')
-  # fid.write("<RCC>\n")
-  # fid.write("\t<qresource prefix=\"/%s\">\n" % name)
-  # for x in file_list:
-  #   fid.write("\t\t<file>%s</file>\n" % x)
-  # fid.write("\t</qresource>\n")
-  # fid.write("</RCC>\n")
-  # fid.close()
+
+  qrc_filename = "%s.qrc"%(name)
+  # qrc_filename = "%s/%s.qrc"%(native.package_name(),name)
+
   native.genrule(
-      name = "%s_resource" % name,
-      srcs=["%s.qrc"%name]+file_list,
-      outs = ["rcc_%s.cpp" % name],
-      # cmd =  "rcc %s/%s.qrc -o $@"%(native.package_name(),name) ,
-      cmd="generate_qrc 111.qrc %s"%','.join(file_list),
+      name = "%s_gen_qrc" % name,
+      srcs=file_list,
+      outs =[qrc_filename],
+      cmd="$(location //third_party:generate_qrc) $@ $(SRCS)",
       tools=["//third_party:generate_qrc"]
   )
-  srcs = [":rcc_%s.cpp" % name]
+  native.genrule(
+      name = "%s_gen_resource" % name,
+      srcs=[qrc_filename]+file_list,
+      outs= ["rcc_%s.cpp" % name],
+      cmd =  "rcc $(GENDIR)/%s/%s -o $@"%(native.package_name(),qrc_filename),
+  )
+   
+  
+  srcs =[":rcc_%s.cpp" % name]
 
 
   native.cc_library(

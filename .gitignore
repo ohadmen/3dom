@@ -246,3 +246,6 @@ src/.vscode/c_cpp_properties.json
 
 # bazel
 bazel-*
+
+#vscode
+.vscode
