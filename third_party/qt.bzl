@@ -38,25 +38,14 @@ def qt_cc_library(name, src, hdr, normal_hdrs=[], deps=None, ui=None,
 def qt_resource(name,file_list, **kwargs):
 
   qrc_filename = "%s.qrc"%(name)
-  # qrc_filename = "%s/%s.qrc"%(native.package_name(),name)
-
-  native.genrule(
-      name = "%s_gen_qrc" % name,
-      srcs=file_list,
-      outs =[qrc_filename],
-      cmd="$(location //third_party:generate_qrc) $@ $(SRCS)",
-      tools=["//third_party:generate_qrc"]
-  )
   native.genrule(
       name = "%s_gen_resource" % name,
-      srcs=[qrc_filename]+file_list,
+      srcs=file_list ,
       outs= ["rcc_%s.cpp" % name],
-      cmd =  "rcc $(GENDIR)/%s/%s -o $@"%(native.package_name(),qrc_filename),
+      cmd =  "$(location //third_party:generate_qrc) tmp.qrc $(SRCS) && rcc tmp.qrc -o $@",
+      tools=["//third_party:generate_qrc"]
   )
-   
-  
   srcs =[":rcc_%s.cpp" % name]
-
 
   native.cc_library(
       name = name,
