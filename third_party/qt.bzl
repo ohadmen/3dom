@@ -1,6 +1,5 @@
 
-def qt_cc_library(name, src, hdr, normal_hdrs=[], deps=None, ui=None,
-                  ui_deps=None, **kwargs):
+def qt_cc_library(name, src, hdr, normal_hdrs=[], deps=None, **kwargs):
   """Compiles a QT library and generates the MOC for it.
 
   If a UI file is provided, then it is also compiled with UIC.
@@ -11,8 +10,6 @@ def qt_cc_library(name, src, hdr, normal_hdrs=[], deps=None, ui=None,
     hdr: The single header file that the MOC compiles to src.
     normal_hdrs: Headers which are not sources for generated code.
     deps: cc_library dependencies for the library.
-    ui: If provided, a UI file to compile with UIC.
-    ui_deps: Dependencies for the UI file.
     kwargs: Any additional arguments are passed to the cc_library rule.
   """
   native.genrule(
@@ -42,7 +39,7 @@ def qt_resource(name,file_list, **kwargs):
       name = "%s_gen_resource" % name,
       srcs=file_list ,
       outs= ["rcc_%s.cpp" % name],
-      cmd =  "$(location //third_party:generate_qrc) tmp.qrc $(SRCS) && rcc tmp.qrc -o $@",
+      cmd =  "$(location //third_party:generate_qrc) tmp.qrc %s $(SRCS) && rcc tmp.qrc -name %s -o $@ "%(name,name),
       tools=["//third_party:generate_qrc"]
   )
   srcs =[":rcc_%s.cpp" % name]

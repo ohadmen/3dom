@@ -12,7 +12,7 @@ public:
     void setBGcolor();
     Backdrop();    
     void initializeGL();
-    void initShader(const QString& vshader, const QString& fshader);
+    void initShader(const QString& shaderName);
     void resizeGL(int w, int h);
     void paintGL();
 

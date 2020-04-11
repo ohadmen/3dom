@@ -8,6 +8,11 @@ qt_cc_library(
     name = "backdrop",
     src = "backdrop.cpp",
     hdr = "backdrop.h",
-    deps = qtdeps+["//zview/common"],
+    deps = qtdeps+["//zview/common","//zview/shaders"],
     visibility = ["//zview:__subpackages__"],
+        copts = [
+        '-fpic',
+    ],
+    
+
 )

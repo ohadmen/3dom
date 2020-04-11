@@ -1,6 +1,10 @@
 #include "backdrop.h"
 #include "zview/common/common_types.h"
 #include "zview/common/params.h"
+// #include "QtCore/qdiriterator.h"
+
+
+
 void Backdrop::setBGcolor()
 {
     std::array<Types::VertData, 4> vbuf;
@@ -27,19 +31,26 @@ void Backdrop::setBGcolor()
 }
 Backdrop::Backdrop()
 {
+    Q_INIT_RESOURCE(shaders);
     initializeOpenGLFunctions();
-    initShader("meshv", "meshf");
+    initShader("mesh");
     setBGcolor();
 }
-void Backdrop::initShader(const QString &vshader, const QString &fshader)
+void Backdrop::initShader(const QString &shaderName)
 {
+    
+    // QDirIterator it(":", QDirIterator::Subdirectories);
+    // while (it.hasNext()) {
+    //     qDebug() << it.next();
+    // }
+
     // Compile vertex shader
-    if (!m_meshShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/" + vshader + ".glsl"))
+    if (!m_meshShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v"+shaderName))
         throw std::runtime_error("could not find glsl vertex shader file");
         
 
     // Compile fragment shader
-    if (!m_meshShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/" + fshader + ".glsl"))
+    if (!m_meshShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f"+shaderName))
         throw std::runtime_error("could not find glsl Fragment shader file");
     // Link shader pipeline
     if (!m_meshShader.link())
