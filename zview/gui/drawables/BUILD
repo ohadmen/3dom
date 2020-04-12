@@ -16,6 +16,19 @@ qt_cc_library(
  
 )
 
+qt_cc_library(
+    name = "drawables_buffer",
+    src = "drawables_buffer.cpp",
+    hdr = "drawables_buffer.h",
+    deps = qtdeps+["drawable_mesh"],
+    visibility = ["//zview:__subpackages__"],
+        copts = [
+        '-fpic',
+    ],
+ 
+)
+
+
 cc_library(
     name = "drawable_base",
     srcs = ["drawable_base.cpp"],
@@ -29,3 +42,14 @@ cc_library(
 
 )
 
+qt_cc_library(
+    name = "drawable_mesh",
+    src = "drawable_mesh.cpp",
+    hdr = "drawable_mesh.h",
+    deps = qtdeps+["drawable_base"],
+    visibility = ["//zview:__subpackages__"],
+        copts = [
+        '-fpic',
+    ],
+ 
+)

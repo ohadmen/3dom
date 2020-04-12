@@ -4,7 +4,6 @@
 #include <QtGui/QMatrix4x4>
 #include <QtGui/qvector2d.h>
 #include <QtGui/qquaternion.h>
-#include "params.h"
 #include <QtCore/qdebug.h>
 
 //signelon, view projection matrix
@@ -15,14 +14,10 @@ class VPmat
 	int m_w;
 	int m_h;
 	QMatrix4x4 m_view;
-    VPmat();
-
-
 
 public:
+	VPmat();
 
-    static VPmat& i();
-	
     QMatrix4x4 operator()() const;
     void setWinSize(int w, int h);
 

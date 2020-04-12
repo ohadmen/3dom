@@ -13,13 +13,18 @@ qt_cc_library(
     copts = [
         '-fpic',
     ],
-    deps = qtdeps+[":canvas"],
+    deps = qtdeps+[":canvas","//zview/io"],
     visibility = ["//zview:__subpackages__"],
 )
 qt_cc_library(
     name = "canvas",
     src = "canvas.cpp",
     hdr = "canvas.h",
-    deps = qtdeps+["//zview/gui/drawables:backdrop"] ,
+    deps = qtdeps+[
+        "//zview/gui/drawables:backdrop",
+        "//zview/gui/drawables:drawables_buffer",
+        "//zview/backend",
+        "//zview/common"
+        ] ,
     visibility = ["//zview:__subpackages__"],
 )

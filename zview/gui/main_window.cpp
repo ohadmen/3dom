@@ -1,5 +1,6 @@
 #include "main_window.h"
 #include "canvas.h"
+#include "zview/io/read_stl.h"
 #include <QtWidgets/QTreeView>
 #include <QtWidgets/QApplication>
 #include <QtGui/QScreen>
@@ -90,4 +91,8 @@ MainWindow::MainWindow(QWidget *parent)
     // QObject::connect(this, &CurieMainWin::signal_wheelEvent,stateMachine, &TrackStateMachine::input );
 
     // setFocus();
+
+    Types::Mesh obj = io::readstl("/home/ohad/dev/projects/zview/example/horse.stl");
+    canvas->addShape(obj,"debug");
+
 }

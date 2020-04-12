@@ -19,6 +19,7 @@ public:
     void resizeGL(int w, int h);
     void paintGL();
     void paintGL(const QMatrix4x4& mvp, int txt);
+    Types::Roi3d get3dbbox()const;
     QVector3D picking(const QVector3D& p, const QVector3D& n) const;
 
 private:

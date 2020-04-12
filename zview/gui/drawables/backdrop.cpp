@@ -61,7 +61,7 @@ void Backdrop::initShader(const QString &shaderName)
         throw std::runtime_error("could not link shader");
     
 }
-void resizeGL(int w, int h)
+void Backdrop::resizeGL(int w, int h)
 {
     Q_UNUSED(w);
     Q_UNUSED(h);
@@ -90,3 +90,4 @@ void Backdrop::paintGL(const QMatrix4x4& , int )
     m_meshShader.release();
 }
 QVector3D Backdrop::picking(const QVector3D& p, const QVector3D& n)const{return QVector3D();}
+Types::Roi3d Backdrop::get3dbbox()const{return Types::Roi3d();}

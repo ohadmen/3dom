@@ -121,6 +121,6 @@ namespace Types
         const std::vector< EdgeIndx>& e()const { return m_e; }
 
     };
-	//using Shape = std::variant<Pcl,Edges,Mesh> ;
+	using Shape = std::variant<Pcl,Edges,Mesh> ;
 } //namespcae Types
 

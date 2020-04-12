@@ -32,3 +32,5 @@ void DrawableBase::privInitShader(const QString &shaderName)
         throw std::runtime_error("could not link shader");
     
 }
+
+

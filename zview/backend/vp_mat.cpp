@@ -1,4 +1,6 @@
 #include "vp_mat.h"
+#include "zview/common/params.h"
+
 //signelon, view projection matrix
 #define vpmat VPmat::i()
 VPmat::VPmat() :m_w(1), m_h(1)
@@ -7,11 +9,6 @@ VPmat::VPmat() :m_w(1), m_h(1)
     m_view.setToIdentity();
 
 
-}
-VPmat& VPmat::i()
-{
-    static VPmat v;
-    return v;
 }
 
 QMatrix4x4 VPmat::operator()() const { return m_proj * m_view; }

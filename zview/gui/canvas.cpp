@@ -1,5 +1,6 @@
 #include "zview/gui/canvas.h"
-
+#include "zview/common/params.h"
+#include <math.h>
 // #include "drawables/drawables_buffer.h"
 // #include "drawables/drawable_basic_shapes.h"
 
@@ -17,18 +18,24 @@ void Canvas::forceUpdate()
 }
 void Canvas::resetView()
 {
+	constexpr float deg2rad =  M_PI/180.0;
 	// camera is always at (0,0,0), looking tawards negative z.
 	// rotation center is always (0,0,-1). for init, set object to (0,0,-1), and rescale it to fit in image.
 	// static const float deg2rad = std::acosf(0.0) / 90;
-	// Types::Roi3d objsbbox = drawablesBuffer.get3dbbox();
+	Types::Roi3d objsbbox;
+	for (const auto& o : m_buffer)
+	{
+		Types::Roi3d bbox = o.second.get()->get3dbbox();
+		objsbbox |= bbox;
+	}
 	
-	// float a = std::tan(deg2rad * Params::camFOV() / 2);
-	// float s = 2 * a / (objsbbox.rangey() + objsbbox.rangez() * a);
+	float a = std::tan(deg2rad * Params::camFOV() / 2);
+	float s = 2 * a / (objsbbox.rangey() + objsbbox.rangez() * a);
     
-    // QVector3D t = -objsbbox.mid();
-	// QMatrix4x4 vm = VPmat::translate({0,0,-1})*VPmat::scale(s) * VPmat::translate(t);
+    QVector3D t = -objsbbox.mid();
+	QMatrix4x4 vm = VPmat::translate({0,0,-1})*VPmat::scale(s) * VPmat::translate(t);
 	
-	// vpmat.setViewMatrix(vm);
+	m_vpmat.setViewMatrix(vm);
 	
 }
 
@@ -60,11 +67,11 @@ void Canvas::paintGL()
 {
 	glEnable(GL_DEPTH_TEST);
 	m_backdrop.paintGL(QMatrix4x4(),0);
-	// QMatrix4x4 vp = vpmat();
-	// for (auto& d : drawablesBuffer)
-	// {
-	// 	d.get()->paintGL(vp, m_textureType);
-	// }
+	QMatrix4x4 vp = m_vpmat();
+	for (auto& d : m_buffer)
+	{
+		d.second.get()->paintGL(vp, m_textureType);
+	}
 	// drawableBasicShapes.paintGL(vp);
 
 
@@ -73,9 +80,14 @@ void Canvas::paintGL()
 }
 void Canvas::resizeGL(int w, int h)
 {
-	//m_bg->resizeGL(w, h);
-	// vpmat.setWinSize(w, h);
+	m_backdrop.resizeGL(w, h);
+	m_vpmat.setWinSize(w, h);
 	
 
 }
 
+void Canvas::addShape(const Types::Shape& obj,const std::string& name)
+{
+	m_buffer.addShape(obj,name);
+	resetView();
+}

@@ -8,7 +8,9 @@
 #include <QtGui/QVector2D>
 #include <QtCore/QBasicTimer>
 #include <QtGui/qevent.h>
+#include "zview/backend/vp_mat.h"
 #include "zview/gui/drawables/backdrop.h"
+#include "zview/gui/drawables/drawables_buffer.h"
 
 // #include "libcurie/common/common_types.h"
 // #include "libcurie/drawables/backdrop.h"
@@ -22,6 +24,7 @@ class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 
 public:
 	explicit Canvas(QWidget* parent);
+	void addShape(const Types::Shape& obj,const std::string& name);
 	void resetView();
 
 public slots:
@@ -39,13 +42,14 @@ protected:
 
 
     
-
+	
 private:
 
 	
-	
+	DrawablesBuffer m_buffer;
 	Backdrop m_backdrop;
     int m_textureType;
+	VPmat m_vpmat;
 	
 	
 

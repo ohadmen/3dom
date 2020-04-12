@@ -9,6 +9,6 @@ new_local_repository(
 git_repository(
     name = "tinyply",
     remote = "https://github.com/ohadmen/tinyply.git",
-    branch = "master",
-    visibility = ["//libcurie:__subpackages__"],
+    commit = "84d9ef245f7baae84767cc841e7ba653e10b09d1",
+    shallow_since = "1573773597 +0100"
 )
