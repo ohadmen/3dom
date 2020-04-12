@@ -12,7 +12,7 @@ namespace TrackStateCommon
         QVector3D  p = vmI * QVector3D(0, 0, 0);
         QVector3D p2 = vmI * vpmat.xy2screen(xy);
         QVector3D n = (p2 - p).normalized();
-        QVector3D x = drawablesBuffer.getRayIntersection(p, n);
+        QVector3D x = drawablesBuffer.picking(p, n);
         return x;
 
 }

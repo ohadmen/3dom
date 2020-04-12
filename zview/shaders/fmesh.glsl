@@ -1,8 +1,8 @@
-//#ifdef GL_ES
-//// Set default precision to medium
-//precision mediump int;
-//precision mediump float;
-//#endif
+#ifdef GL_ES
+// Set default precision to medium
+precision mediump int;
+precision mediump float;
+#endif
 
 uniform int u_txt;
 
@@ -18,13 +18,13 @@ void main()
     
     if(u_txt==1)
 	{
-		gl_FragColor = v_rgb; 
+		gl_FragColor =v_rgb;
 	}
 	else if(u_txt==2)
 	{
 		
 		float specularFactor =0.8;
-		vec3 ec_pos=vec3(v_xyz[0],v_xyz[1],v_xyz[2]);
+		vec3 ec_pos=v_xyz.xyz;
 		vec3 ec_normal = normalize(cross(dFdx(ec_pos),dFdy(ec_pos)));
 		vec3 lightDir = vec3(0.4, 0.48, 0.51);
 		float spec = max(dot(ec_normal, lightDir), 0.0)*specularFactor/2.0+

@@ -44,7 +44,7 @@ private:
 
 	
 	
-	Backdrop* m_bg;
+	Backdrop m_backdrop;
     int m_textureType;
 	
 	

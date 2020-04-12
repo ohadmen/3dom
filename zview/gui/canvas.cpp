@@ -47,9 +47,8 @@ void  Canvas::initializeGL()
     glEnable(GL_BLEND);
     glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	m_backdrop.initializeGL();
 
-	m_bg = new Backdrop;
-	// m_bg.initializeGL();
 	// drawableBasicShapes.initializeGL();
 	
 	
@@ -60,7 +59,7 @@ void  Canvas::initializeGL()
 void Canvas::paintGL()
 {
 	glEnable(GL_DEPTH_TEST);
-	m_bg->paintGL();
+	m_backdrop.paintGL(QMatrix4x4(),0);
 	// QMatrix4x4 vp = vpmat();
 	// for (auto& d : drawablesBuffer)
 	// {

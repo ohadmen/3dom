@@ -2,6 +2,7 @@
 #include <QtGui/qvector3d.h>
 #include <vector>
 #include <array>
+#include <variant>
 
 namespace Types
 {
@@ -77,6 +78,28 @@ namespace Types
 	public:
 		std::vector< VertData>& v() { return m_v; }
 		const std::vector< VertData>& v() const { return m_v; }
+
+		Roi3d get3dbbox() const
+		{
+			if (m_v.size() == 0)
+			{
+				static const float e = 1e-3;
+				return Types::Roi3d(-e, e, -e, e, -e, e);
+			}
+			else if (m_v.size() == 1)
+			{
+				static const float e = 1e-3;
+				return Types::Roi3d(m_v[0].x - e, m_v[0].x + e, m_v[0].y - e, m_v[0].y + e, m_v[0].z - e, m_v[0].z + e);
+			}
+			else
+			{
+				auto xmm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData &a, const Types::VertData &b) { return a.x < b.x; });
+				auto ymm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData &a, const Types::VertData &b) { return a.y < b.y; });
+				auto zmm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData &a, const Types::VertData &b) { return a.z < b.z; });
+				return Types::Roi3d(xmm.first->x, xmm.second->x, ymm.first->y, ymm.second->y, zmm.first->z, zmm.second->z);
+			}
+}
+
 	};
 
 	class Mesh: public Pcl
@@ -98,5 +121,6 @@ namespace Types
         const std::vector< EdgeIndx>& e()const { return m_e; }
 
     };
-}
-//using Shape = std::variant<Pcl,Edges,Mesh> ;
+	//using Shape = std::variant<Pcl,Edges,Mesh> ;
+} //namespcae Types
+

@@ -35,7 +35,7 @@ QAction *MainWindow::privAddAction(const QString &str, void (MainWindow::*ff)(),
 }
 void MainWindow::privAddMenuBar()
 {
-    auto menuH = menuBar()->addMenu(tr("&File"));
+    //auto menuH = menuBar()->addMenu(tr("&File"));
     // menuH->addAction(privAddAction("save ply", &MainWindow::privCallback_savePly, QKeySequence::Save));
     // menuH->addAction(privAddAction("open", &MainWindow::privCallback_load, QKeySequence::Open));
 }
