@@ -5,17 +5,17 @@
 // #include "drawables/drawable_basic_shapes.h"
 
 
-Canvas::Canvas(QWidget* parent = 0) :QOpenGLWidget(parent), m_textureType(0)
+Canvas::Canvas(QWidget* parent = 0) :QOpenGLWidget(parent), m_textureType(0),m_broker(&m_buffer,&m_vpmat),m_stateMachine(m_broker)
 {
 	setMouseTracking(true);
+
+	
+
 }
 
-void Canvas::setTexture(int txt) { m_textureType = txt; }
+void Canvas::slot_setTexture(int txt) { m_textureType = txt; }
 
-void Canvas::forceUpdate()
-{
-    update();
-}
+void Canvas::slot_forceUpdate(){    update();}
 void Canvas::resetView()
 {
 	constexpr float deg2rad =  M_PI/180.0;
@@ -23,7 +23,7 @@ void Canvas::resetView()
 	// rotation center is always (0,0,-1). for init, set object to (0,0,-1), and rescale it to fit in image.
 	// static const float deg2rad = std::acosf(0.0) / 90;
 	Types::Roi3d objsbbox;
-	for (const auto& o : m_buffer)
+	for (const auto& o : DrawablesBuffer::i())
 	{
 		Types::Roi3d bbox = o.second.get()->get3dbbox();
 		objsbbox |= bbox;
@@ -35,7 +35,7 @@ void Canvas::resetView()
     QVector3D t = -objsbbox.mid();
 	QMatrix4x4 vm = VPmat::translate({0,0,-1})*VPmat::scale(s) * VPmat::translate(t);
 	
-	m_vpmat.setViewMatrix(vm);
+	m_stateMachine.setViewMatrix(vm);
 	
 }
 
@@ -67,8 +67,8 @@ void Canvas::paintGL()
 {
 	glEnable(GL_DEPTH_TEST);
 	m_backdrop.paintGL(QMatrix4x4(),0);
-	QMatrix4x4 vp = m_vpmat();
-	for (auto& d : m_buffer)
+	QMatrix4x4 vp = m_stateMachine.getViewMatrix();
+	for (auto& d : DrawablesBuffer::i())
 	{
 		d.second.get()->paintGL(vp, m_textureType);
 	}
@@ -81,13 +81,13 @@ void Canvas::paintGL()
 void Canvas::resizeGL(int w, int h)
 {
 	m_backdrop.resizeGL(w, h);
-	m_vpmat.setWinSize(w, h);
+	m_stateMachine.setWinSize(w, h);
 	
 
 }
 
 void Canvas::addShape(const Types::Shape& obj,const std::string& name)
 {
-	m_buffer.addShape(obj,name);
+	DrawablesBuffer::i().addShape(obj,name);
 	resetView();
 }

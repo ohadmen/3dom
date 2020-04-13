@@ -1,7 +1,6 @@
 #include "track_state_rotate.h"
 #include "track_state_idle.h"
-#include "libcurie/common/vp_mat.h"
-#include "libcurie/common/params.h"
+#include "zview/common/params.h"
 #include <cassert>
 #include <cmath>
 
@@ -24,7 +23,7 @@ QVector3D TrackStateRotate::sprivGetHitSphere(const QPointF& xy)
 	float paramb = y0 * y0 / x0 - x0;
 
 
-	QVector3D hitonscreen = vpmat.xy2screen(xy);
+	QVector3D hitonscreen = m_machineP->xy2screen(xy);
 	
 	assert(tbradius2 < 1.0);
 	float xyr2 = hitonscreen.x() * hitonscreen.x() + hitonscreen.y() * hitonscreen.y();
@@ -42,7 +41,7 @@ QVector3D TrackStateRotate::sprivGetHitSphere(const QPointF& xy)
 
 TrackStateRotate::TrackStateRotate(const QPointF& xy)
 {
-	m_hitview = vpmat.getViewMatrix();
+	m_hitview = m_machineP->getViewMatrix();
 	m_hitonscreen = sprivGetHitSphere(xy).normalized();
 	
 	
@@ -65,8 +64,8 @@ void TrackStateRotate::input(QMouseEvent* e)
 		m(0, 3) = m(0, 2);
 		m(1, 3) = m(1, 2);
 		m(2, 3) = m(2, 2) - 1;
-		vpmat.setViewMatrix(m * m_hitview);
-        canvasUpdate();
+		m_machineP->setViewMatrix(m * m_hitview);
+        m_machineP->canvasUpdate();
 	}
 	if (e->button() == Qt::MouseButton::LeftButton && e->type() == QInputEvent::MouseButtonRelease && e->modifiers() == Qt::KeyboardModifier::NoModifier)
 		m_machineP->setState(new TrackStateIdle);

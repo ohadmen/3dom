@@ -12,7 +12,7 @@ static paramType paramName(paramType vin = paramType(-1)) \
 class Params
 {
 public:
-	
+	paramsStaticParameter(trackBallRadius, float, 0.5f);
     paramsStaticParameter(nStatusLines, int, 3);
     paramsStaticParameter(camZnear, float, 0.1f);
     paramsStaticParameter(camZfar, float, 1e2f);

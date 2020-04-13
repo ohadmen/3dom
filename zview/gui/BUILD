@@ -23,8 +23,10 @@ qt_cc_library(
     deps = qtdeps+[
         "//zview/gui/drawables:backdrop",
         "//zview/gui/drawables:drawables_buffer",
-        "//zview/backend",
+        "//zview/backend:vp_mat",
+        "//zview/backend/state_machine",
         "//zview/common"
+
         ] ,
     visibility = ["//zview:__subpackages__"],
 )

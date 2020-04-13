@@ -1,7 +1,7 @@
 #pragma once
 #include "track_state_abs.h"
-#include <QtGui/QVector3D>
-#include <QtGui/QMatrix4x4>
+
+
 
 //----------------------state translation----------------------//
 class TrackStateTranslate : public TrackStateAbs {

@@ -1,8 +1,12 @@
-# https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
-cc_library(
+load("//third_party:qt.bzl", "qt_cc_library")
+
+qt_cc_library(
     name = "state_machine",
-    srcs = glob(["*.cpp"]),
-    hdrs = glob(["*.h"]),
-    visibility = ["//libcurie:__subpackages__"],
-    deps = ["@qt//:qt_gui","//libcurie/common","//libcurie/drawables:drawables_buffer","//libcurie/drawables:drawable_basic_shapes"]
+    src = "state_machine.cpp",
+    hdr = "state_machine.h",
+    srcs = glob(["track*.cpp"]),
+    hdrs = glob(["track*.h"]),
+    visibility = ["//zview:__subpackages__"],
+    deps = ["@qt//:qt_gui","//zview/common","//zview/backend:vp_mat","//zview/gui/drawables:drawables_buffer"]
 )
+

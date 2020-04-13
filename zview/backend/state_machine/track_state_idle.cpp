@@ -12,8 +12,8 @@ void TrackStateIdle::input(QKeyEvent* e)
     if(e->type() == QInputEvent::KeyPress && e->modifiers() == Qt::KeyboardModifier::NoModifier && e->key() >= Qt::Key::Key_0 && e->key() <= Qt::Key::Key_9)
     {
         int k(e->key() - Qt::Key::Key_0);
-        emit m_machineP->setTexture(k);
-        emit m_machineP->canvasUpdate();
+        m_machineP->setTexture(k);
+        m_machineP->canvasUpdate();
     }
     else if (e->type() == QInputEvent::KeyPress && e->modifiers() == Qt::KeyboardModifier::NoModifier && e->key() == Qt::Key::Key_D)
     {

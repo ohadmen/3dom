@@ -1,5 +1,6 @@
 #pragma once
-#include "track_state_machine.h"
+#include "state_machine.h"
+#include "QtGui/qmatrix4x4.h"
 #include <QtCore/QEvent>
 //----------------------State base class----------------------//
 class TrackStateAbs 
@@ -9,17 +10,17 @@ class TrackStateAbs
 protected:
 	TrackStateMachine* m_machineP;
 public:
+	virtual ~TrackStateAbs();
 	virtual const char* name() = 0;
 	
 	void input(QInputEvent* e);
-	void canvasUpdate();
-    
-    void setStatus(const std::string& str);
 
 	virtual void input(QMouseEvent*) { return; }
 	virtual void input(QKeyEvent*) { return; }
 	virtual void input(QWheelEvent*) { return; }
     TrackStateAbs(TrackStateMachine* machine = nullptr) :m_machineP(machine) {}
+
+
 
 };
 
