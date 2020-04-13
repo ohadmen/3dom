@@ -14,7 +14,7 @@ QVector3D TrackStateMachine::pickClosestObject(const QPointF &xy) const
     float minLen = inf;
     QVector3D pt(inf, inf, inf);
 
-    for (const auto& o : DrawablesBuffer::i())
+    for (const auto& o : drawablesBuffer)
 	{ 
         if (!o.second->isActive())
             continue;

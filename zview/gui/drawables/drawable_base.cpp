@@ -34,3 +34,4 @@ void DrawableBase::privInitShader(const QString &shaderName)
 }
 
 
+DrawableBase::~DrawableBase(){}

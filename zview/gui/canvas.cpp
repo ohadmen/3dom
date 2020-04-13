@@ -5,7 +5,7 @@
 // #include "drawables/drawable_basic_shapes.h"
 
 
-Canvas::Canvas(QWidget* parent = 0) :QOpenGLWidget(parent), m_textureType(0),m_broker(&m_buffer,&m_vpmat),m_stateMachine(m_broker)
+Canvas::Canvas(QWidget* parent = 0) :QOpenGLWidget(parent), m_textureType(0),m_stateMachine()
 {
 	setMouseTracking(true);
 
@@ -23,7 +23,7 @@ void Canvas::resetView()
 	// rotation center is always (0,0,-1). for init, set object to (0,0,-1), and rescale it to fit in image.
 	// static const float deg2rad = std::acosf(0.0) / 90;
 	Types::Roi3d objsbbox;
-	for (const auto& o : DrawablesBuffer::i())
+	for (const auto& o : drawablesBuffer)
 	{
 		Types::Roi3d bbox = o.second.get()->get3dbbox();
 		objsbbox |= bbox;
@@ -68,11 +68,11 @@ void Canvas::paintGL()
 	glEnable(GL_DEPTH_TEST);
 	m_backdrop.paintGL(QMatrix4x4(),0);
 	QMatrix4x4 vp = m_stateMachine.getViewMatrix();
-	for (auto& d : DrawablesBuffer::i())
+	for (auto& d : drawablesBuffer)
 	{
 		d.second.get()->paintGL(vp, m_textureType);
 	}
-	// drawableBasicShapes.paintGL(vp);
+	//drawableBasicShapes.paintGL(vp);
 
 
 	

@@ -10,8 +10,9 @@ class TrackStateMachine : public QObject {
         TrackStateAbs* m_state;
         VPmat m_vpmat;
     
-    QVector3D pickClosestObject(const QPointF &xy) const;
+    
 public:
+    QVector3D pickClosestObject(const QPointF &xy) const;
     void setState(TrackStateAbs* newState);
     TrackStateMachine();
 
@@ -22,7 +23,7 @@ public:
 	void 	   setViewMatrix(const QMatrix4x4& m);
     void 	   setWinSize(int w, int h);
 	QVector3D  xy2screen(const QPointF& xy);
-	QVector3D pickClosestObject(const QPointF& xy);
+	
 
 
 public slots:
