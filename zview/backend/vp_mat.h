@@ -21,7 +21,7 @@ class VPmat
 public:
 	VPmat();
 
-    QMatrix4x4 operator()() const;
+    QMatrix4x4 getVPmatrix() const;
     void setWinSize(int w, int h);
 
     

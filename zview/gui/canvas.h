@@ -13,47 +13,28 @@
 #include "zview/gui/drawables/backdrop.h"
 #include "zview/gui/drawables/drawables_buffer.h"
 
-
-
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
 	Q_OBJECT
 
 public:
-	explicit Canvas(QWidget* parent);
-	void addShape(const Types::Shape& obj,const std::string& name);
+	explicit Canvas(QWidget *parent);
+	void addShape(const Types::Shape &obj, const std::string &name);
 	void resetView();
 
 public slots:
-    void slot_forceUpdate();
-    void slot_setTexture(int txt);
+	void slot_forceUpdate();
+	void slot_setTexture(int txt);
+
 protected:
 	void initializeGL();
 
-	
 	void paintGL();
 	void resizeGL(int w, int h);
-	
 
-
-
-
-    
-	
 private:
-
-	
-	
-	Backdrop m_backdrop;
-    int m_textureType;
-	
-	
+	int m_textureType;
 	TrackStateMachine m_stateMachine;
+	Backdrop m_backdrop;
 	
-	
-
-
 };
-
-
-

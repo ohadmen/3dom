@@ -15,7 +15,7 @@ QVector3D VPmat::xy2screen(const QPointF &xy) const
     return QVector3D(sv);
 }
 
-QMatrix4x4 VPmat::operator()() const { return m_proj * m_view; }
+QMatrix4x4 VPmat::getVPmatrix() const { return m_proj * m_view; }
 void VPmat::setWinSize(int w, int h)
 {
     m_w = w;

@@ -67,7 +67,7 @@ void Canvas::paintGL()
 {
 	glEnable(GL_DEPTH_TEST);
 	m_backdrop.paintGL(QMatrix4x4(),0);
-	QMatrix4x4 vp = m_stateMachine.getViewMatrix();
+	QMatrix4x4 vp = m_stateMachine.getVPmatrix();
 	for (auto& d : drawablesBuffer)
 	{
 		d.second.get()->paintGL(vp, m_textureType);

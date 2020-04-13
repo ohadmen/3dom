@@ -19,6 +19,7 @@ public:
 	void canvasUpdate() ;
     void setStatus(const std::string& str) ;
     void setTexture(int k);
+    QMatrix4x4 getVPmatrix() const;
 	QMatrix4x4 getViewMatrix() const;
 	void 	   setViewMatrix(const QMatrix4x4& m);
     void 	   setWinSize(int w, int h);
