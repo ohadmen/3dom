@@ -1,7 +1,7 @@
 #include "track_state_translate.h"
 #include "track_state_idle.h"
 
-TrackStateTranslate::TrackStateTranslate(const QPointF& xy)
+TrackStateTranslate::TrackStateTranslate(TrackStateMachine* machine,const QPointF& xy):TrackStateAbs(machine)
 {
 	m_hitview = m_machineP->getViewMatrix();
 	
@@ -19,7 +19,7 @@ void TrackStateTranslate::input(QMouseEvent* e)
 
 	if (e->button() == Qt::MouseButton::RightButton && e->type() == QInputEvent::MouseButtonRelease && e->modifiers() == Qt::KeyboardModifier::NoModifier)
 	{
-		m_machineP->setState(new TrackStateIdle);
+		m_machineP->setState(new TrackStateIdle(m_machineP));
 	}
 }
 

@@ -2,7 +2,7 @@
 #include <cmath>
 #include <sstream>
 
-TrackStateMeasureDistance::TrackStateMeasureDistance() 
+TrackStateMeasureDistance::TrackStateMeasureDistance(TrackStateMachine* machine):TrackStateIdle(machine) 
 {
     // drawableBasicShapes.remove(drawble_line_key);
     // drawableBasicShapes.remove(drawble_p0_key);
@@ -35,7 +35,7 @@ void TrackStateMeasureDistance::input(QKeyEvent* e)
         //    drawableBasicShapes.insert(drawble_line_key, { m_p0,p1 }, { 0,0,255 });
             m_machineP->canvasUpdate();
        }
-       m_machineP->setState(new TrackStateIdle);
+       m_machineP->setState(new TrackStateIdle(m_machineP));
     }
    else
        TrackStateIdle::input(e);

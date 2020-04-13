@@ -36,7 +36,6 @@ void TrackStateMachine::setState(TrackStateAbs *newState)
 {
     delete m_state;
     m_state = newState;
-    m_state->m_machineP = this;
     qDebug() << "current state:" << m_state->name();
 }
 

@@ -11,7 +11,7 @@ class TrackStateMeasureDistance : public TrackStateIdle {
 public:
     bool setMesuringStartPoint(const QPointF&);
 	const char* name() { return "TrackStateMeasureDistance"; }
-    TrackStateMeasureDistance();
+    TrackStateMeasureDistance(TrackStateMachine* machine);
     void input(QKeyEvent*) override;
     
 	

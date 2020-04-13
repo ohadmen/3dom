@@ -6,7 +6,7 @@ protected:
     QPointF m_mousepos;
 public:
 	const char* name() { return "TrackStateIdle"; }
-    TrackStateIdle(TrackStateMachine* p = nullptr);
+    TrackStateIdle(TrackStateMachine* machine);
 	
     void input(QKeyEvent* e);
     void input(QMouseEvent* e);

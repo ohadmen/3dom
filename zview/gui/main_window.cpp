@@ -1,5 +1,4 @@
 #include "main_window.h"
-#include "canvas.h"
 #include "zview/io/read_stl.h"
 #include <QtWidgets/QTreeView>
 #include <QtWidgets/QApplication>
@@ -44,17 +43,17 @@ void MainWindow::privAddMenuBar()
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    Canvas *canvas = new Canvas(this);
+    m_canvas = new Canvas(this);
     QTreeView *objList = new QTreeView(this);
     //TrackStateMachine* stateMachine = new TrackStateMachine;
     objList->setMinimumWidth(140);
-    canvas->setMinimumWidth(500);
-    canvas->setMinimumHeight(400);
+    m_canvas->setMinimumWidth(500);
+    m_canvas->setMinimumHeight(400);
 
     m_status.setStyleSheet("QLabel { background-color : #FFFFFF; color : black; }");
 
     QHBoxLayout *layoutP = new QHBoxLayout;
-    layoutP->addWidget(canvas, 0);
+    layoutP->addWidget(m_canvas, 0);
 
     QVBoxLayout *sublayoutP = new QVBoxLayout;
     sublayoutP->addWidget(objList, 0);
@@ -77,22 +76,29 @@ MainWindow::MainWindow(QWidget *parent)
 
     // objList->setModel(g);
 
-    // QObject::connect(stateMachine, &TrackStateMachine::setStatus, this, &CurieMainWin::setStatus);
+    
     // QObject::connect(g, &TreeModel::viewLabelChanged, &drawablesBuffer, &DrawablesBuffer::viewLabelChanged);
     // QObject::connect(&drawablesBuffer, &DrawablesBuffer::addItem, g, &TreeModel::addItem);
     // QObject::connect(&drawablesBuffer, &DrawablesBuffer::canvasUpdate, canvas, &Canvas::forceUpdate);
     // QObject::connect(this, &CurieMainWin::resetView, canvas, &Canvas::resetView);
+    // QObject::connect(stateMachine, &TrackStateMachine::setStatus, this, &CurieMainWin::setStatus);
     // QObject::connect(stateMachine, &TrackStateMachine::canvasUpdate, canvas, &Canvas::forceUpdate);
-
     // QObject::connect(stateMachine, &TrackStateMachine::setTexture, canvas, &Canvas::setTexture);
-
-    // QObject::connect(this, &CurieMainWin::signal_keyEvent  ,stateMachine, &TrackStateMachine::input );
-    // QObject::connect(this, &CurieMainWin::signal_mouseEvent,stateMachine, &TrackStateMachine::input );
-    // QObject::connect(this, &CurieMainWin::signal_wheelEvent,stateMachine, &TrackStateMachine::input );
+    // QObject::connect(this, &MainWindow::signal_keyEvent  ,canvas->m_stateMachine, &TrackStateMachine::input );
+    // QObject::connect(this, &MainWindow::signal_mouseEvent,canvas->m_stateMachine, &TrackStateMachine::input );
+    // QObject::connect(this, &MainWindow::signal_wheelEvent,canvas->m_stateMachine, &TrackStateMachine::input );
 
     // setFocus();
 
     Types::Mesh obj = io::readstl("/home/ohad/dev/projects/zview/example/horse.stl");
-    canvas->addShape(obj,"debug");
+    m_canvas->addShape(obj,"debug");
 
 }
+void MainWindow::keyPressEvent(QKeyEvent* e){m_canvas->input(e);}
+void MainWindow::keyReleaseEvent(QKeyEvent* e){m_canvas->input(e);}
+void MainWindow::mouseReleaseEvent(QMouseEvent* e){m_canvas->input(e);}
+void MainWindow::mousePressEvent(QMouseEvent* e){m_canvas->input(e);}
+void MainWindow::mouseDoubleClickEvent(QMouseEvent* e){m_canvas->input(e);}
+void MainWindow::mouseMoveEvent(QMouseEvent* e){m_canvas->input(e);}
+void MainWindow::wheelEvent(QWheelEvent* e){m_canvas->input(e);}
+

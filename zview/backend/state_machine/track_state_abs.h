@@ -15,10 +15,11 @@ public:
 	
 	void input(QInputEvent* e);
 
+	
 	virtual void input(QMouseEvent*) { return; }
 	virtual void input(QKeyEvent*) { return; }
 	virtual void input(QWheelEvent*) { return; }
-    TrackStateAbs(TrackStateMachine* machine = nullptr) :m_machineP(machine) {}
+    TrackStateAbs(TrackStateMachine* machine) :m_machineP(machine) {}
 
 
 

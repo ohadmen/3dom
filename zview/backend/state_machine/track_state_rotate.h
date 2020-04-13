@@ -11,7 +11,7 @@ class TrackStateRotate: public TrackStateAbs{
 	
 public:
 	const char* name() { return "TrackStateRotate"; }
-	TrackStateRotate(const QPointF& xy);
+	TrackStateRotate(TrackStateMachine* machine,const QPointF& xy);
 
 	void input(QMouseEvent* e);
 };

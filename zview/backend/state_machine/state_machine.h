@@ -25,9 +25,6 @@ public:
     void 	   setWinSize(int w, int h);
 	QVector3D  xy2screen(const QPointF& xy);
 	
-
-
-public slots:
     void input(QInputEvent* e);
 
  signals:

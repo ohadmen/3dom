@@ -9,15 +9,18 @@ TrackStateIdle::TrackStateIdle(TrackStateMachine* machine):TrackStateAbs(machine
 
 void TrackStateIdle::input(QKeyEvent* e)
 {
-    if(e->type() == QInputEvent::KeyPress && e->modifiers() == Qt::KeyboardModifier::NoModifier && e->key() >= Qt::Key::Key_0 && e->key() <= Qt::Key::Key_9)
+    
+    bool noModifier = e->modifiers() == Qt::KeyboardModifier::NoModifier;
+    bool typeKeypress = e->type() == QInputEvent::KeyRelease;
+    if(typeKeypress && noModifier && e->key() >= Qt::Key::Key_0 && e->key() <= Qt::Key::Key_9)
     {
         int k(e->key() - Qt::Key::Key_0);
         m_machineP->setTexture(k);
         m_machineP->canvasUpdate();
     }
-    else if (e->type() == QInputEvent::KeyPress && e->modifiers() == Qt::KeyboardModifier::NoModifier && e->key() == Qt::Key::Key_D)
+    else if (typeKeypress && noModifier && e->key() == Qt::Key::Key_D)
     {
-        TrackStateMeasureDistance* tsmd = new TrackStateMeasureDistance;
+        TrackStateMeasureDistance* tsmd = new TrackStateMeasureDistance(m_machineP);
         if (tsmd->setMesuringStartPoint(m_mousepos))
             m_machineP->setState(tsmd);
         else
@@ -39,9 +42,11 @@ void TrackStateIdle::input(QMouseEvent* e)
 {
     m_mousepos = e->localPos();
 	if (e->button() == Qt::MouseButton::LeftButton && e->type() == QInputEvent::MouseButtonPress && e->modifiers() == Qt::KeyboardModifier::NoModifier)
-		m_machineP->setState(new TrackStateRotate(m_mousepos));
+    {
+		m_machineP->setState(new TrackStateRotate(m_machineP,m_mousepos));
+    }
 	else if (e->button() == Qt::MouseButton::RightButton && e->type() == QInputEvent::MouseButtonPress && e->modifiers() == Qt::KeyboardModifier::NoModifier)
-		m_machineP->setState(new TrackStateTranslate(m_mousepos));
+		m_machineP->setState(new TrackStateTranslate(m_machineP,m_mousepos));
 	else if (e->button() == Qt::MouseButton::LeftButton && e->type() == QInputEvent::MouseButtonDblClick && e->modifiers() == Qt::KeyboardModifier::NoModifier)
 		TrackStateRetarget(m_machineP).input(m_mousepos);
 	//else

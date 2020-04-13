@@ -10,7 +10,7 @@ class TrackStateTranslate : public TrackStateAbs {
 
 public:
 	const char* name() { return "TrackStateTranslate"; }
-	TrackStateTranslate(const QPointF& xy);
+	TrackStateTranslate(TrackStateMachine* machine,const QPointF& xy);
 	void input(QMouseEvent* e);
 };
 

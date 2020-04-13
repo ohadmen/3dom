@@ -39,7 +39,7 @@ QVector3D TrackStateRotate::sprivGetHitSphere(const QPointF& xy)
 	return hitonscreen;
 }
 
-TrackStateRotate::TrackStateRotate(const QPointF& xy)
+TrackStateRotate::TrackStateRotate(TrackStateMachine* machine,const QPointF& xy):TrackStateAbs(machine)
 {
 	m_hitview = m_machineP->getViewMatrix();
 	m_hitonscreen = sprivGetHitSphere(xy).normalized();
@@ -68,6 +68,6 @@ void TrackStateRotate::input(QMouseEvent* e)
         m_machineP->canvasUpdate();
 	}
 	if (e->button() == Qt::MouseButton::LeftButton && e->type() == QInputEvent::MouseButtonRelease && e->modifiers() == Qt::KeyboardModifier::NoModifier)
-		m_machineP->setState(new TrackStateIdle);
+		m_machineP->setState(new TrackStateIdle(m_machineP));
 
 }

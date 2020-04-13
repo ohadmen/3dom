@@ -21,16 +21,21 @@ public:
 	explicit Canvas(QWidget *parent);
 	void addShape(const Types::Shape &obj, const std::string &name);
 	void resetView();
+	void forceUpdate();
+	void setTexture(int txt);
 
+	void input(QInputEvent *e);
 public slots:
 	void slot_forceUpdate();
 	void slot_setTexture(int txt);
-
+	
 protected:
 	void initializeGL();
 
 	void paintGL();
 	void resizeGL(int w, int h);
+
+
 
 private:
 	int m_textureType;
