@@ -21,13 +21,16 @@ public:
 	explicit Canvas(QWidget *parent);
 	void addShape(const Types::Shape &obj, const std::string &name);
 	void resetView();
-	void forceUpdate();
-	void setTexture(int txt);
-
+	
 	void input(QInputEvent *e);
+	
 public slots:
+	void slot_setStatus(const QString& str);
 	void slot_forceUpdate();
 	void slot_setTexture(int txt);
+
+signals:
+	void signal_setStatus(const QString& str);
 	
 protected:
 	void initializeGL();

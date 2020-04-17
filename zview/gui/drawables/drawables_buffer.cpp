@@ -8,7 +8,7 @@ DrawablesBuffer::DrawablesBuffer()
 {
 }
 
-void DrawablesBuffer::addShape(const Types::Shape &objv, const std::string &name)
+size_t DrawablesBuffer::addShape(const Types::Shape &objv, const std::string &name)
 {
     if (std::holds_alternative<Types::Mesh>(objv))
     {
@@ -25,9 +25,17 @@ void DrawablesBuffer::addShape(const Types::Shape &objv, const std::string &name
         throw std::runtime_error("not implemnted yet");
     }
 
-    ++m_uniqueKeyCounter;
+    return m_uniqueKeyCounter++;
 }
 
+bool DrawablesBuffer::removeShape(size_t key)
+{
+    auto it = m_drawobjs.find(key);
+    if (it == m_drawobjs.end())
+        return false;
+    m_drawobjs.erase(it);
+    return true;
+}
 DrawablesBuffer::BaseTypeVector::iterator DrawablesBuffer::begin() { return m_drawobjs.begin(); }
 DrawablesBuffer::BaseTypeVector::const_iterator DrawablesBuffer::begin() const { return m_drawobjs.begin(); }
 DrawablesBuffer::BaseTypeVector::const_iterator DrawablesBuffer::cbegin() const { return begin(); }

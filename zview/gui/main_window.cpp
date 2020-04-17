@@ -9,6 +9,19 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMenuBar>
 
+
+
+void MainWindow::slot_setStatus(const QString& str)
+{
+    //auto t = std::time(nullptr);
+    //auto tm = *std::localtime(&t);
+    //std::stringstream ss;
+    //ss << std::put_time(&tm, "[%Y-%m-%d %H:%M:%S]") << " " << str.toStdString();
+    m_status.append(str);
+    m_status.scroll(0, 1);
+}
+
+
 QRect getCenterRect()
 {
     // get the dimension available on this screen
@@ -43,6 +56,8 @@ void MainWindow::privAddMenuBar()
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    
+
     m_canvas = new Canvas(this);
     QTreeView *objList = new QTreeView(this);
     //TrackStateMachine* stateMachine = new TrackStateMachine;
@@ -81,17 +96,17 @@ MainWindow::MainWindow(QWidget *parent)
     // QObject::connect(&drawablesBuffer, &DrawablesBuffer::addItem, g, &TreeModel::addItem);
     // QObject::connect(&drawablesBuffer, &DrawablesBuffer::canvasUpdate, canvas, &Canvas::forceUpdate);
     // QObject::connect(this, &CurieMainWin::resetView, canvas, &Canvas::resetView);
-    // QObject::connect(stateMachine, &TrackStateMachine::setStatus, this, &CurieMainWin::setStatus);
+    QObject::connect(m_canvas, &Canvas::signal_setStatus, this, &MainWindow::slot_setStatus);
     // QObject::connect(stateMachine, &TrackStateMachine::canvasUpdate, canvas, &Canvas::forceUpdate);
     // QObject::connect(stateMachine, &TrackStateMachine::setTexture, canvas, &Canvas::setTexture);
-    // QObject::connect(this, &MainWindow::signal_keyEvent  ,canvas->m_stateMachine, &TrackStateMachine::input );
-    // QObject::connect(this, &MainWindow::signal_mouseEvent,canvas->m_stateMachine, &TrackStateMachine::input );
-    // QObject::connect(this, &MainWindow::signal_wheelEvent,canvas->m_stateMachine, &TrackStateMachine::input );
 
-    // setFocus();
+    setMouseTracking(true);
+    setFocus();
 
     Types::Mesh obj = io::readstl("/home/ohad/dev/projects/zview/example/horse.stl");
     m_canvas->addShape(obj,"debug");
+    
+    
 
 }
 void MainWindow::keyPressEvent(QKeyEvent* e){m_canvas->input(e);}
@@ -99,6 +114,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent* e){m_canvas->input(e);}
 void MainWindow::mouseReleaseEvent(QMouseEvent* e){m_canvas->input(e);}
 void MainWindow::mousePressEvent(QMouseEvent* e){m_canvas->input(e);}
 void MainWindow::mouseDoubleClickEvent(QMouseEvent* e){m_canvas->input(e);}
-void MainWindow::mouseMoveEvent(QMouseEvent* e){m_canvas->input(e);}
 void MainWindow::wheelEvent(QWheelEvent* e){m_canvas->input(e);}
+void MainWindow::mouseMoveEvent(QMouseEvent* e){    m_canvas->input(e);    }
 

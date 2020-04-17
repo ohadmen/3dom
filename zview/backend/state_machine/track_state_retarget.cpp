@@ -3,11 +3,12 @@
 #include <QtGui/QMatrix4x4>
 #include <cmath>
 #include <sstream>
+#include <iomanip>
 
 std::string strginFromQVector3d(const QVector3D& x)
 {
     std::stringstream ss;
-    ss <<"[" << x.x() << ", " << x.y() << ", " << x.z() << "]";
+    ss <<"[" << std::setw(7) << std::setprecision(3) << x.x() << ", " << x.y() << ", " << x.z() << "]";
     return ss.str();
 
 }

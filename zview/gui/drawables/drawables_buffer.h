@@ -23,7 +23,8 @@ public:
 		return obj;
 	}
 
-	void addShape(const Types::Shape &obj, const std::string &name);
+	size_t addShape(const Types::Shape &obj, const std::string &name);
+	bool removeShape(size_t key);
 
 	BaseTypeVector::iterator	   begin();
 	BaseTypeVector::const_iterator begin() const;

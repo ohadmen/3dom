@@ -20,7 +20,7 @@ cc_library(
     name = "drawables_buffer",
     srcs = ["drawables_buffer.cpp"],
     hdrs = ["drawables_buffer.h"],
-    deps = qtdeps+["drawable_mesh"],
+    deps = qtdeps+["drawable_mesh","drawable_edges","drawable_pcl"],
     visibility = ["//zview:__subpackages__"],
         copts = [
         '-fpic',
@@ -53,3 +53,30 @@ qt_cc_library(
     ],
  
 )
+
+qt_cc_library(
+    name = "drawable_edges",
+    src = "drawable_edges.cpp",
+    hdr = "drawable_edges.h",
+    deps = qtdeps+["drawable_base"],
+    visibility = ["//zview:__subpackages__"],
+        copts = [
+        '-fpic',
+    ],
+ 
+)
+
+
+
+qt_cc_library(
+    name = "drawable_pcl",
+    src = "drawable_pcl.cpp",
+    hdr = "drawable_pcl.h",
+    deps = qtdeps+["drawable_base","//zview/common"],
+    visibility = ["//zview:__subpackages__"],
+        copts = [
+        '-fpic',
+    ],
+ 
+)
+

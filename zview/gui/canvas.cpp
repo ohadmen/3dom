@@ -7,27 +7,25 @@
 
 Canvas::Canvas(QWidget* parent = 0) :QOpenGLWidget(parent), m_textureType(0),m_stateMachine()
 {
-	setMouseTracking(true);
-
+	
+	
 	
     //QObject::connect(m_stateMachine, &TrackStateMachine::setStatus, this, &CurieMainWin::setStatus);
-    QObject::connect(&m_stateMachine, &TrackStateMachine::signal_canvasUpdate, this, &Canvas::forceUpdate);
-    QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setTexture, this, &Canvas::setTexture);
+	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setStatus, this, &Canvas::slot_setStatus);
+    QObject::connect(&m_stateMachine, &TrackStateMachine::signal_canvasUpdate, this, &Canvas::slot_forceUpdate);
+    QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setTexture, this, &Canvas::slot_setTexture);
 	setFocus();
 
 }
 
-void Canvas::setTexture(int txt) {
-	 m_textureType = txt; 
-	 qDebug() << "texture set to " << m_textureType;
-	 }
-void Canvas::forceUpdate()
+void Canvas::slot_setStatus(const QString& str)
 {
-    update();
+	emit signal_setStatus(str);
 }
 
 
-void Canvas::slot_setTexture(int txt) { m_textureType = txt; }
+
+void Canvas::slot_setTexture(int txt) { m_textureType = txt; qDebug() << "texture set to " << m_textureType;}
 
 void Canvas::slot_forceUpdate(){    update();}
 void Canvas::resetView()

@@ -10,6 +10,8 @@ class MainWindow : public QMainWindow
 
   	void privAddMenuBar();
     QAction* privAddAction(const QString& str, void(MainWindow::* ff)(), QKeySequence q = QKeySequence::UnknownKey);
+public slots:
+    void slot_setStatus(const QString& str);
 
 
 public:
