@@ -3,7 +3,7 @@
 
 class DrawableMesh : public Types::Mesh, public DrawableBase
 {
-    QOpenGLBuffer m_vBuff; //vertices 3xn
+    
     QOpenGLBuffer m_iBuff; //indices 3xm
     
 public:

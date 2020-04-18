@@ -3,33 +3,13 @@
 #include "track_state_rotate.h"
 #include "track_state_translate.h"
 #include "track_state_retarget.h"
+#include "track_state_measure_distance.h"
 #include <cmath>
 #include <sstream>
 constexpr float inf = std::numeric_limits<float>::infinity();
 
-TrackStateIdle::TrackStateIdle(TrackStateMachine* machine):TrackStateAbs(machine), m_mousepos(-1,-1),m_distanceMesurment{inf,inf,inf}{}
+TrackStateIdle::TrackStateIdle(TrackStateMachine* machine):TrackStateAbs(machine), m_mousepos(-1,-1){}
 
-
-void TrackStateIdle::privSetDistanceMesuremnts()
-{
-    QVector3D x = m_machineP->pickClosestObject(m_mousepos);
-	
-    if (std::isinf(x[0]))
-		return;
-    
-    if(std::isinf(m_distanceMesurment[0]))
-        m_distanceMesurment=x;
-    else
-    {
-           QVector3D d = x - m_distanceMesurment;
-           std::stringstream ss;
-           ss << "distance:"<< d.length() << " ["<<d.x() << ", " << d.y() << ", " << d.z() << "]";
-           m_machineP->setStatus(ss.str());
-           m_distanceMesurment[0]=inf;
-
-    }
-
-}
 
 void TrackStateIdle::input(QKeyEvent* e)
 {
@@ -44,7 +24,11 @@ void TrackStateIdle::input(QKeyEvent* e)
     }
     else if (typeKeypress && noModifier && e->key() == Qt::Key::Key_D)
     {
-        privSetDistanceMesuremnts();
+                TrackStateMeasureDistance* tsmd = new TrackStateMeasureDistance(m_machineP);
+        if (tsmd->setMesuringStartPoint(m_mousepos))
+            m_machineP->setState(tsmd);
+        else
+            delete tsmd;
     }
 
 
@@ -61,7 +45,7 @@ void TrackStateIdle::input(QWheelEvent* e)
 void TrackStateIdle::input(QMouseEvent* e)
 {
     m_mousepos = e->localPos();
-    qDebug() << "mouseMove";
+    
 	if (e->button() == Qt::MouseButton::LeftButton && e->type() == QInputEvent::MouseButtonPress && e->modifiers() == Qt::KeyboardModifier::NoModifier)
     {
 		m_machineP->setState(new TrackStateRotate(m_machineP,m_mousepos));
@@ -70,8 +54,6 @@ void TrackStateIdle::input(QMouseEvent* e)
 		m_machineP->setState(new TrackStateTranslate(m_machineP,m_mousepos));
 	else if (e->button() == Qt::MouseButton::LeftButton && e->type() == QInputEvent::MouseButtonDblClick && e->modifiers() == Qt::KeyboardModifier::NoModifier)
 		TrackStateRetarget(m_machineP).input(m_mousepos);
-	//else
-	//	qDebug() << "type:" << e->type() << "button:" << e->button();
 
 	
 	
@@ -81,3 +63,4 @@ void TrackStateIdle::input(QMouseEvent* e)
 	
 
 }
+

@@ -20,10 +20,14 @@ public:
 	void setActive(bool a);
 	const std::string& getName() const;
 
+	void updateVertexBuffer(const Types::VertData* data,size_t n);
+
 protected:
+	
     std::string m_name;
     bool m_active;
 	QOpenGLShaderProgram m_meshShader;
+	QOpenGLBuffer m_vBuff; //vertices 3xn
 
 	void privInitShader(const QString &shaderName);
 

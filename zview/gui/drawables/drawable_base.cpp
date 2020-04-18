@@ -3,7 +3,7 @@
 
 
 
-DrawableBase::DrawableBase(const std::string& name) :m_name(name),m_active(true) {}
+DrawableBase::DrawableBase(const std::string& name) :m_name(name),m_active(true),m_vBuff(QOpenGLBuffer::VertexBuffer) {}
 
 
 bool DrawableBase::isActive() const { return m_active; }
@@ -35,3 +35,15 @@ void DrawableBase::privInitShader(const QString &shaderName)
 
 
 DrawableBase::~DrawableBase(){}
+
+
+void DrawableBase::updateVertexBuffer(const Types::VertData* data,size_t n)
+{
+    size_t nbytes = n*sizeof(Types::VertData);
+    m_vBuff.bind();
+    auto ptr = m_vBuff.mapRange(0, nbytes, QOpenGLBuffer::RangeInvalidateBuffer | QOpenGLBuffer::RangeWrite);
+    memcpy(ptr, data,  nbytes);
+    m_vBuff.unmap();
+    m_vBuff.release();
+
+}

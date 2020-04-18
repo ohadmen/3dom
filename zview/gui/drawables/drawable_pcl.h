@@ -4,7 +4,7 @@
 
 class DrawablePcl : public Types::Pcl, public DrawableBase
 {
-	QOpenGLBuffer m_vBuff; //vertices 3xn
+	
 	
 
 public:

@@ -38,6 +38,12 @@ protected:
 	void paintGL();
 	void resizeGL(int w, int h);
 
+    void mouseReleaseEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void mouseDoubleClickEvent(QMouseEvent* e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void wheelEvent(QWheelEvent* e);
+
 
 
 private:

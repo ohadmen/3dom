@@ -1,7 +1,7 @@
 #include "drawable_pcl.h"
 #include "zview/common/params.h"
 
-DrawablePcl::DrawablePcl(const std::string& name) :DrawableBase(name), m_vBuff(QOpenGLBuffer::VertexBuffer){}
+DrawablePcl::DrawablePcl(const std::string& name) :DrawableBase(name){}
 
 DrawablePcl::~DrawablePcl()
 {

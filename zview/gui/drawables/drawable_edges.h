@@ -3,7 +3,7 @@
 
 class DrawableEdges : public Types::Edges, public DrawableBase
 {
-    QOpenGLBuffer m_vBuff; //vertices 3xn
+    
     QOpenGLBuffer m_eBuff; //indices 2xm
 
 public:

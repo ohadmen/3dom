@@ -1,6 +1,6 @@
 #include "drawable_mesh.h"
 
-DrawableMesh::DrawableMesh(const std::string &name) : DrawableBase(name), m_vBuff(QOpenGLBuffer::VertexBuffer), m_iBuff(QOpenGLBuffer::IndexBuffer) {}
+DrawableMesh::DrawableMesh(const std::string &name) : DrawableBase(name),  m_iBuff(QOpenGLBuffer::IndexBuffer) {}
 
 DrawableMesh::~DrawableMesh()
 {

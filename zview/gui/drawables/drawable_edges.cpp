@@ -1,7 +1,7 @@
 #include "drawable_edges.h"
 
 
-DrawableEdges::DrawableEdges(const std::string& name) :DrawableBase(name), m_vBuff(QOpenGLBuffer::VertexBuffer), m_eBuff(QOpenGLBuffer::IndexBuffer) {}
+DrawableEdges::DrawableEdges(const std::string& name) :DrawableBase(name), m_eBuff(QOpenGLBuffer::IndexBuffer) {}
 
 DrawableEdges::~DrawableEdges()
 {
@@ -15,7 +15,7 @@ void DrawableEdges::initializeGL()
     initializeOpenGLFunctions();
     m_vBuff.create();
     m_eBuff.create();
-    m_vBuff.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    m_vBuff.setUsagePattern(QOpenGLBuffer::DynamicDraw);
     m_eBuff.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
     m_vBuff.bind();

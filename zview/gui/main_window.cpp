@@ -57,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     
+    setMouseTracking(true);
+    setFocus();
 
     m_canvas = new Canvas(this);
     QTreeView *objList = new QTreeView(this);
@@ -100,8 +102,6 @@ MainWindow::MainWindow(QWidget *parent)
     // QObject::connect(stateMachine, &TrackStateMachine::canvasUpdate, canvas, &Canvas::forceUpdate);
     // QObject::connect(stateMachine, &TrackStateMachine::setTexture, canvas, &Canvas::setTexture);
 
-    setMouseTracking(true);
-    setFocus();
 
     Types::Mesh obj = io::readstl("/home/ohad/dev/projects/zview/example/horse.stl");
     m_canvas->addShape(obj,"debug");
@@ -111,9 +111,3 @@ MainWindow::MainWindow(QWidget *parent)
 }
 void MainWindow::keyPressEvent(QKeyEvent* e){m_canvas->input(e);}
 void MainWindow::keyReleaseEvent(QKeyEvent* e){m_canvas->input(e);}
-void MainWindow::mouseReleaseEvent(QMouseEvent* e){m_canvas->input(e);}
-void MainWindow::mousePressEvent(QMouseEvent* e){m_canvas->input(e);}
-void MainWindow::mouseDoubleClickEvent(QMouseEvent* e){m_canvas->input(e);}
-void MainWindow::wheelEvent(QWheelEvent* e){m_canvas->input(e);}
-void MainWindow::mouseMoveEvent(QMouseEvent* e){    m_canvas->input(e);    }
-

@@ -9,13 +9,12 @@ Canvas::Canvas(QWidget* parent = 0) :QOpenGLWidget(parent), m_textureType(0),m_s
 {
 	
 	
-	
+	setMouseTracking(true);
     //QObject::connect(m_stateMachine, &TrackStateMachine::setStatus, this, &CurieMainWin::setStatus);
 	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setStatus, this, &Canvas::slot_setStatus);
     QObject::connect(&m_stateMachine, &TrackStateMachine::signal_canvasUpdate, this, &Canvas::slot_forceUpdate);
     QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setTexture, this, &Canvas::slot_setTexture);
-	setFocus();
-
+ 
 }
 
 void Canvas::slot_setStatus(const QString& str)
@@ -104,7 +103,16 @@ void Canvas::addShape(const Types::Shape& obj,const std::string& name)
 	resetView();
 }
 
+
 void Canvas::input(QInputEvent *e)
 {
 	m_stateMachine.input(e);
 }
+
+
+void Canvas::mouseReleaseEvent(QMouseEvent* e){m_stateMachine.input(e);}
+void Canvas::mousePressEvent(QMouseEvent* e){m_stateMachine.input(e);}
+void Canvas::mouseDoubleClickEvent(QMouseEvent* e){m_stateMachine.input(e);}
+void Canvas::wheelEvent(QWheelEvent* e){m_stateMachine.input(e);}
+void Canvas::mouseMoveEvent(QMouseEvent* e){    m_stateMachine.input(e);}
+

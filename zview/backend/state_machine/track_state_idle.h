@@ -2,10 +2,10 @@
 #include "track_state_abs.h"
 //----------------------state idle----------------------//
 class TrackStateIdle : public TrackStateAbs {
-    QPointF m_mousepos;
-    QVector3D m_distanceMesurment;
-    void privSetDistanceMesuremnts();
+    
 protected:
+    QPointF m_mousepos;
+    
     
 public:
 	const char* name() { return "TrackStateIdle"; }
