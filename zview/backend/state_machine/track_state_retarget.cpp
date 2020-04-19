@@ -1,4 +1,5 @@
 #include "track_state_retarget.h"
+#include "state_machine.h"
 #include <QtGui/QVector3D>
 #include <QtGui/QMatrix4x4>
 #include <cmath>

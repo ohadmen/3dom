@@ -1,4 +1,5 @@
 #include "track_state_zoom.h"
+#include "state_machine.h"
 namespace
 {
 QMatrix4x4 scale(float v)

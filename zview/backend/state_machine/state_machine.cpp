@@ -1,3 +1,4 @@
+
 #include "state_machine.h"
 #include "track_state_idle.h"
 #include "zview/gui/drawables/drawables_buffer.h"
@@ -29,19 +30,15 @@ QVector3D TrackStateMachine::pickClosestObject(const QPointF &xy) const
     return pt;
 }
 
-TrackStateMachine::TrackStateMachine() : m_state(new TrackStateIdle(this))
+TrackStateMachine::TrackStateMachine()
 {
+    setCurrentState<TrackStateIdle>();
 }
-void TrackStateMachine::setState(TrackStateAbs *newState)
-{
-    delete m_state;
-    m_state = newState;
-    qDebug() << "current state:" << m_state->name();
-}
+
 
 void TrackStateMachine::input(QInputEvent *e)
 {
-    m_state->input(e);
+    m_statesMap[m_currentState]->input(e);
 }
 
 void TrackStateMachine::setStatus(const std::string &str)

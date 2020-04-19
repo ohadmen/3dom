@@ -44,6 +44,7 @@ void main()
 		int ii=int(max(min(v_xyz[0]/2000.0+0.5,1.0),0.0)*255.0);
 		
 		gl_FragColor = colFromBase(u_colmap[ii],nrml);
+		gl_FragColor[3]=0.5;
 	}
 	else if(u_txt==5)
 	{

@@ -10,8 +10,9 @@ class TrackStateRotate: public TrackStateAbs{
 	QMatrix4x4 m_hitview;
 	
 public:
-	const char* name() { return "TrackStateRotate"; }
-	TrackStateRotate(TrackStateMachine* machine,const QPointF& xy);
+	const char* name() override{ return "TrackStateRotate"; }
+	TrackStateRotate(TrackStateMachine* machine);
+	void setInitLocation(const QPointF& xy);
 
 	void input(QMouseEvent* e);
 };

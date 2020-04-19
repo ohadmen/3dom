@@ -5,7 +5,7 @@ class TrackStateRetarget : public TrackStateAbs {
 
 
 public:
-    const char* name() { return "TrackStateRetarget"; }
+    const char* name() override{ return "TrackStateRetarget"; }
     void input(const QPointF& xy);
     TrackStateRetarget(TrackStateMachine* machine);
 

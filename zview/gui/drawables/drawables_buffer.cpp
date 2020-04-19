@@ -73,3 +73,13 @@ DrawablesBuffer::BaseTypeVector::const_iterator DrawablesBuffer::cbegin() const 
 DrawablesBuffer::BaseTypeVector::iterator DrawablesBuffer::end() { return m_drawobjs.end(); }
 DrawablesBuffer::BaseTypeVector::const_iterator DrawablesBuffer::end() const { return m_drawobjs.end(); }
 DrawablesBuffer::BaseTypeVector::const_iterator DrawablesBuffer::cend() const { return end(); }
+bool DrawablesBuffer::setShapeVisability(size_t key, bool isvis)
+{
+    auto it = m_drawobjs.find(key);
+    if (it == m_drawobjs.end())
+        return false;
+    DrawableBase *obj = it->second.get();
+    obj->setActive(isvis);
+    return true;
+
+}

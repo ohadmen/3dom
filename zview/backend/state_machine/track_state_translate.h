@@ -9,8 +9,9 @@ class TrackStateTranslate : public TrackStateAbs {
 	QMatrix4x4 m_hitview;
 
 public:
-	const char* name() { return "TrackStateTranslate"; }
-	TrackStateTranslate(TrackStateMachine* machine,const QPointF& xy);
+	const char* name()override { return "TrackStateTranslate"; }
+	TrackStateTranslate(TrackStateMachine* machine);
+	void setInitLocation(const QPointF& xy);
 	void input(QMouseEvent* e);
 };
 

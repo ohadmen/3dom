@@ -1,8 +1,8 @@
 #pragma once
-#include "state_machine.h"
 #include "QtGui/qmatrix4x4.h"
-#include <QtCore/QEvent>
+#include <QtGui/QInputEvent>
 //----------------------State base class----------------------//
+class TrackStateMachine;
 class TrackStateAbs 
 {
 	
@@ -10,7 +10,7 @@ class TrackStateAbs
 protected:
 	TrackStateMachine* m_machineP;
 public:
-	virtual ~TrackStateAbs();
+	~TrackStateAbs();
 	virtual const char* name() = 0;
 	
 	void input(QInputEvent* e);

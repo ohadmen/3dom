@@ -6,7 +6,7 @@ class TrackStateZoom : public TrackStateAbs {
 
 
 public:
-	const char* name() { return "TrackStateZoom"; }
+	const char* name()override { return "TrackStateZoom"; }
     TrackStateZoom(TrackStateMachine* p);
 	void input(QWheelEvent*);
 	

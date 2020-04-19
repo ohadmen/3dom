@@ -25,6 +25,7 @@ public:
 
 	size_t addShape(const Types::Shape &obj, const std::string &name);
 	bool removeShape(size_t key);
+	bool setShapeVisability(size_t key, bool isvis);
 
 	bool updateVertexBuffer(size_t key,const Types::VertData* pcl,size_t n);
 

@@ -8,7 +8,7 @@ protected:
     
     
 public:
-	const char* name() { return "TrackStateIdle"; }
+	const char* name()override { return "TrackStateIdle"; }
     TrackStateIdle(TrackStateMachine* machine);
 	
     void input(QKeyEvent* e);

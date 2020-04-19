@@ -84,6 +84,7 @@ void Canvas::paintGL()
 		d.second.get()->paintGL(vp, m_textureType);
 	}
 	//drawableBasicShapes.paintGL(vp);
+	
 
 
 	
@@ -114,5 +115,5 @@ void Canvas::mouseReleaseEvent(QMouseEvent* e){m_stateMachine.input(e);}
 void Canvas::mousePressEvent(QMouseEvent* e){m_stateMachine.input(e);}
 void Canvas::mouseDoubleClickEvent(QMouseEvent* e){m_stateMachine.input(e);}
 void Canvas::wheelEvent(QWheelEvent* e){m_stateMachine.input(e);}
-void Canvas::mouseMoveEvent(QMouseEvent* e){    m_stateMachine.input(e);}
+void Canvas::mouseMoveEvent(QMouseEvent* e){    m_stateMachine.input(e);repaint();}
 
