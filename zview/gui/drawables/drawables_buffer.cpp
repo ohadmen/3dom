@@ -45,6 +45,7 @@ size_t DrawablesBuffer::addShape(const Types::Shape &objv, const std::string &na
         throw std::runtime_error("?unimplemented option?");
     }
     emit shapeAdded(QString::fromStdString(m_drawobjs[m_uniqueKeyCounter]->getName()),m_uniqueKeyCounter);
+    emit updateCanvas();
     return m_uniqueKeyCounter++;
 }
 
@@ -55,6 +56,7 @@ bool DrawablesBuffer::removeShape(size_t key)
         return false;
     m_drawobjs.erase(it);
     emit shapeRemoved(key);
+    emit updateCanvas();
     return true;
 }
 
@@ -81,6 +83,7 @@ bool DrawablesBuffer::setShapeVisability(size_t key, bool isvis)
         return false;
     DrawableBase *obj = it->second.get();
     obj->setActive(isvis);
+    emit updateCanvas();
     return true;
 
 }

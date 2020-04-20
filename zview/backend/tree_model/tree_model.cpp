@@ -77,7 +77,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 
     Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-    if (index.column() == 1)
+    if (index.column() == 2)
         flags |= Qt::ItemIsUserCheckable;
 
     return flags;

@@ -42,4 +42,5 @@ public slots:
 signals:
 	void shapeAdded(QString name, size_t key);
 	void shapeRemoved(size_t key);
+	void updateCanvas();
 };

@@ -106,6 +106,8 @@ MainWindow::MainWindow(QWidget *parent)
     //when adding new shape to buffer, add list
     QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeRemoved, g, &TreeModel::removeItem);
 
+    QObject::connect(&drawablesBuffer, &DrawablesBuffer::updateCanvas, m_canvas, &Canvas::slot_forceUpdate);
+
     // QObject::connect(&drawablesBuffer, &DrawablesBuffer::addItem, g, &TreeModel::addItem);
     // QObject::connect(&drawablesBuffer, &DrawablesBuffer::canvasUpdate, canvas, &Canvas::forceUpdate);
     // QObject::connect(this, &CurieMainWin::resetView, canvas, &Canvas::resetView);
