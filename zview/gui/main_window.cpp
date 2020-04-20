@@ -108,16 +108,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     QObject::connect(&drawablesBuffer, &DrawablesBuffer::updateCanvas, m_canvas, &Canvas::slot_forceUpdate);
 
-    // QObject::connect(&drawablesBuffer, &DrawablesBuffer::addItem, g, &TreeModel::addItem);
-    // QObject::connect(&drawablesBuffer, &DrawablesBuffer::canvasUpdate, canvas, &Canvas::forceUpdate);
     // QObject::connect(this, &CurieMainWin::resetView, canvas, &Canvas::resetView);
     QObject::connect(m_canvas, &Canvas::signal_setStatus, this, &MainWindow::slot_setStatus);
-    // QObject::connect(stateMachine, &TrackStateMachine::canvasUpdate, canvas, &Canvas::forceUpdate);
-    // QObject::connect(stateMachine, &TrackStateMachine::setTexture, canvas, &Canvas::setTexture);
 
 
     Types::Mesh obj = io::readstl("/home/ohad/dev/projects/zview/example/horse.stl");
-    m_canvas->addShape(obj,"debug");
+    m_canvas->addShape(obj,"fileio/horst.stl");
     
     
 

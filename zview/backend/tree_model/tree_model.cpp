@@ -5,7 +5,6 @@
 TreeModel::TreeModel(QTreeView *treeViewP, const QStringList &headerString, QObject *parent)
     : QAbstractItemModel(parent), m_rootItem(new TreeItem("", -1, nullptr)), m_headerString(headerString), m_treeViewP(treeViewP)
 {
-    
 }
 
 TreeModel::~TreeModel()
@@ -60,9 +59,15 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
     {
         TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
 
-        item->setChecked(value == Qt::Checked);
+        bool checkval = value == Qt::Checked;
+        for (auto a : sprivGetChildren(item))
+        {
+            a->setChecked(checkval);
+            emit viewLabelChanged(a->getHandleNum(), a->isChecked());
+        }
+
         emit dataChanged(createIndex(index.row(), 1), createIndex(rowCount(), columnCount()));
-        emit viewLabelChanged(item->getHandleNum(), item->isChecked());
+
         //set focus back to parent
         m_treeViewP->parentWidget()->setFocus();
     }
@@ -171,7 +176,7 @@ void privAddItemRec(const QStringList &list, int handleNum, TreeItem *parent)
 
 void TreeModel::addItem(const QString &str, size_t handleNum)
 {
-    
+
     QStringList list = str.simplified().split(QRegExp("\\/"), QString::SkipEmptyParts);
 
     privAddItemRec(list, handleNum, m_rootItem);
@@ -181,29 +186,36 @@ void TreeModel::addItem(const QString &str, size_t handleNum)
 void TreeModel::removeItem(size_t handleNum)
 {
     //go over all tree and locate object with handlenum
-    std::vector<TreeItem *> stack;
-    stack.push_back(m_rootItem);
-    while (!stack.empty())
-    {
-        TreeItem *cur = stack.back();
-        stack.pop_back();
-
-        if (cur->getHandleNum() == int(handleNum))
+    std::vector<TreeItem *> flatList = sprivGetChildren(m_rootItem);
+    std::for_each(flatList.begin(), flatList.end(), [&handleNum](TreeItem *a) {
+        if (a->getHandleNum() == int(handleNum))
         {
-            if (cur->childCount() == 0)
+            if (a->childCount() == 0)
             {
                 //leaf node - remove
-                cur->parent()->removeChild(cur);
+                a->parent()->removeChild(a);
             }
             else
             {
                 //has childeren - just set handleNum to -i
-                cur->setHandleNum(-1);
+                a->setHandleNum(-1);
             }
-            break;
         }
+    });
+}
 
-        for (auto &a : *cur)
-            stack.push_back(a);
+std::vector<TreeItem *> TreeModel::sprivGetChildren(TreeItem *root)
+{
+    std::vector<TreeItem *> list;
+    list.push_back(root);
+    size_t i = 0;
+    while (i != list.size())
+    {
+        TreeItem* cur = list[i++];
+        for(auto a:*cur)
+            list.push_back(a);
+        
+        
     }
+    return list;
 }

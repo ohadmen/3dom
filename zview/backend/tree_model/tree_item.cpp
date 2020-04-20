@@ -3,8 +3,6 @@
 bool TreeItem::isChecked() { return m_checked; }
 void TreeItem::setChecked(bool set) {
     m_checked = set;
-    for (auto& ch : *this)
-        ch->setChecked(set);
 }
 void TreeItem::setHandleNum(int hn){m_handleNum=hn;}
 QList<TreeItem*>::iterator TreeItem::begin() { return childItems.begin(); }
