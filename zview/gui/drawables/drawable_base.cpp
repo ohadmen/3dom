@@ -37,13 +37,16 @@ void DrawableBase::privInitShader(const QString &shaderName)
 DrawableBase::~DrawableBase(){}
 
 
-void DrawableBase::updateVertexBuffer(const Types::VertData* data,size_t n)
+bool DrawableBase::updateVertexBuffer(const Types::VertData* data,size_t n)
 {
     size_t nbytes = n*sizeof(Types::VertData);
     m_vBuff.bind();
     auto ptr = m_vBuff.mapRange(0, nbytes, QOpenGLBuffer::RangeInvalidateBuffer | QOpenGLBuffer::RangeWrite);
-    memcpy(ptr, data,  nbytes);
+    if(!ptr)
+    return false;
+        memcpy(ptr, data,  nbytes);
     m_vBuff.unmap();
     m_vBuff.release();
+    return true;
 
 }

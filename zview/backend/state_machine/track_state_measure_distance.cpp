@@ -9,9 +9,11 @@ void TrackStateMeasureDistance::privStateReset()
     constexpr float inf = std::numeric_limits<float>::infinity();
     m_p[0].x=inf;
     m_p[1].x=inf;
+    if(m_drawObjHandle!=-1)
+        drawablesBuffer.removeShape(m_drawObjHandle);
     m_drawObjHandle=-1;
 }
-TrackStateMeasureDistance::TrackStateMeasureDistance(TrackStateMachine *machineP) : TrackStateIdle(machineP)
+TrackStateMeasureDistance::TrackStateMeasureDistance(TrackStateMachine *machineP) : TrackStateIdle(machineP),m_drawObjHandle(-1)
 {
     privStateReset();
 }
@@ -45,6 +47,7 @@ void TrackStateMeasureDistance::privSetMesuringEndPoint()
 
 bool TrackStateMeasureDistance::setMesuringStartPoint(const QPointF &xy)
 {
+    privStateReset();
     constexpr uint8_t begcolor[] = {255, 0, 0};
     m_p[0] = vecCol2vert(m_machineP->pickClosestObject(xy), begcolor);
     if (std::isinf(m_p[0].x))
@@ -64,7 +67,7 @@ void TrackStateMeasureDistance::input(QKeyEvent *e)
     }
     else if (typeKeypress && noModifier && e->key() == Qt::Key::Key_Escape)
     {
-        drawablesBuffer.removeShape(m_drawObjHandle);
+        
         privStateReset();
          m_machineP->setCurrentState<TrackStateIdle>();
          m_machineP->canvasUpdate();

@@ -1,5 +1,6 @@
 #include "main_window.h"
 #include "zview/io/read_stl.h"
+#include "zview/backend/tree_model/tree_model.h"
 #include <QtWidgets/QTreeView>
 #include <QtWidgets/QApplication>
 #include <QtGui/QScreen>
@@ -62,6 +63,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_canvas = new Canvas(this);
     QTreeView *objList = new QTreeView(this);
+    TreeModel* g = new TreeModel(objList,{"#", "Layer name","v" });
+    objList->setModel(g);
+    objList->setColumnWidth(0,10);
+    objList->setColumnWidth(1,200);
+    objList->setColumnWidth(2,10);
     //TrackStateMachine* stateMachine = new TrackStateMachine;
     objList->setMinimumWidth(140);
     m_canvas->setMinimumWidth(500);
@@ -89,12 +95,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     privAddMenuBar();
 
-    //TreeModel* g = new TreeModel(objList,{ "Layer name","v" });
-
-    // objList->setModel(g);
+    
 
     
-    // QObject::connect(g, &TreeModel::viewLabelChanged, &drawablesBuffer, &DrawablesBuffer::viewLabelChanged);
+
+    //when chaning object visiblity on the tree view - update it in the buffer
+    QObject::connect(g, &TreeModel::viewLabelChanged, &drawablesBuffer, &DrawablesBuffer::setShapeVisability);
+    //when adding new shape to buffer, add list
+    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeAdded, g, &TreeModel::addItem);
+    //when adding new shape to buffer, add list
+    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeRemoved, g, &TreeModel::removeItem);
+
     // QObject::connect(&drawablesBuffer, &DrawablesBuffer::addItem, g, &TreeModel::addItem);
     // QObject::connect(&drawablesBuffer, &DrawablesBuffer::canvasUpdate, canvas, &Canvas::forceUpdate);
     // QObject::connect(this, &CurieMainWin::resetView, canvas, &Canvas::resetView);

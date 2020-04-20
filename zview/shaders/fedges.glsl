@@ -14,7 +14,7 @@ void main()
 {
 
 
-    gl_FragColor = vec4(v_col[0],v_col[1],v_col[2],1.0); 
+    gl_FragColor = v_col; 
     
 }
 //! [0]

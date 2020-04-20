@@ -13,7 +13,7 @@ qt_cc_library(
     copts = [
         '-fpic',
     ],
-    deps = qtdeps+[":canvas","//zview/io"],
+    deps = qtdeps+[":canvas","//zview/io","//zview/backend/tree_model"],
     visibility = ["//zview:__subpackages__"],
 )
 qt_cc_library(

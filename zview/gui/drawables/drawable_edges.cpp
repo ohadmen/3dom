@@ -30,7 +30,7 @@ void DrawableEdges::initializeGL()
     m_eBuff.write(0, m_e.data(), int(m_e.size() * sizeof(Types::EdgeIndx)));
     m_eBuff.release();
 
-    privInitShader("line");
+    privInitShader("edges");
 }
 
 void DrawableEdges::paintGL(const QMatrix4x4& mvp, int txt)
@@ -40,7 +40,7 @@ void DrawableEdges::paintGL(const QMatrix4x4& mvp, int txt)
     if (!m_active)
         return;
 
-
+    
     m_vBuff.bind();
     m_eBuff.bind();
 
@@ -57,7 +57,8 @@ void DrawableEdges::paintGL(const QMatrix4x4& mvp, int txt)
 
 
     m_meshShader.setUniformValue("u_txt", txt);
-
+    
+    
 
     //glVertexAttribPointer(vc, 3, GL_UNSIGNED_INT8_NV, false, 3 * sizeof(uint8_t), NULL);
     glDrawElements(GL_LINES, m_eBuff.size() / sizeof(uint32_t), GL_UNSIGNED_INT, NULL);

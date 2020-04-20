@@ -20,7 +20,7 @@ public:
 	void setActive(bool a);
 	const std::string& getName() const;
 
-	void updateVertexBuffer(const Types::VertData* data,size_t n);
+	bool updateVertexBuffer(const Types::VertData* data,size_t n);
 
 protected:
 	

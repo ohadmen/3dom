@@ -16,10 +16,10 @@ qt_cc_library(
  
 )
 
-cc_library(
+qt_cc_library(
     name = "drawables_buffer",
-    srcs = ["drawables_buffer.cpp"],
-    hdrs = ["drawables_buffer.h"],
+    src = "drawables_buffer.cpp",
+    hdr = "drawables_buffer.h",
     deps = qtdeps+["drawable_mesh","drawable_edges","drawable_pcl"],
     visibility = ["//zview:__subpackages__"],
         copts = [
