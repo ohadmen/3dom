@@ -19,6 +19,7 @@ public:
 
     void keyPressEvent(QKeyEvent* e);
     void keyReleaseEvent(QKeyEvent* e);
+    void readFileList(const QStringList& files);
 private:
   QTextBrowser m_status;
   Canvas * m_canvas;

@@ -15,5 +15,5 @@ namespace
 
 namespace io
 {
-    std::vector <Types::Shape> readPly(const char* fn);
+    std::vector <std::pair<std::string,Types::Shape>> readPly(const char* fn);
 }

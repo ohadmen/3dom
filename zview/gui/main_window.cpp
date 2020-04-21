@@ -1,5 +1,6 @@
 #include "main_window.h"
 #include "zview/io/read_stl.h"
+#include "zview/io/read_ply.h"
 #include "zview/backend/tree_model/tree_model.h"
 #include <QtWidgets/QTreeView>
 #include <QtWidgets/QApplication>
@@ -10,9 +11,7 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMenuBar>
 
-
-
-void MainWindow::slot_setStatus(const QString& str)
+void MainWindow::slot_setStatus(const QString &str)
 {
     //auto t = std::time(nullptr);
     //auto tm = *std::localtime(&t);
@@ -21,7 +20,6 @@ void MainWindow::slot_setStatus(const QString& str)
     m_status.append(str);
     m_status.scroll(0, 1);
 }
-
 
 QRect getCenterRect()
 {
@@ -57,17 +55,17 @@ void MainWindow::privAddMenuBar()
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    
+
     setMouseTracking(true);
     setFocus();
 
     m_canvas = new Canvas(this);
     QTreeView *objList = new QTreeView(this);
-    TreeModel* g = new TreeModel(objList,{"#", "Layer name","v" });
+    TreeModel *g = new TreeModel(objList, {"#", "Layer name", "v"});
     objList->setModel(g);
-    objList->setColumnWidth(0,10);
-    objList->setColumnWidth(1,200);
-    objList->setColumnWidth(2,10);
+    objList->setColumnWidth(0, 10);
+    objList->setColumnWidth(1, 200);
+    objList->setColumnWidth(2, 10);
     //TrackStateMachine* stateMachine = new TrackStateMachine;
     objList->setMinimumWidth(140);
     m_canvas->setMinimumWidth(500);
@@ -95,10 +93,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     privAddMenuBar();
 
-    
-
-    
-
     //when chaning object visiblity on the tree view - update it in the buffer
     QObject::connect(g, &TreeModel::viewLabelChanged, &drawablesBuffer, &DrawablesBuffer::setShapeVisability);
     //when adding new shape to buffer, add list
@@ -110,13 +104,40 @@ MainWindow::MainWindow(QWidget *parent)
 
     // QObject::connect(this, &CurieMainWin::resetView, canvas, &Canvas::resetView);
     QObject::connect(m_canvas, &Canvas::signal_setStatus, this, &MainWindow::slot_setStatus);
-
-
-    Types::Mesh obj = io::readstl("/home/ohad/dev/projects/zview/example/horse.stl");
-    m_canvas->addShape(obj,"fileio/horst.stl");
-    
-    
-
 }
-void MainWindow::keyPressEvent(QKeyEvent* e){m_canvas->input(e);}
-void MainWindow::keyReleaseEvent(QKeyEvent* e){m_canvas->input(e);}
+void MainWindow::readFileList(const QStringList &files)
+{
+
+    for (const auto &s : files)
+    {
+        qDebug() << s;
+        QFileInfo finfo(s);
+        if (!finfo.exists())
+        {
+            qWarning() << "file " << finfo.absoluteFilePath() << " does not exists";
+            continue;
+        }
+
+        if (finfo.suffix().toLower() == "stl")
+        {
+            Types::Mesh obj = io::readstl(finfo.absoluteFilePath().toStdString());
+            m_canvas->addShape(obj, ("fileio/" + finfo.baseName().toStdString()));
+        }
+        else if (finfo.suffix().toLower() == "ply")
+        {
+            std::vector <std::pair<std::string,Types::Shape>> shapes = io::readPly(finfo.absoluteFilePath().toStdString().c_str());
+            for(auto& obj:shapes)
+            {
+                    m_canvas->addShape(obj.second, ("fileio/" + finfo.baseName().toStdString())+"/"+obj.first);
+            }
+
+        }
+        else
+        {
+            qWarning() << "file type " << finfo.suffix() << " is unsupported";
+        }
+    }
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *e) { m_canvas->input(e); }
+void MainWindow::keyReleaseEvent(QKeyEvent *e) { m_canvas->input(e); }

@@ -2,14 +2,14 @@
 #include "read_ply.h"
 #include <tinyply.h>
 #include <fstream>
-std::vector <Types::Shape> io::readPly(const char* fn)
+std::vector <std::pair<std::string,Types::Shape>> io::readPly(const char* fn)
 {
     
     std::ifstream ss(fn, std::ios::in | std::ios::binary);
     if (ss.fail()) throw
         std::runtime_error("failed to open " + std::string(fn));
 
-    std::vector<Types::Shape> container;
+    std::vector <std::pair<std::string,Types::Shape>> container;
     
     while (true)
     {   
@@ -66,7 +66,7 @@ std::vector <Types::Shape> io::readPly(const char* fn)
 
             obj.f().resize(faces->count); 
             std::memcpy(obj.f().data(), faces->buffer.get(), faces->buffer.size_bytes());
-            container.emplace_back(obj);
+            container.emplace_back(std::make_pair(name,obj));
 
         }
         if (edges)
@@ -77,14 +77,14 @@ std::vector <Types::Shape> io::readPly(const char* fn)
 
             obj.e().resize(edges->count);
             std::memcpy(obj.e().data(), edges->buffer.get(), edges->buffer.size_bytes());
-            container.emplace_back(obj);
+            container.emplace_back(std::make_pair(name,obj));
         }
         if (!edges & !faces)
         {
             Types::Pcl obj;
             obj.v().resize(vertices->count);
             std::memcpy(obj.v().data(), vertices->buffer.get(), vertices->buffer.size_bytes());
-            container.emplace_back(obj);
+            container.emplace_back(std::make_pair(name,obj));
         }
 
     }
