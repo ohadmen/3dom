@@ -63,7 +63,11 @@ void privReadStlBin(std::ifstream* ifsP, Types::Mesh* meshP)
 		uint8_t rgb[3] = { privColData2ch(coldata,0) ,privColData2ch(coldata,1),privColData2ch(coldata,2) };
 		for (unsigned i = 0; i < 3; ++i)
 		{
-			memcpy(&v[i], b, 3 * sizeof(float));
+			const auto& bf = reinterpret_cast<const float*>(b);
+
+			v[i].x = bf[0];
+			v[i].y = bf[1];
+			v[i].z = bf[2];
 			v[i].r = rgb[0];
 			v[i].g = rgb[1];
 			v[i].b = rgb[2];

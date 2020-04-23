@@ -1,7 +1,8 @@
 #include "drawable_edges.h"
+#include <QtGui/QMatrix2x2>
+#include <cmath>
 
-
-DrawableEdges::DrawableEdges(const std::string& name) :DrawableBase(name), m_eBuff(QOpenGLBuffer::IndexBuffer) {}
+DrawableEdges::DrawableEdges(const std::string &name) : DrawableBase(name), m_eBuff(QOpenGLBuffer::IndexBuffer) {}
 
 DrawableEdges::~DrawableEdges()
 {
@@ -20,7 +21,6 @@ void DrawableEdges::initializeGL()
 
     m_vBuff.bind();
 
-
     m_vBuff.allocate(m_v.data(), int(m_v.size() * sizeof(Types::VertData)));
     m_vBuff.write(0, m_v.data(), int(m_v.size() * sizeof(Types::VertData)));
     m_vBuff.release();
@@ -33,14 +33,13 @@ void DrawableEdges::initializeGL()
     privInitShader("edges");
 }
 
-void DrawableEdges::paintGL(const QMatrix4x4& mvp, int txt)
+void DrawableEdges::paintGL(const QMatrix4x4 &mvp, int txt)
 {
     if (!m_vBuff.isCreated())
         initializeGL();
     if (!m_active)
         return;
 
-    
     m_vBuff.bind();
     m_eBuff.bind();
 
@@ -55,10 +54,7 @@ void DrawableEdges::paintGL(const QMatrix4x4& mvp, int txt)
     m_meshShader.enableAttributeArray(vc);
     m_meshShader.setAttributeBuffer(vc, GL_UNSIGNED_BYTE, 3 * sizeof(float), 4, sizeof(Types::VertData));
 
-
     m_meshShader.setUniformValue("u_txt", txt);
-    
-    
 
     //glVertexAttribPointer(vc, 3, GL_UNSIGNED_INT8_NV, false, 3 * sizeof(uint8_t), NULL);
     glDrawElements(GL_LINES, m_eBuff.size() / sizeof(uint32_t), GL_UNSIGNED_INT, NULL);
@@ -66,20 +62,10 @@ void DrawableEdges::paintGL(const QMatrix4x4& mvp, int txt)
     m_vBuff.release();
     m_eBuff.release();
 
-
-
     // Clean up state machine
     m_meshShader.disableAttributeArray(vp);
     m_meshShader.disableAttributeArray(vc);
-
-
-
-
-
-
-
 }
-
 
 Types::Roi3d DrawableEdges::get3dbbox() const
 {
@@ -95,41 +81,45 @@ Types::Roi3d DrawableEdges::get3dbbox() const
     }
     else
     {
-        auto xmm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData& a, const Types::VertData& b) {return a.x < b.x; });
-        auto ymm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData& a, const Types::VertData& b) {return a.y < b.y; });
-        auto zmm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData& a, const Types::VertData& b) {return a.z < b.z; });
+        auto xmm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData &a, const Types::VertData &b) { return a.x < b.x; });
+        auto ymm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData &a, const Types::VertData &b) { return a.y < b.y; });
+        auto zmm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData &a, const Types::VertData &b) { return a.z < b.z; });
         return Types::Roi3d(xmm.first->x, xmm.second->x, ymm.first->y, ymm.second->y, zmm.first->z, zmm.second->z);
-
     }
 }
 
-float sprivRayEdgeIntersection(const QVector3D& rp, const QVector3D& rn, const QVector3D& v0, const QVector3D& v1)
+QVector3D DrawableEdges::picking(const QVector3D &p1, const QVector3D &n1) const
 {
+    static const float angularthresholt = std::tan(2.0 * M_PI / 180.0);
     static const float inf = std::numeric_limits<float>::infinity();
-    //todo
-    return inf;
 
-}
-
-QVector3D DrawableEdges::picking(const QVector3D& p, const QVector3D& n) const
-{
-    float r = std::numeric_limits<float>::infinity();
-    static const float inf = std::numeric_limits<float>::infinity();
-    QVector3D pt(inf, inf, inf);
-    for (const auto& i : m_e)
+    float closestDistance = inf;
+    QVector3D closestPoint(inf, inf, inf);
+    for (const auto &i : m_e)
     {
-        auto ri = sprivRayEdgeIntersection(p, n, m_v[i[0]], m_v[i[1]]);
-        if (r > ri)
-        {
-            r = ri;
-
-
-        }
+        const QVector3D &p2 = m_v[i[0]];
+        const QVector3D &p2_ = m_v[i[1]];
         
-
+        
+        QVector3D n2 = (p2_ - p2).normalized();
+        QVector3D q = p1 - p2;
+        float c = QVector3D::dotProduct(n1, n2);
+        
+        float invdet = 1.0 / (-1.0 + c * c);
+        float n1q = QVector3D::dotProduct(n1, q);
+        float n2q = QVector3D::dotProduct(n2, q);
+        float mu1 = (1 * n1q - c * n2q) * invdet;
+        float mu2 = (c * n1q - 1 * n2q) * invdet;
+        QVector3D pl1 = p1 + mu1 * n1;
+        QVector3D pl2 = p2 + mu2 * n2;
+        float d = pl1.length();
+        if (d > closestDistance)
+            continue;
+        float a = (pl2 - pl1).length();
+        if (a / d > angularthresholt)
+            continue;
+        closestDistance = d;
+        closestPoint = pl2;
     }
-    return pt;
-
+    return closestPoint;
 }
-
-

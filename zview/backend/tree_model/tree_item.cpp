@@ -39,7 +39,7 @@ int TreeItem::childCount() const
 
 int TreeItem::columnCount() const
 {
-    return 3;
+    return 4;
 }
 
 QString TreeItem::getName() const

@@ -5,7 +5,7 @@
 // #include "drawables/drawable_basic_shapes.h"
 
 
-Canvas::Canvas(QWidget* parent = 0) :QOpenGLWidget(parent), m_textureType(0),m_stateMachine()
+Canvas::Canvas(QWidget* parent = 0) :QOpenGLWidget(parent), m_textureType(1),m_stateMachine()
 {
 	
 	

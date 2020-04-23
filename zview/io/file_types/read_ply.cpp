@@ -2,6 +2,17 @@
 #include "read_ply.h"
 #include <tinyply.h>
 #include <fstream>
+
+namespace
+{
+    struct PlyHeadeData
+    {
+        size_t nvertices;
+        size_t nFaces;
+        size_t nEdges;
+    };
+}
+
 std::vector <std::pair<std::string,Types::Shape>> io::readPly(const char* fn)
 {
     

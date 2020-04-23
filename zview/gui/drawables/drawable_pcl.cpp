@@ -1,3 +1,4 @@
+#include <cmath>
 #include "drawable_pcl.h"
 #include "zview/common/params.h"
 
@@ -20,7 +21,7 @@ void DrawablePcl::initializeGL()
 	m_vBuff.write(0, m_v.data(), int(m_v.size() * sizeof(Types::VertData)));
 	m_vBuff.release();
 
-	privInitShader("meshV");
+	privInitShader("point");
 
     
 
@@ -53,7 +54,8 @@ void DrawablePcl::paintGL(const QMatrix4x4& mvp, int txt)
 
 
 	m_meshShader.setUniformValue("u_txt", txt);
-	//glPointSize(Params::pointSize());
+	m_meshShader.setUniformValue("u_ptSize", Params::pointSize());
+
 	glDrawArrays(GL_POINTS, 0,m_vBuff.size() / sizeof(float));
 
 	m_vBuff.release();
@@ -84,9 +86,24 @@ Types::Roi3d DrawablePcl::get3dbbox() const
 
 QVector3D DrawablePcl::picking(const QVector3D& p, const QVector3D& n) const
 {
+	static const float angularthresholt = std::tan(2.0*M_PI/180.0);
     constexpr float inf = std::numeric_limits<float>::infinity();
-    QVector3D pt(inf, inf, inf);
-
-	return pt;
+	float closestDistance = inf;
+	QVector3D closestPoint(inf,inf,inf);
+	for(const auto& pt:m_v)
+	{
+		auto pt_ = QVector3D(pt);
+		float d = QVector3D::dotProduct(n,pt_-p);
+		if(d<0)//behind camera
+			continue;
+		if(closestDistance<d)
+			continue;
+		float a = (p+n*d-pt_).length();
+		if(a/d>angularthresholt)
+			continue;
+		closestDistance = d;
+		closestPoint = pt_;
+	}
+	return closestPoint;
 
 }

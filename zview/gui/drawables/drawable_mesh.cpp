@@ -80,7 +80,7 @@ std::pair<float, QVector3D> sprivRayTriangleIntersection(const QVector3D &rp, co
 	{ // ray is  parallel to triangle plane
 		return inf;
 	}
-	float a = -QVector3D::dotProduct(n, rp - v0);
+	float a = QVector3D::dotProduct(n, v0-rp);
 	// get intersect point of ray with triangle plane
 	float r = a / b;
 	if (r < 0.0)	// ray goes away from triangle

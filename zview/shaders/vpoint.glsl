@@ -5,6 +5,7 @@ precision mediump float;
 #endif
 
 uniform mat4 mvp_matrix;
+uniform float u_ptSize;
 
 attribute vec4 a_xyz;
 attribute vec4 a_rgb;
@@ -19,7 +20,8 @@ void main()
 {
     // Calculate vertex position in screen space
     gl_Position = mvp_matrix * a_xyz;
-	v_xyz = a_xyz;
+	gl_PointSize = 10/max(0.05,abs(gl_Position[2]));
+    v_xyz = a_xyz;
     v_rgb = a_rgb;
 	v_eyeDir  = -1.0 * normalize(vec3(gl_Position));
 

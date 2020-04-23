@@ -1,15 +1,12 @@
 #include "main_window.h"
-#include "zview/io/read_stl.h"
-#include "zview/io/read_ply.h"
 #include "zview/backend/tree_model/tree_model.h"
-#include <QtWidgets/QTreeView>
 #include <QtWidgets/QApplication>
 #include <QtGui/QScreen>
 #include <QtWidgets/QStyle>
 #include <QtWidgets/QLayout>
 #include <QtWidgets/QAction>
-#include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMenuBar>
+#include "zview/io/read_file_list.h"
 
 void MainWindow::slot_setStatus(const QString &str)
 {
@@ -60,14 +57,8 @@ MainWindow::MainWindow(QWidget *parent)
     setFocus();
 
     m_canvas = new Canvas(this);
-    QTreeView *objList = new QTreeView(this);
-    TreeModel *g = new TreeModel(objList, {"#", "Layer name", "v"});
-    objList->setModel(g);
-    objList->setColumnWidth(0, 10);
-    objList->setColumnWidth(1, 200);
-    objList->setColumnWidth(2, 10);
-    //TrackStateMachine* stateMachine = new TrackStateMachine;
-    objList->setMinimumWidth(140);
+
+    TreeModel *treeModel = new TreeModel(this);
     m_canvas->setMinimumWidth(500);
     m_canvas->setMinimumHeight(400);
 
@@ -77,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
     layoutP->addWidget(m_canvas, 0);
 
     QVBoxLayout *sublayoutP = new QVBoxLayout;
-    sublayoutP->addWidget(objList, 0);
+    sublayoutP->addWidget(treeModel->getTreeView(), 0);
     sublayoutP->addWidget(&m_status, 1);
     sublayoutP->setStretch(0, 70);
     sublayoutP->setStretch(1, 30);
@@ -94,11 +85,11 @@ MainWindow::MainWindow(QWidget *parent)
     privAddMenuBar();
 
     //when chaning object visiblity on the tree view - update it in the buffer
-    QObject::connect(g, &TreeModel::viewLabelChanged, &drawablesBuffer, &DrawablesBuffer::setShapeVisability);
+    QObject::connect(treeModel, &TreeModel::viewLabelChanged, &drawablesBuffer, &DrawablesBuffer::setShapeVisability);
     //when adding new shape to buffer, add list
-    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeAdded, g, &TreeModel::addItem);
+    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeAdded, treeModel, &TreeModel::addItem);
     //when adding new shape to buffer, add list
-    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeRemoved, g, &TreeModel::removeItem);
+    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeRemoved, treeModel, &TreeModel::removeItem);
 
     QObject::connect(&drawablesBuffer, &DrawablesBuffer::updateCanvas, m_canvas, &Canvas::slot_forceUpdate);
 
@@ -107,36 +98,9 @@ MainWindow::MainWindow(QWidget *parent)
 }
 void MainWindow::readFileList(const QStringList &files)
 {
-
-    for (const auto &s : files)
-    {
-        qDebug() << s;
-        QFileInfo finfo(s);
-        if (!finfo.exists())
-        {
-            qWarning() << "file " << finfo.absoluteFilePath() << " does not exists";
-            continue;
-        }
-
-        if (finfo.suffix().toLower() == "stl")
-        {
-            Types::Mesh obj = io::readstl(finfo.absoluteFilePath().toStdString());
-            m_canvas->addShape(obj, ("fileio/" + finfo.baseName().toStdString()));
-        }
-        else if (finfo.suffix().toLower() == "ply")
-        {
-            std::vector <std::pair<std::string,Types::Shape>> shapes = io::readPly(finfo.absoluteFilePath().toStdString().c_str());
-            for(auto& obj:shapes)
-            {
-                    m_canvas->addShape(obj.second, ("fileio/" + finfo.baseName().toStdString())+"/"+obj.first);
-            }
-
-        }
-        else
-        {
-            qWarning() << "file type " << finfo.suffix() << " is unsupported";
-        }
-    }
+    auto objList = io::readFileList(files);
+    for (const auto &o : objList)
+        m_canvas->addShape(o.second, o.first);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e) { m_canvas->input(e); }

@@ -1,7 +1,10 @@
 
 #include "state_machine.h"
 #include "track_state_idle.h"
+#include "track_state_measure_distance.h"
+
 #include "zview/gui/drawables/drawables_buffer.h"
+
 #include <sstream>
 
 QVector3D TrackStateMachine::pickClosestObject(const QPointF &xy) const
@@ -17,6 +20,8 @@ QVector3D TrackStateMachine::pickClosestObject(const QPointF &xy) const
     for (const auto &o : drawablesBuffer)
     {
         if (!o.second->isActive())
+            continue;
+        if(o.second->getName()==TrackStateMeasureDistance::measure_distance_object_name)
             continue;
         QVector3D x = o.second.get()->picking(ray.first, ray.second);
         QVector2D xcam(mat * x);

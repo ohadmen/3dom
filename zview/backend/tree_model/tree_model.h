@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QtCore/QAbstractItemModel>
 #include <QtCore/QModelIndex>
 #include <QtCore/QList>
@@ -16,7 +17,7 @@ signals:
 
 
 public:
-    TreeModel(QTreeView* treeViewP,const QStringList& headerString,QObject* parent = 0);
+    TreeModel(QWidget* parent);
     ~TreeModel();
 
     QVariant data(const QModelIndex& index, int role)  const;
@@ -31,6 +32,7 @@ public:
 public slots:
     void addItem(const QString& str,size_t handleNum);
     void removeItem(size_t handleNum);
+    QTreeView* getTreeView();
     
 
 private:

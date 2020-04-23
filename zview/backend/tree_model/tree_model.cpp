@@ -1,12 +1,26 @@
 #include <QtCore/QStringList>
 #include "tree_model.h"
 #include <QtWidgets/QCheckBox>
+#include <QtCore/QDebug>
 
-TreeModel::TreeModel(QTreeView *treeViewP, const QStringList &headerString, QObject *parent)
-    : QAbstractItemModel(parent), m_rootItem(new TreeItem("", -1, nullptr)), m_headerString(headerString), m_treeViewP(treeViewP)
+constexpr int CHECKBOX_COL  = 1;
+constexpr int TITLE_COL  = 2;
+constexpr int HANDLENUM_COLUMN  = 3;
+
+TreeModel::TreeModel(QWidget *parent)
+    : QAbstractItemModel(parent), m_rootItem(new TreeItem("", -1, nullptr)), m_treeViewP(new QTreeView(parent))
 {
-}
+     m_headerString = QStringList({"","#", "Layer name", "v"});
+    m_treeViewP->setModel(this);
+    m_treeViewP->setColumnWidth(0, 0);
+    m_treeViewP->setColumnWidth(1, 10);
+    m_treeViewP->setColumnWidth(2, 180);
+    m_treeViewP->setColumnWidth(3, 10);
+    m_treeViewP->setMinimumWidth(140);
 
+     
+}
+QTreeView* TreeModel::getTreeView(){return m_treeViewP;}
 TreeModel::~TreeModel()
 {
     delete m_rootItem;
@@ -29,20 +43,20 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     QVariant retval;
     switch (index.column())
     {
-    case 0: //handle num
+    case HANDLENUM_COLUMN: //handle num
     {
         int num = item->getHandleNum();
         if (role == Qt::DisplayRole)
             retval = num == -1 ? QString() : QString::number(num);
         break;
     }
-    case 1: //name
+    case TITLE_COL: //name
     {
         if (role == Qt::DisplayRole)
             retval = item->getName();
         break;
     }
-    case 2: //checkbox
+    case CHECKBOX_COL: //checkbox
     {
         if (role == Qt::CheckStateRole)
             retval = static_cast<int>(item->isChecked() ? Qt::Checked : Qt::Unchecked);
@@ -55,7 +69,7 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
 }
 bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (role == Qt::CheckStateRole && index.column() == 2)
+    if (role == Qt::CheckStateRole && index.column() == CHECKBOX_COL)
     {
         TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
 
@@ -82,7 +96,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 
     Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-    if (index.column() == 2)
+    if (index.column() == CHECKBOX_COL)
         flags |= Qt::ItemIsUserCheckable;
 
     return flags;

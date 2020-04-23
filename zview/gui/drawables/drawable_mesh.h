@@ -1,9 +1,10 @@
 #pragma once
 #include "drawable_base.h"
+#include "QtGui/QVector2D"
 
 class DrawableMesh : public Types::Mesh, public DrawableBase
 {
-    
+
     QOpenGLBuffer m_iBuff; //indices 3xm
     
 public:

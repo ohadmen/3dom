@@ -52,7 +52,7 @@ bool TrackStateMeasureDistance::setMesuringStartPoint(const QPointF &xy)
     m_p[0] = vecCol2vert(m_machineP->pickClosestObject(xy), begcolor);
     if (std::isinf(m_p[0].x))
         return false;
-    m_drawObjHandle = drawablesBuffer.addShape(makeEdgeShape(m_p[0], m_p[0]), "distance measurment");
+    m_drawObjHandle = drawablesBuffer.addShape(makeEdgeShape(m_p[0], m_p[0]), measure_distance_object_name);
     m_machineP->canvasUpdate();
 
     return true;

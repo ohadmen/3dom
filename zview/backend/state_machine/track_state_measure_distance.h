@@ -14,6 +14,7 @@ class TrackStateMeasureDistance : public TrackStateIdle {
     void privStateReset();
     
 public:
+    static constexpr char measure_distance_object_name[] = "distance measurment";
     bool setMesuringStartPoint(const QPointF&);
 	const char* name() { return "TrackStateMeasureDistance"; }
     TrackStateMeasureDistance(TrackStateMachine* machineP);
