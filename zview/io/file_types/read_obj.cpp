@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <numeric>
+
 namespace
 {
     std::stringstream  getline(std::ifstream& ifs)
@@ -47,18 +48,29 @@ std::vector<std::pair<std::string, Types::Shape>> io::readObj(const char *fn)
             line >> rgb[0];
             line >> rgb[1];
             line >> rgb[2];
-            v.r=rgb[0];
-            v.g=rgb[1];
-            v.b=rgb[2];
+            v.r=rgb[0]*255;
+            v.g=rgb[1]*255;
+            v.b=rgb[2]*255;
+            v.a=200;
             allpoints.push_back(v);
         }
         else if(type=="f")
         {
-            Types::FaceIndx f;
-            line >> f[0];
-            line >> f[1];
-            line >> f[2];
-            mesh.f().push_back(f);
+            
+            //support case that we have more than 3 vetrices - triagulize it
+            uint32_t f0;
+            uint32_t f12[2];
+
+            line >> f0;
+            line >> f12[0];
+            while(line>>f12[1])
+            {
+                //INDICES are one based
+                mesh.f().push_back({f0-1,f12[0]-1,f12[1]-1});
+                f12[0]=f12[1];
+
+            }
+            
         }
         else if(type=="e")
         {

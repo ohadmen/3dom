@@ -4,7 +4,7 @@
 #include <QtGui/QOpenGLBuffer>
 #include <string>
 #include <fstream>
-
+#include "zview/common/params.h"
 #include "zview/common/common_types.h"
 class DrawableBase: public QOpenGLFunctions
 {

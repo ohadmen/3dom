@@ -1,8 +1,6 @@
 #include "zview/gui/canvas.h"
 #include "zview/common/params.h"
 #include <math.h>
-// #include "drawables/drawables_buffer.h"
-// #include "drawables/drawable_basic_shapes.h"
 
 
 Canvas::Canvas(QWidget* parent = 0) :QOpenGLWidget(parent), m_textureType(1),m_stateMachine()
@@ -10,7 +8,7 @@ Canvas::Canvas(QWidget* parent = 0) :QOpenGLWidget(parent), m_textureType(1),m_s
 	
 	
 	setMouseTracking(true);
-    //QObject::connect(m_stateMachine, &TrackStateMachine::setStatus, this, &CurieMainWin::setStatus);
+    
 	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setStatus, this, &Canvas::slot_setStatus);
     QObject::connect(&m_stateMachine, &TrackStateMachine::signal_canvasUpdate, this, &Canvas::slot_forceUpdate);
     QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setTexture, this, &Canvas::slot_setTexture);
@@ -54,23 +52,15 @@ void  Canvas::initializeGL()
 {
 	initializeOpenGLFunctions();
     
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//setFocusPolicy(Qt::StrongFocus);
-	//glEnable(GL_BLEND);
-	//glEnable(GL_LINE_SMOOTH);
-	//glClearColor(0, 0, 0, 1);
+	
 	glEnable(GL_PROGRAM_POINT_SIZE);
-
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
-    glBlendEquation(GL_FUNC_ADD);
+	glEnable(GL_LINE_SMOOTH); 
+    glBlendEquation(GL_FUNC_ADD); 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	m_backdrop.initializeGL();
 
-	// drawableBasicShapes.initializeGL();
-	
-	
-	
 	
 }
 
@@ -83,7 +73,7 @@ void Canvas::paintGL()
 	{
 		d.second.get()->paintGL(vp, m_textureType);
 	}
-	//drawableBasicShapes.paintGL(vp);
+	
 	
 
 

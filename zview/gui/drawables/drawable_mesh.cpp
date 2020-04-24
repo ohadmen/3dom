@@ -42,6 +42,8 @@ void DrawableMesh::paintGL(const QMatrix4x4 &mvp, int txt)
 
 	m_meshShader.bind();
 	m_meshShader.setUniformValue("mvp_matrix", mvp);
+	m_meshShader.setUniformValue("u_txt", txt);
+	m_meshShader.setUniformValue("u_lightDir",Params::lightDir());
 
 	int vp = m_meshShader.attributeLocation("a_xyz");
 	m_meshShader.enableAttributeArray(vp);
@@ -51,7 +53,7 @@ void DrawableMesh::paintGL(const QMatrix4x4 &mvp, int txt)
 	m_meshShader.enableAttributeArray(vc);
 	m_meshShader.setAttributeBuffer(vc, GL_UNSIGNED_BYTE, 3 * sizeof(float), 4, sizeof(Types::VertData));
 
-	m_meshShader.setUniformValue("u_txt", txt);
+	
 
 	//glVertexAttribPointer(vc, 3, GL_UNSIGNED_INT8_NV, false, 3 * sizeof(uint8_t), NULL);
 	glDrawElements(GL_TRIANGLES, m_iBuff.size() / sizeof(uint32_t), GL_UNSIGNED_INT, NULL);

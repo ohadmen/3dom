@@ -7,6 +7,7 @@
 #include "state_machine.h"
 #include <cmath>
 #include <sstream>
+#include "zview/common/params.h"
 constexpr float inf = std::numeric_limits<float>::infinity();
 
 TrackStateIdle::TrackStateIdle(TrackStateMachine* machine):TrackStateAbs(machine), m_mousepos(-1,-1){}
@@ -41,6 +42,14 @@ void TrackStateIdle::input(QWheelEvent* e)
 {
 	if (e->type() == QInputEvent::Wheel && e->modifiers() == Qt::KeyboardModifier::NoModifier)
 		TrackStateZoom(m_machineP).input(e);
+    else if(e->type() == QInputEvent::Wheel && e->modifiers() == Qt::KeyboardModifier::AltModifier)
+    {
+        float newps = Params::pointSize()+0.2*(e->delta()>0?1:-1);
+        newps = std::max(std::min(10.0f,newps),0.1f);
+        Params::pointSize(newps);
+        m_machineP->canvasUpdate();
+    }
+		
 		
 
 }

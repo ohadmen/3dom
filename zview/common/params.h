@@ -1,9 +1,12 @@
 #pragma once
-#define paramsStaticParameter(paramName, paramType,paramDefaultValue) \
-static paramType paramName(paramType vin = paramType(-1)) \
+#include <QtGui/QVector3D>
+
+
+#define paramsStaticParameter(paramName, paramType,paramDefaultValue,paramUnknownValue) \
+static paramType paramName(paramType vin = paramUnknownValue) \
     {                               \
     static paramType vs(paramDefaultValue);               \
-    if (vin != -1)                   \
+    if (vin != paramUnknownValue)                   \
         vs = vin;                   \
     return vs;                       \
     }                               \
@@ -12,16 +15,18 @@ static paramType paramName(paramType vin = paramType(-1)) \
 class Params
 {
 public:
-	paramsStaticParameter(trackBallRadius, float, 0.5f);
-    paramsStaticParameter(nStatusLines, int, 3);
-    paramsStaticParameter(camZnear, float, 0.1f);
-    paramsStaticParameter(camZfar, float, 1e2f);
-    paramsStaticParameter(camFOV, float, 60.0f);
-    paramsStaticParameter(whiteBackground, int, 0);
-	paramsStaticParameter(pointSize, float, 5);
+	paramsStaticParameter(trackBallRadius, float, 0.5f,-1);
+    paramsStaticParameter(nStatusLines, int, 3,-1);
+    paramsStaticParameter(camZnear, float, 0.1f,-1);
+    paramsStaticParameter(camZfar, float, 1e2f,-1);
+    paramsStaticParameter(camFOV, float, 60.0f,-1);
+    paramsStaticParameter(whiteBackground, int, 0,-1);
+	paramsStaticParameter(pointSize, float, 1,-1);
+    paramsStaticParameter(lightDir, QVector3D,QVector3D(0.4, 0.48, 0.51),QVector3D(-1, -1, -1) );
     
     
 private:
     Params() {}                    // namespace
 
 };
+ 

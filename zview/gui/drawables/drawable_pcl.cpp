@@ -1,6 +1,6 @@
 #include <cmath>
 #include "drawable_pcl.h"
-#include "zview/common/params.h"
+
 
 DrawablePcl::DrawablePcl(const std::string& name) :DrawableBase(name){}
 
@@ -34,15 +34,16 @@ void DrawablePcl::paintGL(const QMatrix4x4& mvp, int txt)
     if (!m_active)
         return;
 
-    float s = mvp.column(0).length();
+    
 
 	m_vBuff.bind();
 	m_meshShader.bind();
 	m_meshShader.setUniformValue("mvp_matrix", mvp);
 
-	m_meshShader.setUniformValue("u_ptSize", Params::pointSize()*s);
-
 	
+	m_meshShader.setUniformValue("u_ptSize", Params::pointSize());
+	m_meshShader.setUniformValue("u_lightDir",Params::lightDir());
+	m_meshShader.setUniformValue("u_txt", txt);
 
 	int vp = m_meshShader.attributeLocation("a_xyz");
 	m_meshShader.enableAttributeArray(vp);
@@ -53,8 +54,8 @@ void DrawablePcl::paintGL(const QMatrix4x4& mvp, int txt)
 	m_meshShader.setAttributeBuffer(vc, GL_UNSIGNED_BYTE, 3 * sizeof(float), 4, sizeof(Types::VertData));
 
 
-	m_meshShader.setUniformValue("u_txt", txt);
-	m_meshShader.setUniformValue("u_ptSize", Params::pointSize());
+	
+	
 
 	glDrawArrays(GL_POINTS, 0,m_vBuff.size() / sizeof(float));
 
