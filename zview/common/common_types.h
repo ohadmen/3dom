@@ -78,9 +78,13 @@ using EdgeIndx = std::array<uint32_t, 2>;
 class Pcl
 {
 protected:
+	std::string m_name;
 	std::vector<Types::VertData> m_v;
 
 public:
+	Pcl(const std::string& name):m_name(name){}
+	const std::string& getName() const{return m_name;}
+	
 	std::vector<VertData> &v() { return m_v; }
 	const std::vector<VertData> &v() const { return m_v; }
 
@@ -112,6 +116,7 @@ protected:
 	std::vector<FaceIndx> m_f;
 
 public:
+	Mesh(const std::string& name):Pcl(name){}
 	std::vector<FaceIndx> &f() { return m_f; }
 	const std::vector<FaceIndx> &f() const { return m_f; }
 };
@@ -122,6 +127,7 @@ protected:
 	std::vector<EdgeIndx> m_e;
 
 public:
+	Edges(const std::string& name):Pcl(name){}
 	std::vector<EdgeIndx> &e() { return m_e; }
 	const std::vector<EdgeIndx> &e() const { return m_e; }
 };

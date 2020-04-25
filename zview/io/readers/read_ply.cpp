@@ -13,14 +13,18 @@ namespace
     };
 }
 
-std::vector <std::pair<std::string,Types::Shape>> io::readPly(const char* fn)
+std::vector <Types::Shape> io::readPly(const std::string& fn)
 {
     
     std::ifstream ss(fn, std::ios::in | std::ios::binary);
     if (ss.fail()) throw
         std::runtime_error("failed to open " + std::string(fn));
 
-    std::vector <std::pair<std::string,Types::Shape>> container;
+   	auto pos =fn.find_last_of("/");
+	std::string filename = pos==std::string::npos? fn:fn.substr(pos,std::string::npos);
+
+
+    std::vector <Types::Shape> container;
     
     while (true)
     {   
@@ -33,7 +37,7 @@ std::vector <std::pair<std::string,Types::Shape>> io::readPly(const char* fn)
         std::string name;
         for (auto c : file.get_comments()) name += c + "/";
         name.pop_back();
-
+        name = filename+"/"+name;
         std::shared_ptr<tinyply::PlyData> vertices, faces, edges;
         try
         {
@@ -71,31 +75,31 @@ std::vector <std::pair<std::string,Types::Shape>> io::readPly(const char* fn)
         
         if (faces)
         {
-            Types::Mesh obj;
+            Types::Mesh obj(name);
             obj.v().resize(vertices->count);
             std::memcpy(obj.v().data(), vertices->buffer.get(), vertices->buffer.size_bytes());
 
             obj.f().resize(faces->count); 
             std::memcpy(obj.f().data(), faces->buffer.get(), faces->buffer.size_bytes());
-            container.emplace_back(std::make_pair(name,obj));
+            container.emplace_back(obj);
 
         }
         if (edges)
         {
-            Types::Edges obj;
+            Types::Edges obj(name);
             obj.v().resize(vertices->count);
             std::memcpy(obj.v().data(), vertices->buffer.get(), vertices->buffer.size_bytes());
 
             obj.e().resize(edges->count);
             std::memcpy(obj.e().data(), edges->buffer.get(), edges->buffer.size_bytes());
-            container.emplace_back(std::make_pair(name,obj));
+            container.emplace_back(obj);
         }
         if (!edges & !faces)
         {
-            Types::Pcl obj;
+            Types::Pcl obj(name);
             obj.v().resize(vertices->count);
             std::memcpy(obj.v().data(), vertices->buffer.get(), vertices->buffer.size_bytes());
-            container.emplace_back(std::make_pair(name,obj));
+            container.emplace_back(obj);
         }
 
     }

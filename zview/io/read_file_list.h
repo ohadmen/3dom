@@ -6,5 +6,5 @@
 
 namespace io
 {
-std::vector<std::pair<std::string, Types::Shape>> readFileList(const QStringList &files);
+std::vector <Types::Shape> readFileList(const QStringList &files);
 }

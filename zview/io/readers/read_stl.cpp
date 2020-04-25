@@ -95,7 +95,9 @@ void privReadStlAscii(std::ifstream* ifsP, Types::Mesh* meshP)
 
 Types::Mesh io::readstl(const std::string& filename)
 {
-	Types::Mesh obj;
+	auto pos =filename.find_last_of("/");
+	std::string name = pos==std::string::npos? filename:filename.substr(pos,std::string::npos);
+	Types::Mesh obj(name);
 	std::ifstream ifs(filename, std::ios::binary);
 
 	if (!ifs)

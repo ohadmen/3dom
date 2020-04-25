@@ -19,7 +19,7 @@ class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 
 public:
 	explicit Canvas(QWidget *parent);
-	void addShape(const Types::Shape &obj, const std::string &name);
+	void addShape(const Types::Shape &obj);
 	void resetView();
 	
 	void input(QInputEvent *e);

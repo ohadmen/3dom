@@ -2,8 +2,8 @@
 #include <QtGui/QMatrix2x2>
 #include <cmath>
 
-DrawableEdges::DrawableEdges(const std::string &name) : DrawableBase(name), m_eBuff(QOpenGLBuffer::IndexBuffer) {}
-
+DrawableEdges::DrawableEdges(const std::string &name) : Edges(name), m_eBuff(QOpenGLBuffer::IndexBuffer) {}
+Types::Shape DrawableEdges::getShape() const {	return *this;};
 DrawableEdges::~DrawableEdges()
 {
     if (m_vBuff.isCreated())
@@ -11,6 +11,7 @@ DrawableEdges::~DrawableEdges()
     if (m_eBuff.isCreated())
         m_eBuff.destroy();
 }
+const std::string& DrawableEdges::getName() const{return m_name;};
 void DrawableEdges::initializeGL()
 {
     initializeOpenGLFunctions();

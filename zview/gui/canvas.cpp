@@ -67,7 +67,7 @@ void  Canvas::initializeGL()
 void Canvas::paintGL()
 {
 	glEnable(GL_DEPTH_TEST);
-	m_backdrop.paintGL(QMatrix4x4(),0);
+	m_backdrop.paintGL();
 	QMatrix4x4 vp = m_stateMachine.getVPmatrix();
 	for (auto& d : drawablesBuffer)
 	{
@@ -82,15 +82,15 @@ void Canvas::paintGL()
 }
 void Canvas::resizeGL(int w, int h)
 {
-	m_backdrop.resizeGL(w, h);
+	
 	m_stateMachine.setWinSize(w, h);
 	
 
 }
 
-void Canvas::addShape(const Types::Shape& obj,const std::string& name)
+void Canvas::addShape(const Types::Shape& obj)
 {
-	DrawablesBuffer::i().addShape(obj,name);
+	DrawablesBuffer::i().addShape(obj);
 	resetView();
 }
 

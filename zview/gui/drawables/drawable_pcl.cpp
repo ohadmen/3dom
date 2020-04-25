@@ -2,13 +2,14 @@
 #include "drawable_pcl.h"
 
 
-DrawablePcl::DrawablePcl(const std::string& name) :DrawableBase(name){}
+DrawablePcl::DrawablePcl(const std::string& name) :Pcl(name){}
 
 DrawablePcl::~DrawablePcl()
 {
 	if (m_vBuff.isCreated())
 		m_vBuff.destroy();
 }
+const std::string& DrawablePcl::getName() const{return m_name;};
 void DrawablePcl::initializeGL()
 {
 	initializeOpenGLFunctions();
@@ -26,14 +27,18 @@ void DrawablePcl::initializeGL()
     
 
 }
+Types::Shape DrawablePcl::getShape() const {	return *this;};
 
 void DrawablePcl::paintGL(const QMatrix4x4& mvp, int txt)
 {
     if (!m_vBuff.isCreated())
+	{
         initializeGL();
+	}
     if (!m_active)
+	{
         return;
-
+	}
     
 
 	m_vBuff.bind();

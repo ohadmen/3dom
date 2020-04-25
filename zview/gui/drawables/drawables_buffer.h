@@ -8,13 +8,9 @@
 class DrawablesBuffer : public QObject
 {
 	Q_OBJECT
-	using BaseTypeVector = std::map<size_t, std::unique_ptr<DrawableBase>>;
-	BaseTypeVector m_drawobjs;
-	size_t m_uniqueKeyCounter = 0;
-
-	DrawablesBuffer();
-
 public:
+	using BaseTypeVector = std::map<size_t, std::unique_ptr<DrawableBase>>;
+	size_t size() const;
 	DrawablesBuffer(DrawablesBuffer const &) = delete;
 	void operator=(DrawablesBuffer const &) = delete;
 
@@ -24,7 +20,7 @@ public:
 		return obj;
 	}
 
-	size_t addShape(const Types::Shape &obj, const std::string &name);
+	size_t addShape(const Types::Shape &obj);
 	bool removeShape(size_t key);
 
 	bool updateVertexBuffer(size_t key, const Types::VertData *pcl, size_t n);
@@ -43,4 +39,10 @@ signals:
 	void shapeAdded(QString name, size_t key);
 	void shapeRemoved(size_t key);
 	void updateCanvas();
+
+private:
+	BaseTypeVector m_drawobjs;
+	size_t m_uniqueKeyCounter = 0;
+
+	DrawablesBuffer();
 };

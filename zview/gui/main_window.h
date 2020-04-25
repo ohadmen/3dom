@@ -7,22 +7,21 @@
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
-
-  	void privAddMenuBar();
-    QAction* privAddAction(const QString& str, void(MainWindow::* ff)(), QKeySequence q = QKeySequence::UnknownKey);
+  void privloadFile();
+  void privSavePly();
+  void privAddMenuBar();
+  QAction *privAddAction(const QString &str, void (MainWindow::*ff)(), QKeySequence q = QKeySequence::UnknownKey);
 public slots:
-    void slot_setStatus(const QString& str);
-
+  void slot_setStatus(const QString &str);
 
 public:
   explicit MainWindow(QWidget *parent = 0);
 
-    void keyPressEvent(QKeyEvent* e);
-    void keyReleaseEvent(QKeyEvent* e);
-    void readFileList(const QStringList& files);
+  void keyPressEvent(QKeyEvent *e);
+  void keyReleaseEvent(QKeyEvent *e);
+  void readFileList(const QStringList &files);
+
 private:
   QTextBrowser m_status;
-  Canvas * m_canvas;
-  
+  Canvas *m_canvas;
 };
-

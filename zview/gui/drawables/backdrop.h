@@ -3,10 +3,10 @@
 #include <QtGui/QOpenGLFunctions>
 #include <QtGui/QOpenGLShaderProgram>
 #include <QtGui/QOpenGLBuffer>
-#include "zview/gui/drawables/drawable_base.h"
 
 
-class Backdrop : public DrawableBase
+
+class Backdrop: public QOpenGLFunctions
 {
     
 public:
@@ -16,11 +16,8 @@ public:
        
     void initializeGL();
     void initShader(const QString& shaderName);
-    void resizeGL(int w, int h);
+
     void paintGL();
-    void paintGL(const QMatrix4x4& mvp, int txt);
-    Types::Roi3d get3dbbox()const;
-    QVector3D picking(const QVector3D& p, const QVector3D& n) const;
 
 private:
 	QOpenGLShaderProgram m_meshShader;

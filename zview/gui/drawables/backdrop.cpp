@@ -29,7 +29,7 @@ void Backdrop::setBGcolor()
     m_verts.allocate(vbuf.data(), sizeof(vbuf));
     m_verts.release();
 }
-Backdrop::Backdrop():DrawableBase("Backdrop"){}
+Backdrop::Backdrop(){}
 
 void Backdrop::initializeGL()
 {
@@ -61,13 +61,8 @@ void Backdrop::initShader(const QString &shaderName)
         throw std::runtime_error("could not link shader");
     
 }
-void Backdrop::resizeGL(int w, int h)
-{
-    Q_UNUSED(w);
-    Q_UNUSED(h);
-}
 
-void Backdrop::paintGL(const QMatrix4x4& , int )
+void Backdrop::paintGL( )
 {
     m_meshShader.bind();
     m_verts.bind();
@@ -89,5 +84,3 @@ void Backdrop::paintGL(const QMatrix4x4& , int )
     m_verts.release();
     m_meshShader.release();
 }
-QVector3D Backdrop::picking(const QVector3D& p, const QVector3D& n)const{return QVector3D();}
-Types::Roi3d Backdrop::get3dbbox()const{return Types::Roi3d();}

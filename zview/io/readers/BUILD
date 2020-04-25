@@ -1,5 +1,5 @@
 cc_library(
-    name = "file_types",
+    name = "readers",
     srcs = glob(["*.cpp"]),
     hdrs = glob(["*.h"]),
     visibility = ["//zview:__subpackages__"],

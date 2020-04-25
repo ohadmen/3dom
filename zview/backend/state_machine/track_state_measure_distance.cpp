@@ -24,7 +24,7 @@ Types::VertData vecCol2vert(const QVector3D &v, const uint8_t *c)
 
 Types::Edges makeEdgeShape(const Types::VertData &p0v, const Types::VertData &p1v)
 {
-    Types::Edges e;
+    Types::Edges e(TrackStateMeasureDistance::measure_distance_object_name);
     e.v().push_back(p0v);
     e.v().push_back(p1v);
     e.e().push_back({0, 1});
@@ -52,7 +52,7 @@ bool TrackStateMeasureDistance::setMesuringStartPoint(const QPointF &xy)
     m_p[0] = vecCol2vert(m_machineP->pickClosestObject(xy), begcolor);
     if (std::isinf(m_p[0].x))
         return false;
-    m_drawObjHandle = drawablesBuffer.addShape(makeEdgeShape(m_p[0], m_p[0]), measure_distance_object_name);
+    m_drawObjHandle = drawablesBuffer.addShape(makeEdgeShape(m_p[0], m_p[0]));
     m_machineP->canvasUpdate();
 
     return true;

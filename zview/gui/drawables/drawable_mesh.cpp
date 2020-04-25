@@ -1,7 +1,7 @@
 #include "drawable_mesh.h"
 
-DrawableMesh::DrawableMesh(const std::string &name) : DrawableBase(name),  m_iBuff(QOpenGLBuffer::IndexBuffer) {}
-
+DrawableMesh::DrawableMesh(const std::string &name) : Mesh(name),  m_iBuff(QOpenGLBuffer::IndexBuffer) {}
+Types::Shape DrawableMesh::getShape() const {	return *this;};
 DrawableMesh::~DrawableMesh()
 {
 	if (m_vBuff.isCreated())
@@ -9,6 +9,7 @@ DrawableMesh::~DrawableMesh()
 	if (m_iBuff.isCreated())
 		m_iBuff.destroy();
 }
+const std::string& DrawableMesh::getName() const{return m_name;};
 void DrawableMesh::initializeGL()
 {
 	initializeOpenGLFunctions();

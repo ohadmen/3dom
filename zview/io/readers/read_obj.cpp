@@ -16,15 +16,18 @@ namespace
     }
     
 }
-std::vector<std::pair<std::string, Types::Shape>> io::readObj(const char *fn)
+std::vector<Types::Shape> io::readObj(const std::string& fn)
 {
         std::ifstream ifs(fn, std::ios::in | std::ios::binary);
     if (ifs.fail()) throw
         std::runtime_error("failed to open " + std::string(fn));
 
-    
-    Types::Mesh mesh;
-    Types::Edges edges;
+       	auto pos =fn.find_last_of("/");
+	std::string filename = pos==std::string::npos? fn:fn.substr(pos,std::string::npos);
+
+
+    Types::Mesh mesh(filename+"/mesh");
+    Types::Edges edges(filename+"/edges");
     
 
     std::vector<Types::VertData> allpoints;
@@ -101,27 +104,27 @@ std::vector<std::pair<std::string, Types::Shape>> io::readObj(const char *fn)
     }
 
 
-    std::vector <std::pair<std::string,Types::Shape>> container;
+    std::vector<Types::Shape> container;
     size_t unused = std::accumulate(usedPoint.begin(),usedPoint.end(),size_t(0),[](size_t s,bool v){return s+(v==0);});
     if(unused!=0)
     {
-        Types::Pcl pcl;
+        Types::Pcl pcl(filename+"/pcl");;
         for(size_t i=0;i!=usedPoint.size();++i)
             if(!usedPoint[i])
                 pcl.v().push_back(allpoints[i]);
         
-        container.push_back({"pcl",pcl});
+        container.push_back(pcl);
     }
 
     if(edges.e().size()!=0)
     {
         edges.v()=allpoints;
-        container.push_back({"edges",edges});
+        container.push_back(edges);
     }
     if(mesh.f().size()!=0)
     {
         mesh.v()=allpoints;
-        container.push_back({"mesh",mesh});
+        container.push_back(mesh);
     }
 
     return container;
