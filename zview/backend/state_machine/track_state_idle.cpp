@@ -44,12 +44,19 @@ void TrackStateIdle::input(QWheelEvent* e)
 		TrackStateZoom(m_machineP).input(e);
     else if(e->type() == QInputEvent::Wheel && e->modifiers() == Qt::KeyboardModifier::AltModifier)
     {
-        float newps = Params::pointSize()+0.2*(e->delta()>0?1:-1);
+        float newps = Params::pointSize()+0.2*(e->delta()<0?1:-1);
         newps = std::max(std::min(10.0f,newps),0.1f);
         Params::pointSize(newps);
         m_machineP->canvasUpdate();
     }
-		
+	else if(e->type() == QInputEvent::Wheel && e->modifiers() == Qt::KeyboardModifier::ShiftModifier)
+    {
+        float newfov = Params::camFOV()+2*(e->delta()<0?1:-1);
+        newfov = std::max(std::min(120.0f,newfov),1.0f);
+        Params::camFOV(newfov);
+        m_machineP->updatePmat();
+        m_machineP->canvasUpdate();
+    }	
 		
 
 }

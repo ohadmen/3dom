@@ -78,9 +78,13 @@ void operator()(const Types::Mesh &obj)
 };
 
 }; // namespace
-void io::writeShapeToFile(const std::string &fn, const std::vector<Types::Shape> &shapes)
+void io::writeShapeToFile(std::string fn, const std::vector<Types::Shape> &shapes)
 {
-    
+    auto pos =fn.find_last_of(".");
+	std::string suffix = pos==std::string::npos? fn:fn.substr(pos,std::string::npos);
+    if(suffix!=".ply")
+        fn+=".ply";
+
     Writer w(fn);
     
     for (const auto &objv : shapes)

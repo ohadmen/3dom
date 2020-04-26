@@ -16,13 +16,19 @@ QVector3D VPmat::xy2screen(const QPointF &xy) const
 }
 
 QMatrix4x4 VPmat::getVPmatrix() const { return m_proj * m_view; }
+void VPmat::updatePmat()
+{
+    float ar = float(m_w) / m_h;
+    m_proj.setToIdentity();
+    m_proj.perspective(Params::camFOV(), ar, Params::camZnear(), Params::camZfar());
+
+
+}
 void VPmat::setWinSize(int w, int h)
 {
     m_w = w;
     m_h = h;
-    float ar = float(w) / h;
-    m_proj.setToIdentity();
-    m_proj.perspective(Params::camFOV(), ar, Params::camZnear(), Params::camZfar());
+    updatePmat();
 }
 
 const QMatrix4x4 &VPmat::getViewMatrix() const { return m_view; }

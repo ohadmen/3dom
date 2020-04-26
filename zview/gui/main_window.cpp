@@ -68,9 +68,19 @@ QAction *MainWindow::privAddAction(const QString &str, void (MainWindow::*ff)(),
 }
 void MainWindow::privAddMenuBar()
 {
-    auto menuH = menuBar()->addMenu(tr("&File"));
-    menuH->addAction(privAddAction("save ply", &MainWindow::privSavePly, QKeySequence::Save));
-    menuH->addAction(privAddAction("open", &MainWindow::privloadFile, QKeySequence::Open));
+    {
+    auto top = menuBar()->addMenu(tr("&File"));
+    top->addAction(privAddAction("Open file", &MainWindow::privloadFile, QKeySequence::Open));
+    top->addAction(privAddAction("Save", &MainWindow::privSavePly, QKeySequence::Save));
+    }
+    {
+        auto top = menuBar()->addMenu(tr("&Help"));
+        top->addAction(privAddAction("Manual", nullptr));
+        top->addAction(privAddAction("About", nullptr));
+    }
+    
+    
+    
 }
 
 MainWindow::MainWindow(QWidget *parent)

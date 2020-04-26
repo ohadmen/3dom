@@ -69,6 +69,7 @@ public:
     void setViewMatrix(const QMatrix4x4 &m);
     void setWinSize(int w, int h);
     QVector3D xy2screen(const QPointF &xy);
+    void updatePmat();
 
     void input(QInputEvent *e);
 

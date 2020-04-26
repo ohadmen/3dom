@@ -4,6 +4,6 @@
 #include <fstream>
 namespace io
 {
-        void writeShapeToFile(const std::string &fn, const std::vector<Types::Shape>& shapes);
+        void writeShapeToFile(std::string fn, const std::vector<Types::Shape>& shapes);
 
 }

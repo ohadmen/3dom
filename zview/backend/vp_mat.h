@@ -23,6 +23,7 @@ public:
 
     QMatrix4x4 getVPmatrix() const;
     void setWinSize(int w, int h);
+	void updatePmat();
 
     
 	QVector3D xy2screen(const QPointF& xy) const;

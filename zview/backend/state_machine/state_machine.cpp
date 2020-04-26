@@ -39,7 +39,10 @@ TrackStateMachine::TrackStateMachine()
 {
     setCurrentState<TrackStateIdle>();
 }
-
+void TrackStateMachine::updatePmat()
+{
+    m_vpmat.updatePmat();
+}
 
 void TrackStateMachine::input(QInputEvent *e)
 {

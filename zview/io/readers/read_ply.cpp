@@ -20,8 +20,6 @@ std::vector <Types::Shape> io::readPly(const std::string& fn)
     if (ss.fail()) throw
         std::runtime_error("failed to open " + std::string(fn));
 
-   	auto pos =fn.find_last_of("/");
-	std::string filename = pos==std::string::npos? fn:fn.substr(pos,std::string::npos);
 
 
     std::vector <Types::Shape> container;
@@ -37,7 +35,6 @@ std::vector <Types::Shape> io::readPly(const std::string& fn)
         std::string name;
         for (auto c : file.get_comments()) name += c + "/";
         name.pop_back();
-        name = filename+"/"+name;
         std::shared_ptr<tinyply::PlyData> vertices, faces, edges;
         try
         {
