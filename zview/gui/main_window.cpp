@@ -10,26 +10,28 @@
 #include "zview/io/read_file_list.h"
 #include "zview/io/write_shape_to_file.h"
 
-
-
 void MainWindow::privSavePly()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Save .ply file", QString(), "*.ply");
     std::vector<Types::Shape> shapes;
-    for(const auto& a:drawablesBuffer)
+    for (const auto &a : drawablesBuffer)
     {
         Types::Shape s = a.second->getShape();
         shapes.push_back(s);
     }
-        
-    io::writeShapeToFile(filename.toStdString(),shapes);
-    
+
+    io::writeShapeToFile(filename.toStdString(), shapes);
 }
 void MainWindow::privloadFile()
 {
-    QStringList filenames = QFileDialog::getOpenFileNames(this, "load file", QString(), tr("PLY (*.ply);;STL (*.stl);;OBJ (*.obj);;All files (*.*)"));
-    readFileList(filenames);
+    QFileDialog dialog(this);
+    dialog.setNameFilter(tr("3d data storage(*.ply *.stl *.obj)"));
 
+    if (dialog.exec())
+    {
+        QStringList fileNames = dialog.selectedFiles();
+        readFileList(fileNames);
+    }
 }
 
 void MainWindow::slot_setStatus(const QString &str)
@@ -69,18 +71,15 @@ QAction *MainWindow::privAddAction(const QString &str, void (MainWindow::*ff)(),
 void MainWindow::privAddMenuBar()
 {
     {
-    auto top = menuBar()->addMenu(tr("&File"));
-    top->addAction(privAddAction("Open file", &MainWindow::privloadFile, QKeySequence::Open));
-    top->addAction(privAddAction("Save", &MainWindow::privSavePly, QKeySequence::Save));
+        auto top = menuBar()->addMenu(tr("&File"));
+        top->addAction(privAddAction("Open file", &MainWindow::privloadFile, QKeySequence::Open));
+        top->addAction(privAddAction("Save", &MainWindow::privSavePly, QKeySequence::Save));
     }
     {
         auto top = menuBar()->addMenu(tr("&Help"));
         top->addAction(privAddAction("Manual", nullptr));
         top->addAction(privAddAction("About", nullptr));
     }
-    
-    
-    
 }
 
 MainWindow::MainWindow(QWidget *parent)
