@@ -15,6 +15,10 @@ int main(int argc, char **argv)
 {
     
     QApplication app(argc, argv);
+
+    app.setApplicationName("Zview");
+    app.setApplicationVersion("0.1.0");
+
     auto list = getArgs(argc,argv);
     
     MainWindow win;

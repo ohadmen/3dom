@@ -1,6 +1,7 @@
 #include "main_window.h"
 
 #include <QtWidgets/QApplication>
+#include <QtCore/QSettings>
 #include <QtGui/QScreen>
 #include <QtWidgets/QStyle>
 #include <QtWidgets/QLayout>
@@ -12,7 +13,10 @@
 
 void MainWindow::privSavePly()
 {
-    QString filename = QFileDialog::getSaveFileName(this, "Save .ply file", QString(), "*.ply");
+    QString filename = QFileDialog::getSaveFileName(this, "Save .ply file", QSettings().value(m_default_dir_key).toString(), "*.ply");
+    if(filename.isEmpty())
+        return;
+
     std::vector<Types::Shape> shapes;
     for (const auto &a : drawablesBuffer)
     {
@@ -24,8 +28,11 @@ void MainWindow::privSavePly()
 }
 void MainWindow::privloadFile()
 {
+    
+
     QFileDialog dialog(this);
     dialog.setNameFilter(tr("3d data storage(*.ply *.stl *.obj)"));
+    dialog.setDirectory(QSettings().value(m_default_dir_key).toString());
 
     if (dialog.exec())
     {
@@ -73,7 +80,7 @@ void MainWindow::privAddMenuBar()
     {
         auto top = menuBar()->addMenu(tr("&File"));
         top->addAction(privAddAction("Open file", &MainWindow::privloadFile, QKeySequence::Open));
-        top->addAction(privAddAction("Save", &MainWindow::privSavePly, QKeySequence::Save));
+        top->addAction(privAddAction("Save as ply", &MainWindow::privSavePly, QKeySequence::Save));
     }
     {
         auto top = menuBar()->addMenu(tr("&Help"));

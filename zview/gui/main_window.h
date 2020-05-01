@@ -8,6 +8,7 @@
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
+  
   void privloadFile();
   void privSavePly();
   void privAddMenuBar();
@@ -26,4 +27,5 @@ private:
   QTextBrowser m_status;
   Canvas *m_canvas;
   TreeModel* m_treeModel;
+  const QString m_default_dir_key="default_dir";
 };
