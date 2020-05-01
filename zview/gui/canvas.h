@@ -11,6 +11,8 @@
 #include "zview/backend/vp_mat.h"
 #include "zview/backend/state_machine/state_machine.h"
 #include "zview/gui/drawables/backdrop.h"
+#include "zview/gui/drawables/axes.h"
+#include "zview/gui/drawables/grid.h"
 #include "zview/gui/drawables/drawables_buffer.h"
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
@@ -50,5 +52,7 @@ private:
 	int m_textureType;
 	TrackStateMachine m_stateMachine;
 	Backdrop m_backdrop;
+	Axes m_axes;
+	Grid m_grid;
 	
 };

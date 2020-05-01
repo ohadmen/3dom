@@ -32,6 +32,7 @@ void VPmat::setWinSize(int w, int h)
 }
 
 const QMatrix4x4 &VPmat::getViewMatrix() const { return m_view; }
+const QMatrix4x4 &VPmat::getProjMatrix() const { return m_proj; }
 
 void VPmat::setViewMatrix(const QMatrix4x4 &m) { m_view = m; }
 

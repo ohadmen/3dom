@@ -21,7 +21,7 @@ public:
     paramsStaticParameter(camZfar, float, 1e2f,-1);
     paramsStaticParameter(camFOV, float, 60.0f,-1);
     paramsStaticParameter(whiteBackground, int, 0,-1);
-	paramsStaticParameter(pointSize, float, 1,-1);
+	paramsStaticParameter(pointSize, float, 3,-1);
     paramsStaticParameter(lightDir, QVector3D,QVector3D(0.4, 0.48, 0.51),QVector3D(-1, -1, -1) );
     
     

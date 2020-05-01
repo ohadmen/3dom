@@ -50,8 +50,10 @@ size_t DrawablesBuffer::addShape(const Types::Shape &objv)
     return m_uniqueKeyCounter++;
 }
 
-bool DrawablesBuffer::removeShape(size_t key)
+bool DrawablesBuffer::removeShape(int key)
 {
+    if(key==-1)
+        return false;
     auto it = m_drawobjs.find(key);
     if (it == m_drawobjs.end())
         return false;

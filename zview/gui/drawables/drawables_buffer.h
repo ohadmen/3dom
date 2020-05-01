@@ -21,7 +21,7 @@ public:
 	}
 
 	size_t addShape(const Types::Shape &obj);
-	bool removeShape(size_t key);
+	bool removeShape(int key);
 
 	bool updateVertexBuffer(size_t key, const Types::VertData *pcl, size_t n);
 

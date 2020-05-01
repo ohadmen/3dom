@@ -22,6 +22,8 @@ qt_cc_library(
     hdr = "canvas.h",
     deps = qtdeps+[
         "//zview/gui/drawables:backdrop",
+        "//zview/gui/drawables:axes",
+        "//zview/gui/drawables:grid",
         "//zview/gui/drawables:drawables_buffer",
         "//zview/backend:vp_mat",
         "//zview/backend/state_machine",

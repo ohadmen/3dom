@@ -17,6 +17,31 @@ qt_cc_library(
 )
 
 qt_cc_library(
+    name = "axes",
+    src = "axes.cpp",
+    hdr = "axes.h",
+    deps = qtdeps+["//zview/common","drawable_common"],
+    visibility = ["//zview:__subpackages__"],
+        copts = [
+        '-fpic',
+    ],
+ 
+)
+
+
+qt_cc_library(
+    name = "grid",
+    src = "grid.cpp",
+    hdr = "grid.h",
+    deps = qtdeps+["//zview/common","drawable_common"],
+    visibility = ["//zview:__subpackages__"],
+        copts = [
+        '-fpic',
+    ],
+ 
+)
+
+qt_cc_library(
     name = "drawables_buffer",
     src = "drawables_buffer.cpp",
     hdr = "drawables_buffer.h",

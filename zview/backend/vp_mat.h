@@ -30,6 +30,7 @@ public:
 	const std::pair<QVector3D,QVector3D> xy2ray(const QPointF& xy) const;
 	
 	const QMatrix4x4& getViewMatrix() const ;
+	const QMatrix4x4& getProjMatrix() const ;
 	
     void setViewMatrix(const QMatrix4x4& m);
 

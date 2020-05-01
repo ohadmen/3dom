@@ -30,10 +30,19 @@ TreeModel::~TreeModel()
 {
     const auto index = m_treeViewP->currentIndex();
     TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
-    int num= item->getHandleNum();
-    if(num==-1)
-        return;
-    removeItem(num);
+    
+    //get a list of all children
+    std::vector<TreeItem *> children = sprivGetChildren(item);
+        for(auto& a:children)
+        {
+            //remove the corresponding shape from the buffer
+            drawablesBuffer.removeShape(a->getHandleNum());
+            //delete the object (top parent will be removed)
+
+        }
+    drawablesBuffer.removeShape(item->getHandleNum());
+    item->parent()->removeChild(item);
+
     emit dataChanged(createIndex(0, 1), createIndex(rowCount(), columnCount()));
     m_treeViewP->parentWidget()->setFocus();
 
@@ -229,7 +238,7 @@ void TreeModel::removeItem(size_t handleNum)
             }
         }
     });
-    drawablesBuffer.removeShape(handleNum);
+    
 }
 
 std::vector<TreeItem *> TreeModel::sprivGetChildren(TreeItem *root)
