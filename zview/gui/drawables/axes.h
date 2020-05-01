@@ -6,21 +6,22 @@
 
 
 
-class Backdrop: public QOpenGLFunctions
+class Axes: public QOpenGLFunctions
 {
     
 public:
 
-    void setBGcolor();
-    explicit Backdrop();
+    
+    explicit Axes();
        
     void initializeGL();
 
     void paintGL();
 
 private:
-	QOpenGLShaderProgram m_meshShader;
+	QOpenGLShaderProgram m_shader;
 	QOpenGLBuffer m_verts;
+    QOpenGLBuffer m_edges;
 };
 
 

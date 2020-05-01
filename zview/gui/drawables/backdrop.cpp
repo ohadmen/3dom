@@ -1,6 +1,7 @@
 #include "backdrop.h"
 #include "zview/common/common_types.h"
 #include "zview/common/params.h"
+#include "drawable_common.h"
 // #include "QtCore/qdiriterator.h"
 
 
@@ -35,32 +36,11 @@ void Backdrop::initializeGL()
 {
     Q_INIT_RESOURCE(shaders);
     initializeOpenGLFunctions();
-    initShader("mesh");
+    DrawableCommon::initShadar(&m_meshShader,"mesh");
     setBGcolor();
 
 }
 
-void Backdrop::initShader(const QString &shaderName)
-{
-    
-    // QDirIterator it(":", QDirIterator::Subdirectories);
-    // while (it.hasNext()) {
-    //     qDebug() << it.next();
-    // }
-
-    // Compile vertex shader
-    if (!m_meshShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v"+shaderName))
-        throw std::runtime_error("could not find glsl vertex shader file");
-        
-
-    // Compile fragment shader
-    if (!m_meshShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f"+shaderName))
-        throw std::runtime_error("could not find glsl Fragment shader file");
-    // Link shader pipeline
-    if (!m_meshShader.link())
-        throw std::runtime_error("could not link shader");
-    
-}
 
 void Backdrop::paintGL( )
 {

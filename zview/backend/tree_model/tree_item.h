@@ -26,8 +26,10 @@ public:
     void setChecked(bool set);
     void setHandleNum(int hn);
 
+    
+
 private:
-    QList<TreeItem*> childItems;
+    QList<TreeItem*> m_childItems;
     
     QString m_name;
     int m_handleNum;

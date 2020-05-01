@@ -1,4 +1,5 @@
 #pragma once
+#include "zview/backend/tree_model/tree_model.h"
 #include "canvas.h"
 #include <QtCore/QObject>
 #include <QtWidgets/QTextBrowser>
@@ -24,4 +25,5 @@ public:
 private:
   QTextBrowser m_status;
   Canvas *m_canvas;
+  TreeModel* m_treeModel;
 };

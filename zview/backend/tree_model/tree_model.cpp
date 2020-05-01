@@ -1,5 +1,6 @@
 #include <QtCore/QStringList>
 #include "tree_model.h"
+#include "zview/gui/drawables/drawables_buffer.h"
 #include <QtWidgets/QCheckBox>
 #include <QtCore/QDebug>
 
@@ -25,7 +26,18 @@ TreeModel::~TreeModel()
 {
     delete m_rootItem;
 }
+    void TreeModel::removeSelected()
+{
+    const auto index = m_treeViewP->currentIndex();
+    TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+    int num= item->getHandleNum();
+    if(num==-1)
+        return;
+    removeItem(num);
+    emit dataChanged(createIndex(0, 1), createIndex(rowCount(), columnCount()));
+    m_treeViewP->parentWidget()->setFocus();
 
+}
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
@@ -158,7 +170,8 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     else
         m_parentItem = static_cast<TreeItem *>(parent.internalPointer());
 
-    return m_parentItem->childCount();
+    auto r = m_parentItem->childCount();
+    return r;
 }
 
 void privAddItemRec(const QStringList &list, int handleNum, TreeItem *parent)
@@ -216,6 +229,7 @@ void TreeModel::removeItem(size_t handleNum)
             }
         }
     });
+    drawablesBuffer.removeShape(handleNum);
 }
 
 std::vector<TreeItem *> TreeModel::sprivGetChildren(TreeItem *root)

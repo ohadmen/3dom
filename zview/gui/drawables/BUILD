@@ -8,7 +8,7 @@ qt_cc_library(
     name = "backdrop",
     src = "backdrop.cpp",
     hdr = "backdrop.h",
-    deps = qtdeps+["drawable_base"],
+    deps = qtdeps+["//zview/common","drawable_common"],
     visibility = ["//zview:__subpackages__"],
         copts = [
         '-fpic',
@@ -28,18 +28,26 @@ qt_cc_library(
  
 )
 
+cc_library(
+    name = "drawable_common",
+    srcs = ["drawable_common.cpp"],
+    hdrs = ["drawable_common.h"],
+    deps=qtdeps,
+    visibility = ["//zview:__subpackages__"],
+        copts = [
+        '-fpic',
+    ],
+)
 
 cc_library(
     name = "drawable_base",
     srcs = ["drawable_base.cpp"],
     hdrs = ["drawable_base.h"],
-    deps = qtdeps+["//zview/common","//zview/shaders"],
+    deps = qtdeps+["//zview/common","//zview/shaders","drawable_common"],
     visibility = ["//zview:__subpackages__"],
         copts = [
         '-fpic',
     ],
-    
-
 )
 
 qt_cc_library(

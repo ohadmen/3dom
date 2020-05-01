@@ -1,5 +1,5 @@
 #include "main_window.h"
-#include "zview/backend/tree_model/tree_model.h"
+
 #include <QtWidgets/QApplication>
 #include <QtGui/QScreen>
 #include <QtWidgets/QStyle>
@@ -90,8 +90,8 @@ MainWindow::MainWindow(QWidget *parent)
     setFocus();
 
     m_canvas = new Canvas(this);
+    m_treeModel = new TreeModel(this);
 
-    TreeModel *treeModel = new TreeModel(this);
     m_canvas->setMinimumWidth(500);
     m_canvas->setMinimumHeight(400);
 
@@ -101,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent)
     layoutP->addWidget(m_canvas, 0);
 
     QVBoxLayout *sublayoutP = new QVBoxLayout;
-    sublayoutP->addWidget(treeModel->getTreeView(), 0);
+    sublayoutP->addWidget(m_treeModel->getTreeView(), 0);
     sublayoutP->addWidget(&m_status, 1);
     sublayoutP->setStretch(0, 70);
     sublayoutP->setStretch(1, 30);
@@ -118,11 +118,11 @@ MainWindow::MainWindow(QWidget *parent)
     privAddMenuBar();
 
     //when chaning object visiblity on the tree view - update it in the buffer
-    QObject::connect(treeModel, &TreeModel::viewLabelChanged, &drawablesBuffer, &DrawablesBuffer::setShapeVisability);
+    QObject::connect(m_treeModel, &TreeModel::viewLabelChanged, &drawablesBuffer, &DrawablesBuffer::setShapeVisability);
     //when adding new shape to buffer, add list
-    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeAdded, treeModel, &TreeModel::addItem);
+    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeAdded, m_treeModel, &TreeModel::addItem);
     //when adding new shape to buffer, add list
-    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeRemoved, treeModel, &TreeModel::removeItem);
+    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeRemoved, m_treeModel, &TreeModel::removeItem);
 
     QObject::connect(&drawablesBuffer, &DrawablesBuffer::updateCanvas, m_canvas, &Canvas::slot_forceUpdate);
 
@@ -136,5 +136,12 @@ void MainWindow::readFileList(const QStringList &files)
         m_canvas->addShape(o);
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *e) { m_canvas->input(e); }
+void MainWindow::keyPressEvent(QKeyEvent *e) { 
+
+    if(e->key()==Qt::Key::Key_Delete && e->modifiers() == Qt::KeyboardModifier::NoModifier)
+    {
+        m_treeModel->removeSelected();
+    }
+    m_canvas->input(e);
+     }
 void MainWindow::keyReleaseEvent(QKeyEvent *e) { m_canvas->input(e); }

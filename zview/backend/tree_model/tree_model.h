@@ -14,6 +14,7 @@ class TreeModel : public QAbstractItemModel
 signals:
     void viewLabelChanged(size_t handleNum, bool setval);
     
+    
 
 
 public:
@@ -33,6 +34,8 @@ public slots:
     void addItem(const QString& str,size_t handleNum);
     void removeItem(size_t handleNum);
     QTreeView* getTreeView();
+
+    void removeSelected();
     
 
 private:

@@ -5,36 +5,37 @@ void TreeItem::setChecked(bool set) {
     m_checked = set;
 }
 void TreeItem::setHandleNum(int hn){m_handleNum=hn;}
-QList<TreeItem*>::iterator TreeItem::begin() { return childItems.begin(); }
-QList<TreeItem*>::iterator TreeItem::end() { return childItems.end(); }
+QList<TreeItem*>::iterator TreeItem::begin() { return m_childItems.begin(); }
+QList<TreeItem*>::iterator TreeItem::end() { return m_childItems.end(); }
 
 TreeItem::TreeItem(const QString& name,int handleNum, TreeItem* parent) :m_name(name),m_handleNum(handleNum), m_parentItem(parent), m_checked(true)
 {}
 
 TreeItem::~TreeItem()
 {
-    qDeleteAll(childItems);
+    qDeleteAll(m_childItems);
 }
 
 void TreeItem::appendChild(TreeItem* item)
 {
-    childItems.append(item);
+    m_childItems.append(item);
 }
 void TreeItem::removeChild(TreeItem* itm)
 {
-    childItems.removeOne(itm);
+    m_childItems.removeOne(itm);
 }
 
 
 
 TreeItem* TreeItem::child(int row)
 {
-    return childItems.value(row);
+    return m_childItems.value(row);
 }
 
 int TreeItem::childCount() const
 {
-    return childItems.count();
+    return m_childItems.count();
+
 }
 
 int TreeItem::columnCount() const
@@ -62,7 +63,7 @@ TreeItem* TreeItem::parent()
 int TreeItem::row() const
 {
     if (m_parentItem)
-        return m_parentItem->childItems.indexOf(const_cast<TreeItem*>(this));
+        return m_parentItem->m_childItems.indexOf(const_cast<TreeItem*>(this));
 
     return 0;
 }
