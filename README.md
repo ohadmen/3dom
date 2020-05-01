@@ -3,6 +3,7 @@
 ## changelog version 0.1
 * support deletion from object list
 * load obj/stl/ply file types
+* save last visited directory
 
 ## how to run
 * install Bzael:
