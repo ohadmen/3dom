@@ -1,5 +1,5 @@
 #include "main_window.h"
-
+#include <QtCore/QMimeData>
 #include <QtWidgets/QApplication>
 #include <QtCore/QSettings>
 #include <QtGui/QScreen>
@@ -11,10 +11,13 @@
 #include "zview/io/read_file_list.h"
 #include "zview/io/write_shape_to_file.h"
 
+void MainWindow::privSetTexture(int)
+{
+}
 void MainWindow::privSavePly()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Save .ply file", QSettings().value(m_default_dir_key).toString(), "*.ply");
-    if(filename.isEmpty())
+    if (filename.isEmpty())
         return;
 
     std::vector<Types::Shape> shapes;
@@ -26,9 +29,21 @@ void MainWindow::privSavePly()
 
     io::writeShapeToFile(filename.toStdString(), shapes);
 }
+void MainWindow::privShowHideAxes()
+{
+    auto val = Params::viewAxes();
+    Params::viewAxes(1 - val);
+    m_canvas->update();
+}
+void MainWindow::privShowHideGrid()
+{
+    auto val = Params::viewGrid();
+    Params::viewGrid(1 - val);
+    m_canvas->update();
+}
+
 void MainWindow::privloadFile()
 {
-    
 
     QFileDialog dialog(this);
     dialog.setNameFilter(tr("3d data storage(*.ply *.stl *.obj)"));
@@ -83,9 +98,38 @@ void MainWindow::privAddMenuBar()
         top->addAction(privAddAction("Save as ply", &MainWindow::privSavePly, QKeySequence::Save));
     }
     {
+        auto top = menuBar()->addMenu(tr("&View"));
+        top->addAction(privAddAction("show/hide axes", &MainWindow::privShowHideAxes, QKeySequence(tr("Ctrl+a"))));
+        top->addAction(privAddAction("show/hide axes", &MainWindow::privShowHideGrid, QKeySequence(tr("Ctrl+g"))));
+    }
+    {
         auto top = menuBar()->addMenu(tr("&Help"));
         top->addAction(privAddAction("Manual", nullptr));
         top->addAction(privAddAction("About", nullptr));
+    }
+}
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->acceptProposedAction();
+}
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    const QMimeData *mimeData = event->mimeData();
+
+    // check for our needed mime type, here a file or a list of files
+    if (mimeData->hasUrls())
+    {
+        QStringList pathList;
+        QList<QUrl> urlList = mimeData->urls();
+
+        // extract the local paths of the files
+        for (const auto& a: urlList)
+        {
+            pathList.append(a.toLocalFile());
+        }
+
+        // call a function to open the files
+        readFileList(pathList);
     }
 }
 
@@ -94,6 +138,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     setMouseTracking(true);
+    setAcceptDrops(true); //drag and drop
     setFocus();
 
     m_canvas = new Canvas(this);
@@ -143,12 +188,13 @@ void MainWindow::readFileList(const QStringList &files)
         m_canvas->addShape(o);
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *e) { 
+void MainWindow::keyPressEvent(QKeyEvent *e)
+{
 
-    if(e->key()==Qt::Key::Key_Delete && e->modifiers() == Qt::KeyboardModifier::NoModifier)
+    if (e->key() == Qt::Key::Key_Delete && e->modifiers() == Qt::KeyboardModifier::NoModifier)
     {
         m_treeModel->removeSelected();
     }
     m_canvas->input(e);
-     }
+}
 void MainWindow::keyReleaseEvent(QKeyEvent *e) { m_canvas->input(e); }

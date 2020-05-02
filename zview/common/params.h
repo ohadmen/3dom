@@ -15,7 +15,9 @@ static paramType paramName(paramType vin = paramUnknownValue) \
 class Params
 {
 public:
-	paramsStaticParameter(trackBallRadius, float, 0.5f,-1);
+	paramsStaticParameter(viewGrid, int, 1,-1);
+    paramsStaticParameter(viewAxes, int, 1,-1);
+    paramsStaticParameter(trackBallRadius, float, 0.5f,-1);
     paramsStaticParameter(nStatusLines, int, 3,-1);
     paramsStaticParameter(camZnear, float, 0.1f,-1);
     paramsStaticParameter(camZfar, float, 1e2f,-1);

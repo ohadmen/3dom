@@ -15,14 +15,15 @@ void Grid::initializeGL()
     initializeOpenGLFunctions();
     DrawableCommon::initShadar(&m_shader, "edges");
     constexpr int n2 = n/2;
-    static uint8_t col = 100;
+    static uint8_t col = 255;
+    static uint8_t  alpha = 50;
     std::array<Types::VertData, n * 4> vbuf;
     for (int i = 0; i != n; ++i)
     {
-        vbuf[2 * i + 0] = Types::VertData(i - n2, +n2, 0, col, col, col);
-        vbuf[2 * i + 1] = Types::VertData(i - n2, -n2, 0, col, col, col);
-        vbuf[2 * i + 0 + 2 * n] = Types::VertData(n2, i - n / 2, 0, col, col, col);
-        vbuf[2 * i + 1 + 2 * n] = Types::VertData(-n2, i - n / 2, 0, col, col, col);
+        vbuf[2 * i + 0] = Types::VertData(i - n2, +n2, 0, col, col, col,alpha);
+        vbuf[2 * i + 1] = Types::VertData(i - n2, -n2, 0, col, col, col,alpha);
+        vbuf[2 * i + 0 + 2 * n] = Types::VertData(n2, i - n / 2, 0, col, col, col,alpha);
+        vbuf[2 * i + 1 + 2 * n] = Types::VertData(-n2, i - n / 2, 0, col, col, col,alpha);
     }
     if (m_verts.isCreated())
         m_verts.destroy();
@@ -35,18 +36,36 @@ void Grid::initializeGL()
 
 void Grid::paintGL(const QMatrix4x4 &mvp)
 {
-
+    QVector3D p = mvp.inverted()*QVector3D(0, 0, 0);
+    QVector3D p1 = mvp.inverted()*QVector3D(0, 0, 1);
+    QVector3D l = (p1-p).normalized();
+    if(fabs(l[2])<1e-4)
+        return;
+    QVector3D pFloor = p-p[2]/l[2]*l;
     QMatrix4x4 localmvp = mvp;
+
     auto r = mvp.row(0);
     r.setW(0);
-    float s = float(std::pow(10,int(0.75*std::log10(100/r.length()))))/100;
-    float ox = localmvp.data()[12];
-    float oy = localmvp.data()[13];
+    float s = 1/r.length();
+    float q = float(std::pow(10,int(0.85*std::log10(100*s))))/100;
+    
+    pFloor[0] = int(pFloor[0]/q);
+    pFloor[1] = int(pFloor[1]/q);
+
+
+    // float f = 10;
+    // // float s = 
+    
+    // float ox = localmvp.data()[12]*s;
+    // float oy = localmvp.data()[13]*s;
+    localmvp.scale(q);
+    localmvp.translate(pFloor);
+    
 
     
     
     
-    localmvp.scale(s);
+    // localmvp.scale(s);
     
 
 

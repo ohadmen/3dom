@@ -11,6 +11,10 @@ class MainWindow : public QMainWindow
   
   void privloadFile();
   void privSavePly();
+  void privShowHideAxes();
+  void privShowHideGrid();
+  void privSetTexture(int);
+
   void privAddMenuBar();
   QAction *privAddAction(const QString &str, void (MainWindow::*ff)(), QKeySequence q = QKeySequence::UnknownKey);
 public slots:
@@ -19,8 +23,10 @@ public slots:
 public:
   explicit MainWindow(QWidget *parent = 0);
 
-  void keyPressEvent(QKeyEvent *e);
-  void keyReleaseEvent(QKeyEvent *e);
+  void dropEvent(QDropEvent *event) override;
+  void dragEnterEvent(QDragEnterEvent *event) override;
+  void keyPressEvent(QKeyEvent *e) override;
+  void keyReleaseEvent(QKeyEvent *e) override;
   void readFileList(const QStringList &files);
 
 private:

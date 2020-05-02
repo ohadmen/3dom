@@ -69,8 +69,10 @@ void Canvas::paintGL()
 	glEnable(GL_DEPTH_TEST);
 	QMatrix4x4 vp = m_stateMachine.getVPmatrix();
 	m_backdrop.paintGL();
-	m_axes.paintGL(vp);
-	m_grid.paintGL(vp);
+	if(Params::viewAxes())
+		m_axes.paintGL(vp);
+	if(Params::viewGrid())
+		m_grid.paintGL(vp);
 
 	for (auto &d : drawablesBuffer)
 	{

@@ -4,6 +4,9 @@
 * support deletion from object list
 * load obj/stl/ply file types
 * save last visited directory
+* add axes
+* add grid
+* enable drag and drop
 
 ## how to run
 * install Bzael:
