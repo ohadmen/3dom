@@ -11,7 +11,7 @@ class DrawableBase: public QOpenGLFunctions
 public:
 	DrawableBase();
 	virtual void initializeGL() = 0;
-	virtual void paintGL(const QMatrix4x4& mvp, int txt) = 0;
+	virtual void paintGL(const QMatrix4x4& mvp) = 0;
 	virtual QVector3D picking(const QVector3D& p, const QVector3D& n) const = 0;
 	virtual Types::Roi3d get3dbbox()const=0;
 	virtual Types::Shape getShape() const =0;

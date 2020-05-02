@@ -81,37 +81,53 @@ QRect getCenterRect()
 
     return QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, newSize, QApplication::primaryScreen()->availableGeometry());
 }
-
-QAction *MainWindow::privAddAction(const QString &str, void (MainWindow::*ff)(), QKeySequence q)
+template<typename Func>
+QAction* privAddAction(MainWindow* parent, const QString &str, Func ff, const QString& keySequenceStr)
 {
-    QAction *p = new QAction("&" + str, this);
+    QKeySequence q(keySequenceStr);
+    QAction *p = new QAction("&" + str, parent);
     if (q != QKeySequence::StandardKey::UnknownKey)
         p->setShortcut(q);
-    QObject::connect(p, &QAction::triggered, this, ff);
+    QObject::connect(p, &QAction::triggered, parent, ff);
     return p;
 }
 void MainWindow::privAddMenuBar()
 {
     {
         auto top = menuBar()->addMenu(tr("&File"));
-        top->addAction(privAddAction("Open file", &MainWindow::privloadFile, QKeySequence::Open));
-        top->addAction(privAddAction("Save as ply", &MainWindow::privSavePly, QKeySequence::Save));
+        top->addAction(privAddAction(this,"Open file", &MainWindow::privloadFile, "Ctrl+o"));
+        top->addAction(privAddAction(this,"Save as ply", &MainWindow::privSavePly, "Ctrl+s"));
     }
     {
         auto top = menuBar()->addMenu(tr("&View"));
-        top->addAction(privAddAction("show/hide axes", &MainWindow::privShowHideAxes, QKeySequence(tr("Ctrl+a"))));
-        top->addAction(privAddAction("show/hide axes", &MainWindow::privShowHideGrid, QKeySequence(tr("Ctrl+g"))));
+        top->addAction(privAddAction(this,"show/hide axes", &MainWindow::privShowHideAxes, "Ctrl+a"));
+        top->addAction(privAddAction(this,"show/hide axes", &MainWindow::privShowHideGrid, "Ctrl+g"));
+        auto txtTop = top->addMenu( "Texture" );
+        {
+        Canvas* c = m_canvas;
+        
+        for(int i=0;i!=5;++i)
+            txtTop->addAction(privAddAction(this,"texture #"+QString::number(i), [c,i](){Params::drawablesTexture(i);c->slot_forceUpdate();}, "Ctrl+"+QString::number(i)));
+
+        }
+
+
+        // QAction *p = new QAction("&set Texture", this);
+        // p->setShortcut(QKeySequence(tr("Ctrl+0")));
+        // QObject::connect(p, &QAction::triggered, this, [=](){float a;});
+        // top->addAction(p);
+    
+
+
+
     }
     {
-        auto top = menuBar()->addMenu(tr("&Help"));
-        top->addAction(privAddAction("Manual", nullptr));
-        top->addAction(privAddAction("About", nullptr));
+        // auto top = menuBar()->addMenu(tr("&Help"));
+        // top->addAction(privAddAction(this,"Manual", [](){}));
+        // top->addAction(privAddAction(this,"About", [](){}));
     }
 }
-void MainWindow::dragEnterEvent(QDragEnterEvent *event)
-{
-    event->acceptProposedAction();
-}
+
 void MainWindow::dropEvent(QDropEvent *event)
 {
     const QMimeData *mimeData = event->mimeData();
@@ -131,6 +147,10 @@ void MainWindow::dropEvent(QDropEvent *event)
         // call a function to open the files
         readFileList(pathList);
     }
+}
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->acceptProposedAction();
 }
 
 MainWindow::MainWindow(QWidget *parent)

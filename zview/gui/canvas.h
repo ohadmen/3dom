@@ -29,7 +29,7 @@ public:
 public slots:
 	void slot_setStatus(const QString& str);
 	void slot_forceUpdate();
-	void slot_setTexture(int txt);
+	
 
 signals:
 	void signal_setStatus(const QString& str);
@@ -49,7 +49,7 @@ protected:
 
 
 private:
-	int m_textureType;
+	
 	TrackStateMachine m_stateMachine;
 	Backdrop m_backdrop;
 	Axes m_axes;

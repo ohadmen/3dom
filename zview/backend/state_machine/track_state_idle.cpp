@@ -17,13 +17,7 @@ void TrackStateIdle::input(QKeyEvent *e)
 
     bool noModifier = e->modifiers() == Qt::KeyboardModifier::NoModifier;
     bool typeKeypress = e->type() == QInputEvent::KeyRelease;
-    if (typeKeypress && noModifier && e->key() >= Qt::Key::Key_0 && e->key() <= Qt::Key::Key_9)
-    {
-        int k(e->key() - Qt::Key::Key_0);
-        m_machineP->setTexture(k);
-        m_machineP->canvasUpdate();
-    }
-    else if (typeKeypress && noModifier && e->key() == Qt::Key::Key_D)
+    if (typeKeypress && noModifier && e->key() == Qt::Key::Key_D)
     {
 
         TrackStateMeasureDistance *tsmd = m_machineP->getState<TrackStateMeasureDistance>();

@@ -32,8 +32,9 @@ void DrawableMesh::initializeGL()
 	privInitShader("mesh");
 }
 
-void DrawableMesh::paintGL(const QMatrix4x4 &mvp, int txt)
+void DrawableMesh::paintGL(const QMatrix4x4 &mvp)
 {
+	int txt = Params::drawablesTexture();
 	if (!m_vBuff.isCreated())
 		initializeGL();
 	if (!m_active)

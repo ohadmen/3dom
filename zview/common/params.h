@@ -15,6 +15,8 @@ static paramType paramName(paramType vin = paramUnknownValue) \
 class Params
 {
 public:
+
+    paramsStaticParameter(drawablesTexture, int, 1,-1);
 	paramsStaticParameter(viewGrid, int, 1,-1);
     paramsStaticParameter(viewAxes, int, 1,-1);
     paramsStaticParameter(trackBallRadius, float, 0.5f,-1);

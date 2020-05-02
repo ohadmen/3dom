@@ -34,8 +34,9 @@ void DrawableEdges::initializeGL()
     privInitShader("edges");
 }
 
-void DrawableEdges::paintGL(const QMatrix4x4 &mvp, int txt)
+void DrawableEdges::paintGL(const QMatrix4x4 &mvp)
 {
+    int txt = Params::drawablesTexture();
     if (!m_vBuff.isCreated())
         initializeGL();
     if (!m_active)

@@ -29,7 +29,7 @@ void DrawablePcl::initializeGL()
 }
 Types::Shape DrawablePcl::getShape() const {	return *this;};
 
-void DrawablePcl::paintGL(const QMatrix4x4& mvp, int txt)
+void DrawablePcl::paintGL(const QMatrix4x4& mvp)
 {
     if (!m_vBuff.isCreated())
 	{
@@ -39,6 +39,7 @@ void DrawablePcl::paintGL(const QMatrix4x4& mvp, int txt)
 	{
         return;
 	}
+	int txt = Params::drawablesTexture();
     
 
 	m_vBuff.bind();

@@ -2,14 +2,14 @@
 #include "zview/common/params.h"
 #include <math.h>
 
-Canvas::Canvas(QWidget *parent = 0) : QOpenGLWidget(parent), m_textureType(1), m_stateMachine()
+Canvas::Canvas(QWidget *parent = 0) : QOpenGLWidget(parent), m_stateMachine()
 {
 
 	setMouseTracking(true);
 
 	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setStatus, this, &Canvas::slot_setStatus);
 	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_canvasUpdate, this, &Canvas::slot_forceUpdate);
-	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setTexture, this, &Canvas::slot_setTexture);
+	
 }
 
 void Canvas::slot_setStatus(const QString &str)
@@ -17,11 +17,6 @@ void Canvas::slot_setStatus(const QString &str)
 	emit signal_setStatus(str);
 }
 
-void Canvas::slot_setTexture(int txt)
-{
-	m_textureType = txt;
-	qDebug() << "texture set to " << m_textureType;
-}
 
 void Canvas::slot_forceUpdate() { update(); }
 void Canvas::resetView()
@@ -76,7 +71,7 @@ void Canvas::paintGL()
 
 	for (auto &d : drawablesBuffer)
 	{
-		d.second.get()->paintGL(vp, m_textureType);
+		d.second.get()->paintGL(vp);
 	}
 }
 void Canvas::resizeGL(int w, int h)

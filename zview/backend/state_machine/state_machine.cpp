@@ -53,10 +53,6 @@ void TrackStateMachine::setStatus(const std::string &str)
 {
     emit signal_setStatus(str.c_str());
 }
-void TrackStateMachine::setTexture(int k)
-{
-    emit signal_setTexture(k);
-}
 void TrackStateMachine::canvasUpdate()
 {
     emit signal_canvasUpdate();
