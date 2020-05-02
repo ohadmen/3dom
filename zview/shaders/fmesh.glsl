@@ -11,6 +11,7 @@ varying vec4 v_xyz;
 varying vec4 v_rgb;
 varying vec3 v_eyeDir;
 
+
 //! [0]
 void main()
 {
@@ -23,15 +24,22 @@ void main()
 	}
 	else if(u_txt==2)
 	{
-		
-		float specularFactor =0.8;
+		vec3 lightColor=vec3(1,1,1);
+		float ambientFactor = 0.2;
+		float diffuseFactor =0.3;
+		float specFactor = 0.7;
+		//calc normal
 		vec3 ec_pos=v_xyz.xyz;
 		vec3 ec_normal = normalize(cross(dFdx(ec_pos),dFdy(ec_pos)));
-		
-		float spec = max(dot(ec_normal, u_lightDir), 0.0)*specularFactor/2.0+
-					 max(dot(ec_normal, -u_lightDir), 0.0)*specularFactor/2.0+
-					 (1.0-specularFactor);
-		gl_FragColor = vec4(vec3(v_rgb*spec),1.0); 
+		//calc diffuse
+		float diffuse = max(0.0,dot(ec_normal, u_lightDir));
+		//calc specularity
+  	    vec3 reflectDir = -reflect(u_lightDir, ec_normal);
+  	    float spec = pow(max(dot(v_eyeDir, reflectDir), 0.0),2);
+
+
+		vec3 result = v_rgb.xyz*(lightColor*ambientFactor+diffuse*diffuseFactor+spec*specFactor);
+		gl_FragColor = vec4(result,1.0); 
 		
 
 	}

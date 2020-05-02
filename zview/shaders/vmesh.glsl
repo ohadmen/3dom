@@ -21,7 +21,7 @@ void main()
     gl_Position = mvp_matrix * a_xyz;
 	v_xyz = a_xyz;
     v_rgb = a_rgb;
-	v_eyeDir  = -1.0 * normalize(vec3(gl_Position));
+	v_eyeDir  = -1.0 * normalize(vec3(mvp_matrix[0]));
 
 
 }

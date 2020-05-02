@@ -7,6 +7,7 @@
 * add axes
 * add grid
 * enable drag and drop
+* screenshot support
 
 ## how to run
 * install Bzael:

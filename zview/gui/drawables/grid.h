@@ -8,7 +8,7 @@
 
 class Grid: public QOpenGLFunctions
 {
-    static constexpr int n = 51;
+    static constexpr int n = 101;
 public:
 
     

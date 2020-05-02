@@ -1,4 +1,7 @@
 #include "main_window.h"
+#include <QtGui/QClipboard>
+#include <QtGui/QWindow>
+#include <QtWidgets/QMessageBox>
 #include <QtCore/QMimeData>
 #include <QtWidgets/QApplication>
 #include <QtCore/QSettings>
@@ -82,9 +85,9 @@ QRect getCenterRect()
     return QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, newSize, QApplication::primaryScreen()->availableGeometry());
 }
 template<typename Func>
-QAction* privAddAction(MainWindow* parent, const QString &str, Func ff, const QString& keySequenceStr)
+QAction* privAddAction(MainWindow* parent, const QString &str, Func ff, const QString& keySequenceStr="")
 {
-    QKeySequence q(keySequenceStr);
+    QKeySequence q= keySequenceStr==""?QKeySequence::UnknownKey:QKeySequence(keySequenceStr);
     QAction *p = new QAction("&" + str, parent);
     if (q != QKeySequence::StandardKey::UnknownKey)
         p->setShortcut(q);
@@ -97,6 +100,8 @@ void MainWindow::privAddMenuBar()
         auto top = menuBar()->addMenu(tr("&File"));
         top->addAction(privAddAction(this,"Open file", &MainWindow::privloadFile, "Ctrl+o"));
         top->addAction(privAddAction(this,"Save as ply", &MainWindow::privSavePly, "Ctrl+s"));
+        top->addAction(privAddAction(this,"screenshot to clipboard", &MainWindow::takeScreenshot, "Ctrl+p"));
+
     }
     {
         auto top = menuBar()->addMenu(tr("&View"));
@@ -122,10 +127,33 @@ void MainWindow::privAddMenuBar()
 
     }
     {
-        // auto top = menuBar()->addMenu(tr("&Help"));
-        // top->addAction(privAddAction(this,"Manual", [](){}));
-        // top->addAction(privAddAction(this,"About", [](){}));
+
+        
+        QWidget* parent = this;
+        auto top = menuBar()->addMenu(tr("&Help"));
+        top->addAction(privAddAction(this,"About", [&parent](){
+            
+            QString aboutText("WIP :)");
+            QMessageBox::about(parent, "Zview", aboutText);
+
+        }));
     }
+}
+
+void MainWindow::takeScreenshot()
+{
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (const QWindow *window = windowHandle())
+        screen = window->screen();
+    if (!screen)
+        return;
+
+    QApplication::beep();
+    QPixmap  originalPixmap = screen->grabWindow(winId());
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setPixmap(originalPixmap);
+    m_canvas->slot_setStatus("image copied to clipboard");
+
 }
 
 void MainWindow::dropEvent(QDropEvent *event)

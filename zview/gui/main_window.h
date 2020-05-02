@@ -22,7 +22,7 @@ public slots:
 
 public:
   explicit MainWindow(QWidget *parent = 0);
-
+  void takeScreenshot();
   void dropEvent(QDropEvent *event) override;
   void dragEnterEvent(QDragEnterEvent *event) override;
   void keyPressEvent(QKeyEvent *e) override;
