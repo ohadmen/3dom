@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/shaders">
+        <file>fedges.glsl</file>
+        <file>fmesh.glsl</file>
+        <file>fpoint.glsl</file>
+        <file>vedges.glsl</file>
+        <file>vmesh.glsl</file>
+        <file>vpoint.glsl</file>
+    </qresource>
+</RCC>

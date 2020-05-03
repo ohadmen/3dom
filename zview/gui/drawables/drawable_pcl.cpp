@@ -93,7 +93,8 @@ Types::Roi3d DrawablePcl::get3dbbox() const
 
 QVector3D DrawablePcl::picking(const QVector3D& p, const QVector3D& n) const
 {
-	static const float angularthresholt = std::tan(2.0*M_PI/180.0);
+    static const float pi = std::acos(0)*2;
+    static const float angularthresholt = std::tan(2.0*pi/180.0);
     constexpr float inf = std::numeric_limits<float>::infinity();
 	float closestDistance = inf;
 	QVector3D closestPoint(inf,inf,inf);

@@ -35,7 +35,7 @@ void main()
 		float diffuse = max(0.0,dot(ec_normal, u_lightDir));
 		//calc specularity
   	    vec3 reflectDir = -reflect(u_lightDir, ec_normal);
-  	    float spec = pow(max(dot(v_eyeDir, reflectDir), 0.0),2);
+            float spec = pow(max(dot(v_eyeDir, reflectDir), 0.0),2.0);
 
 
 		vec3 result = v_rgb.xyz*(lightColor*ambientFactor+diffuse*diffuseFactor+spec*specFactor);

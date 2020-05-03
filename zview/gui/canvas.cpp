@@ -2,7 +2,7 @@
 #include "zview/common/params.h"
 #include <math.h>
 
-Canvas::Canvas(QWidget *parent = 0) : QOpenGLWidget(parent), m_stateMachine()
+Canvas::Canvas(QWidget *parent ) : QOpenGLWidget(parent), m_stateMachine()
 {
 
 	setMouseTracking(true);
@@ -21,7 +21,8 @@ void Canvas::slot_setStatus(const QString &str)
 void Canvas::slot_forceUpdate() { update(); }
 void Canvas::resetView()
 {
-	constexpr float deg2rad = M_PI / 180.0;
+    static const float pi = std::acos(0)*2;
+    static const float deg2rad =  pi/180.0;
 	// camera is always at (0,0,0), looking tawards negative z.
 	// rotation center is always (0,0,-1). for init, set object to (0,0,-1), and rescale it to fit in image.
 	// static const float deg2rad = std::acosf(0.0) / 90;

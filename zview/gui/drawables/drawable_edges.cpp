@@ -92,7 +92,8 @@ Types::Roi3d DrawableEdges::get3dbbox() const
 
 QVector3D DrawableEdges::picking(const QVector3D &p1, const QVector3D &n1) const
 {
-    static const float angularthresholt = std::tan(2.0 * M_PI / 180.0);
+    static const float pi = std::acos(0.0)*2;
+    static const float angularthresholt = std::tan(2.0 * pi / 180.0);
     static const float inf = std::numeric_limits<float>::infinity();
 
     float closestDistance = inf;
