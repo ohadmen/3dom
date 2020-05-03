@@ -8,7 +8,7 @@ def main(argv):
         fid.write("<RCC>\n")
         fid.write("\t<qresource prefix=\"%s\">\n" % resource_name)
         for x in file_list:
-            res_fn = (ntpath.basename(x).split('.')[0],x)
+            res_fn = (ntpath.basename(x),x)
             fid.write("\t\t<file alias='%s' >%s</file>\n" % res_fn)
         fid.write("\t</qresource>\n")
         fid.write("</RCC>\n")
