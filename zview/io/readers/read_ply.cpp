@@ -1,7 +1,7 @@
 #define TINYPLY_IMPLEMENTATION
 #include "read_ply.h"
-#include "third_party/tinyply/source/tinyply.h"
-//#include <tinyply.h>
+//#include "third_party/tinyply/source/tinyply.h"
+#include <tinyply.h>
 #include <fstream>
 
 namespace
