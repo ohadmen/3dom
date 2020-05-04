@@ -90,6 +90,8 @@ void privReadStlBin(std::ifstream* ifsP, Types::Mesh* meshP)
 
 void privReadStlAscii(std::ifstream* ifsP, Types::Mesh* meshP)
 {
+	(void)ifsP; //silence missuse
+	(void)meshP; //silence missuse
 	throw std::runtime_error("ASCII STL are unsopported");
 }
 

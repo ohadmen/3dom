@@ -72,8 +72,8 @@ struct VertData
 			return false;
 	}
 };
-using FaceIndx = std::array<uint32_t, 3>;
-using EdgeIndx = std::array<uint32_t, 2>;
+using FaceIndx = std::array<int32_t, 3>;
+using EdgeIndx = std::array<int32_t, 2>;
 
 class Pcl
 {

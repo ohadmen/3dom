@@ -61,8 +61,8 @@ std::vector<Types::Shape> io::readObj(const std::string& fn)
         {
             
             //support case that we have more than 3 vetrices - triagulize it
-            uint32_t f0;
-            uint32_t f12[2];
+            int32_t f0;
+            int32_t f12[2];
 
             line >> f0;
             line >> f12[0];
@@ -90,14 +90,14 @@ std::vector<Types::Shape> io::readObj(const std::string& fn)
     for(const auto& a: mesh.f())
     {
         for(const auto& b:a)
-            if(b>=0 && b<usedPoint.size())
+            if(b>=0 && size_t(b)<usedPoint.size())
                 usedPoint[b]=true;
     }
     for(const auto& a: edges.e())
     {
         for(const auto& b:a)
         {
-            if(b>=0 && b<usedPoint.size())
+            if(b>=0 && size_t(b)<usedPoint.size())
                 usedPoint[b]=true;
         }
             
