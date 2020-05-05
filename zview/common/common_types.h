@@ -1,5 +1,5 @@
 #pragma once
-#include <QtGui/qvector3d.h>
+#include <QtGui/QVector3D>
 #include <vector>
 #include <array>
 #include <variant>

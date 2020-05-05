@@ -1,7 +1,6 @@
 #include <QtWidgets/QApplication>
 #include "QtCore/QStringList"
 #include "zview/gui/main_window.h"
-
 QStringList getArgs(int argc, char **argv)
 {
     QStringList list;
