@@ -15,7 +15,7 @@
 * screenshot support
 
 ## how to run
-
+* git submodule update --init
 * Install qt:
     * sudo apt install qt5-default
 * ./build.sh
