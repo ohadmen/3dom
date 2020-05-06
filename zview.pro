@@ -84,27 +84,27 @@ RESOURCES += \
 
 
 #----------CUDA-----------
-#CUDA_SOURCES += zview/gui/drawables/picking.cc
-#CUDA_ARCH = sm_75
-#unix:
-#{
-#
-#CUDA_DIR = /usr/local/cuda
-#
-#NVCCFLAGS = --compiler-options -use-fast-math --Wno-deprecated-gpu-targets
-#INCLUDEPATH += $$CUDA_DIR/include
-#QMAKE_LIBDIR += $$CUDA_DIR/lib64
-#LIBS += -lcudart
-#CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
-#cuda.input = CUDA_SOURCES
-#cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.o
-#cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -g -G -arch=$$CUDA_ARCH -c $$NVCCFLAGS $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
-#cuda.dependency_type = TYPE_C
-#cuda.depend_command = $$CUDA_DIR/bin/nvcc -g -G -M $$CUDA_INC $$NVCCFLAGS   ${QMAKE_FILE_NAME}
-#QMAKE_EXTRA_UNIX_COMPILERS += cuda
-#}
-#win32:
-#{
-#
-#}
-#
+CUDA_SOURCES += zview/gui/drawables/picking.cu.cc
+CUDA_ARCH = sm_75
+unix:
+{
+
+CUDA_DIR = /usr/local/cuda
+
+NVCCFLAGS = --compiler-options -use-fast-math --Wno-deprecated-gpu-targets 
+INCLUDEPATH += $$CUDA_DIR/include
+INCLUDEPATH += $$PWD
+QMAKE_LIBDIR += $$CUDA_DIR/lib64
+LIBS += -lcudart
+CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')
+cuda.input = CUDA_SOURCES
+cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.o
+cuda.commands = $$CUDA_DIR/bin/nvcc -m64 -g -G -arch=$$CUDA_ARCH -c $$NVCCFLAGS $$CUDA_INC $$LIBS  ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
+cuda.dependency_type = TYPE_C
+cuda.depend_command = $$CUDA_DIR/bin/nvcc -g -G -M $$CUDA_INC $$NVCCFLAGS   ${QMAKE_FILE_NAME}
+QMAKE_EXTRA_UNIX_COMPILERS += cuda
+}
+win32:
+{
+
+}
