@@ -249,3 +249,7 @@ bazel-*
 
 #vscode
 .vscode
+
+#qmake
+.qmake.stash
+Makefile

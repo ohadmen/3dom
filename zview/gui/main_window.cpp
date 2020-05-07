@@ -106,7 +106,7 @@ void MainWindow::privAddMenuBar()
     {
         auto top = menuBar()->addMenu(tr("&View"));
         top->addAction(privAddAction(this,"show/hide axes", &MainWindow::privShowHideAxes, "Ctrl+a"));
-        top->addAction(privAddAction(this,"show/hide axes", &MainWindow::privShowHideGrid, "Ctrl+g"));
+        top->addAction(privAddAction(this,"show/hide grid", &MainWindow::privShowHideGrid, "Ctrl+g"));
         auto txtTop = top->addMenu( "Texture" );
         {
         Canvas* c = m_canvas;
