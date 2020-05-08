@@ -1,4 +1,5 @@
 #include "main_window.h"
+#include "zview/backend/shared_memory/shared_memory_manager.h"
 #include <QtGui/QClipboard>
 #include <QtGui/QWindow>
 #include <QtWidgets/QMessageBox>
@@ -13,6 +14,8 @@
 #include <QtWidgets/QFileDialog>
 #include "zview/io/read_file_list.h"
 #include "zview/io/write_shape_to_file.h"
+#include "zview/backend/tree_model/tree_model.h"
+#include "canvas.h"
 
 void MainWindow::privSetTexture(int)
 {
@@ -188,7 +191,7 @@ MainWindow::MainWindow(QWidget *parent)
     setMouseTracking(true);
     setAcceptDrops(true); //drag and drop
     setFocus();
-
+    m_smm = new SharedMemoryManager(this);
     m_canvas = new Canvas(this);
     m_treeModel = new TreeModel(this);
 

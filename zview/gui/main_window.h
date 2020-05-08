@@ -1,10 +1,14 @@
 #pragma once
-#include "zview/backend/tree_model/tree_model.h"
-#include "canvas.h"
+
+
+
 #include <QtCore/QObject>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QMainWindow>
 
+class Canvas;
+class TreeModel;
+class SharedMemoryManager;
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
@@ -33,5 +37,6 @@ private:
   QTextBrowser m_status;
   Canvas *m_canvas;
   TreeModel* m_treeModel;
+  SharedMemoryManager* m_smm;
   const QString m_default_dir_key="default_dir";
 };

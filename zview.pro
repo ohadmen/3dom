@@ -11,6 +11,8 @@ MOC_DIR = $${DESTDIR}/moc
 RCC_DIR = $${DESTDIR}/rcc
 
 SOURCES += \
+    zview/backend/shared_memory/shared_memory_manager.cpp \
+    zview/backend/shared_memory/cmd_query_thread.cpp \
     zview/backend/state_machine/state_machine.cpp \
     zview/backend/state_machine/track_state_abs.cpp \
     zview/backend/state_machine/track_state_idle.cpp \
@@ -42,6 +44,8 @@ SOURCES += \
     zview/backend/vp_mat.cpp
 
 HEADERS += \
+    zview/backend/shared_memory/shared_memory_manager.h \
+    zview/backend/shared_memory/cmd_query_thread.h \
     third_party/tinyply/source/tinyply.h \
     zview/backend/state_machine/state_machine.h \
     zview/backend/state_machine/track_state_abs.h \
