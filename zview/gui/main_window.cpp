@@ -1,5 +1,5 @@
 #include "main_window.h"
-//#include "zview/backend/shared_memory/shared_memory_manager.h"
+#include "zview/backend/shared_memory/shared_memory_manager.h"
 #include <QtGui/QClipboard>
 #include <QtGui/QWindow>
 #include <QtWidgets/QMessageBox>
@@ -188,7 +188,7 @@ MainWindow::MainWindow(QWidget *parent)
     setMouseTracking(true);
     setAcceptDrops(true); //drag and drop
     setFocus();
-    //m_smm = new SharedMemoryManager(this);
+    m_smm = new SharedMemoryManager(this);
     m_canvas = new Canvas(this);
     m_treeModel = new TreeModel(this);
 

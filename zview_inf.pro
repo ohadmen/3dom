@@ -1,6 +1,9 @@
+QT += core
+
 TEMPLATE = lib
 CONFIG += staticlib
-CONFIG += c++20
+CONFIG += c++17 
+QMAKE_CXXFLAGS += -std=c++17
 
 TARGET = zview_interface
 DESTDIR = ./bin
@@ -10,5 +13,21 @@ RCC_DIR = $${DESTDIR}/rcc
 
 
 # Input
-HEADERS += zview/interface/zview_inf.h
-SOURCES += zview/interface/zview_inf.cpp
+
+SOURCES += \
+    zview/interface/zview_inf.cpp\
+    zview/io/read_file_list.cpp \
+    zview/io/readers/read_obj.cpp \
+    zview/io/readers/read_ply.cpp \
+    zview/io/readers/read_stl.cpp \
+    zview/io/write_shape_to_file.cpp \
+
+
+
+HEADERS += \
+    zview/interface/zview_inf.h\
+    zview/io/read_file_list.h \
+    zview/io/readers/read_obj.h \
+    zview/io/readers/read_ply.h \
+    zview/io/readers/read_stl.h \
+    zview/io/write_shape_to_file.h \

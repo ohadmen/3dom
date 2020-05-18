@@ -1,4 +1,4 @@
-#include "zview/interface/zview_inf.h"
+#include "zview_inf.h"
 
 
 int main()

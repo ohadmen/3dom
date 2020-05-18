@@ -9,16 +9,17 @@ class DrawablesBuffer : public QObject
 {
 	Q_OBJECT
 public:
+	static DrawablesBuffer& i()
+	{
+		static DrawablesBuffer obj;
+		return obj;
+	}
 	using BaseTypeVector = std::map<size_t, std::unique_ptr<DrawableBase>>;
 	size_t size() const;
 	DrawablesBuffer(DrawablesBuffer const &) = delete;
 	void operator=(DrawablesBuffer const &) = delete;
 
-	static DrawablesBuffer &i()
-	{
-		static DrawablesBuffer obj;
-		return obj;
-	}
+
 
 	size_t addShape(const Types::Shape &obj);
 	bool removeShape(int key);

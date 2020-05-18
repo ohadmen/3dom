@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10.0)
 project (zview_interface_test)
 add_executable(main zview_interface_test.cpp)
-target_include_directories(main PRIVATE ../../)
-target_link_libraries(main libzview_interface.a)
+target_include_directories(main PRIVATE ../../zview/interface/)
+
+find_library(ZVIEW_LIBRARY zview_interface HINTS ../../bin)
+target_link_libraries(main PUBLIC ${ZVIEW_LIBRARY})
