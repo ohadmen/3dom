@@ -1,18 +1,17 @@
 
 QT += core gui  widgets
 
-CONFIG += c++17
+
+CONFIG += c++17 
 QMAKE_CXXFLAGS += -std=c++17
 
-
+TARGET = zview
 DESTDIR = ./bin
 OBJECTS_DIR = $${DESTDIR}/obj
 MOC_DIR = $${DESTDIR}/moc
 RCC_DIR = $${DESTDIR}/rcc
 
 SOURCES += \
-    zview/backend/shared_memory/shared_memory_manager.cpp \
-    zview/backend/shared_memory/cmd_query_thread.cpp \
     zview/backend/state_machine/state_machine.cpp \
     zview/backend/state_machine/track_state_abs.cpp \
     zview/backend/state_machine/track_state_idle.cpp \
@@ -40,13 +39,10 @@ SOURCES += \
     zview/io/readers/read_ply.cpp \
     zview/io/readers/read_stl.cpp \
     zview/io/write_shape_to_file.cpp \
-    zview/zview.cpp
+    zview/gui/zview_main.cpp
     zview/backend/vp_mat.cpp
 
 HEADERS += \
-    zview/backend/shared_memory/shared_memory_manager.h \
-    zview/backend/shared_memory/cmd_query_thread.h \
-    third_party/tinyply/source/tinyply.h \
     zview/backend/state_machine/state_machine.h \
     zview/backend/state_machine/track_state_abs.h \
     zview/backend/state_machine/track_state_idle.h \
@@ -76,7 +72,6 @@ HEADERS += \
     zview/io/readers/read_ply.h \
     zview/io/readers/read_stl.h \
     zview/io/write_shape_to_file.h \
-    zview/io/writers/write_ply.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

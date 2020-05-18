@@ -16,6 +16,7 @@ SharedMemoryManager::SharedMemoryManager(QObject *parent) : QObject(parent)
 
 void SharedMemoryManager::cmdRecieved(const QString &cmd)
 {
+    
 }
 SharedMemoryManager::~SharedMemoryManager()
 {

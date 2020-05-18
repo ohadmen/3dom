@@ -23,11 +23,11 @@ void CmdQueryThread::run()
 
 CmdQueryThread::CmdQueryThread(QObject *parent) : QThread(parent),m_lock("zview_lock", 0, QSystemSemaphore::Create),m_stop(false),m_done(false)
 {
-    m_cmd.setNativeKey("zview_cmd");
-    if (m_cmd.isAttached())
-        m_cmd.detach();
-    if (!m_cmd.create(cmdSize))
-        throw std::runtime_error("could not attach to command shared memory");
+        // m_cmd.setNativeKey("zview_cmd");
+        // if (m_cmd.isAttached())
+        //     m_cmd.detach();
+        // if (!m_cmd.create(cmdSize))
+        //     throw std::runtime_error("could not attach to command shared memory");
 
 }
 
