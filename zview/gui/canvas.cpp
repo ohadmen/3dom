@@ -19,19 +19,14 @@ void Canvas::slot_setStatus(const QString &str)
 
 
 void Canvas::slot_forceUpdate() { update(); }
-void Canvas::resetView()
+void Canvas::resetView(int key)
 {
     static const float pi = std::acos(0)*2;
     static const float deg2rad =  pi/180.0;
 	// camera is always at (0,0,0), looking tawards negative z.
 	// rotation center is always (0,0,-1). for init, set object to (0,0,-1), and rescale it to fit in image.
 	// static const float deg2rad = std::acosf(0.0) / 90;
-	Types::Roi3d objsbbox;
-	for (const auto &o : drawablesBuffer)
-	{
-		Types::Roi3d bbox = o.second.get()->get3dbbox();
-		objsbbox |= bbox;
-	}
+	Types::Roi3d objsbbox = drawablesBuffer.get3dbbox(key);
 
 	float a = std::tan(deg2rad * Params::camFOV() / 2);
 	float s = 2 * a / (objsbbox.rangey() + objsbbox.rangez() * a);

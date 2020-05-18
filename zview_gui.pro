@@ -2,6 +2,7 @@
 QT += core gui  widgets
 
 
+
 CONFIG += c++17 
 QMAKE_CXXFLAGS += -std=c++17
 
@@ -22,6 +23,7 @@ SOURCES += \
     zview/backend/state_machine/track_state_zoom.cpp \
     zview/backend/tree_model/tree_item.cpp \
     zview/backend/tree_model/tree_model.cpp \
+    zview/backend/tree_model/tree_view_signaled.cpp \
     zview/backend/vp_mat.cpp \
     zview/gui/canvas.cpp \
     zview/gui/drawables/axes.cpp \
@@ -53,6 +55,7 @@ HEADERS += \
     zview/backend/state_machine/track_state_zoom.h \
     zview/backend/tree_model/tree_item.h \
     zview/backend/tree_model/tree_model.h \
+    zview/backend/tree_model/tree_view_signaled.h \
     zview/backend/vp_mat.h \
     zview/common/common_types.h \
     zview/common/params.h \
@@ -79,7 +82,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    zview/shaders/shaders.qrc
+    zview/shaders/shaders.qrc\
+    res/res.qrc
 
 
 #----------CUDA-----------

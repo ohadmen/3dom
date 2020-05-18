@@ -4,7 +4,7 @@
 #include <QtCore/QModelIndex>
 #include <QtCore/QList>
 #include <QtCore/QVariant>
-#include <QtWidgets/QTreeView>
+#include "tree_view_signaled.h"
 #include "tree_item.h"
 
 class TreeModel : public QAbstractItemModel
@@ -13,6 +13,7 @@ class TreeModel : public QAbstractItemModel
     std::vector<TreeItem*> sprivGetChildren(TreeItem* root);
 signals:
     void viewLabelChanged(size_t handleNum, bool setval);
+    void focusOnObject(int key);
     
     
 
@@ -36,6 +37,7 @@ public slots:
     QTreeView* getTreeView();
 
     void removeSelected();
+    void focusSelected();
     
 
 private:
@@ -43,5 +45,5 @@ private:
 
     TreeItem* m_rootItem;
     QStringList m_headerString;
-    QTreeView* m_treeViewP;
+    TreeViewSignaled* m_treeViewP;
 };

@@ -32,7 +32,8 @@ public:
 	BaseTypeVector::const_iterator end() const;
 	BaseTypeVector::const_iterator cend() const;
 
-	void addDebug();
+	Types::Roi3d get3dbbox(int handleNum=-1);
+	bool exists(const std::string& name) const;
 public slots:
 	bool setShapeVisability(size_t key, bool isvis);
 signals:

@@ -21,4 +21,4 @@ make -j8 >/dev/null || make
 # echo "running make (interface)"
 # make -j8 >/dev/null || make
 
-echo "done"
+echo "done (cp zview /usr/bin)"

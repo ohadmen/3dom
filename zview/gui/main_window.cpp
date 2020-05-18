@@ -64,29 +64,25 @@ void MainWindow::privloadFile()
 
 void MainWindow::slot_setStatus(const QString &str)
 {
-    //auto t = std::time(nullptr);
-    //auto tm = *std::localtime(&t);
-    //std::stringstream ss;
-    //ss << std::put_time(&tm, "[%Y-%m-%d %H:%M:%S]") << " " << str.toStdString();
     m_status.append(str);
     m_status.scroll(0, 1);
 }
 
-QRect getCenterRect()
-{
-    // get the dimension available on this screen
-    QSize availableSize = QApplication::primaryScreen()->availableSize();
-    static const float initSizeScaleFactor = 0.5;
+// QRect getCenterRect()
+// {
+//     // get the dimension available on this screen
+//     QSize availableSize = QApplication::primaryScreen()->availableSize();
+//     static const float initSizeScaleFactor = 0.5;
 
-    int width = availableSize.width();
-    int height = availableSize.height();
-    //qDebug() << "Available dimensions " << width << "x" << height;
-    width *= initSizeScaleFactor;  // 90% of the screen size
-    height *= initSizeScaleFactor; // 90% of the screen size
-    QSize newSize(width, height);
+//     int width = availableSize.width();
+//     int height = availableSize.height();
+//     //qDebug() << "Available dimensions " << width << "x" << height;
+//     width *= initSizeScaleFactor;  // 90% of the screen size
+//     height *= initSizeScaleFactor; // 90% of the screen size
+//     QSize newSize(width, height);
 
-    return QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, newSize, QApplication::primaryScreen()->availableGeometry());
-}
+//     return QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, newSize, QApplication::primaryScreen()->availableGeometry());
+// }
 template<typename Func>
 QAction* privAddAction(MainWindow* parent, const QString &str, Func ff, const QString& keySequenceStr="")
 {
@@ -187,6 +183,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    setWindowIcon(QIcon(":zview256.png"));
 
     setMouseTracking(true);
     setAcceptDrops(true); //drag and drop
@@ -216,7 +213,9 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget *widget = new QWidget();
     widget->setLayout(layoutP);
     setCentralWidget(widget);
-    setGeometry(getCenterRect());
+
+    showMaximized();
+
 
     privAddMenuBar();
 
@@ -228,6 +227,8 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeRemoved, m_treeModel, &TreeModel::removeItem);
 
     QObject::connect(&drawablesBuffer, &DrawablesBuffer::updateCanvas, m_canvas, &Canvas::slot_forceUpdate);
+    //on double click in tree view - zoom to object
+    QObject::connect(m_treeModel, &TreeModel::focusOnObject, m_canvas, &Canvas::resetView);
 
     // QObject::connect(this, &CurieMainWin::resetView, canvas, &Canvas::resetView);
     QObject::connect(m_canvas, &Canvas::signal_setStatus, this, &MainWindow::slot_setStatus);

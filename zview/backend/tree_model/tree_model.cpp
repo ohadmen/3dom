@@ -9,7 +9,7 @@ constexpr int TITLE_COL  = 2;
 constexpr int HANDLENUM_COLUMN  = 3;
 
 TreeModel::TreeModel(QWidget *parent)
-    : QAbstractItemModel(parent), m_rootItem(new TreeItem("", -1, nullptr)), m_treeViewP(new QTreeView(parent))
+    : QAbstractItemModel(parent), m_rootItem(new TreeItem("", -1, nullptr)), m_treeViewP(new TreeViewSignaled(parent))
 {
      m_headerString = QStringList({"","#", "Layer name", "v"});
     m_treeViewP->setModel(this);
@@ -19,12 +19,21 @@ TreeModel::TreeModel(QWidget *parent)
     m_treeViewP->setColumnWidth(3, 10);
     m_treeViewP->setMinimumWidth(140);
 
+    QObject::connect(m_treeViewP, &TreeViewSignaled::doubleClicked, this, &TreeModel::focusSelected);
+
      
 }
 QTreeView* TreeModel::getTreeView(){return m_treeViewP;}
 TreeModel::~TreeModel()
 {
     delete m_rootItem;
+}
+
+    void TreeModel::focusSelected()
+{
+    const auto index = m_treeViewP->currentIndex();
+    TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+    emit focusOnObject(item->getHandleNum());
 }
     void TreeModel::removeSelected()
 {

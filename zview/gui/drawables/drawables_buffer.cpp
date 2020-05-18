@@ -14,16 +14,26 @@ size_t DrawablesBuffer::size() const { return m_drawobjs.size(); }
 
 struct Shape2drawable
 {
+    static std::string getUniqueName(const std::string &name)
+    {
+        std::string suggestedName = name;
+        int counter = 1;
+        while (drawablesBuffer.exists(suggestedName))
+        {
+            suggestedName = name + "_" + std::to_string(counter++);
+        }
+        return suggestedName;
+    }
     std::unique_ptr<DrawableBase> operator()(const Types::Pcl &obj)
     {
-        std::unique_ptr<DrawablePcl> dobjP(new DrawablePcl(obj.getName()));
+        std::unique_ptr<DrawablePcl> dobjP(new DrawablePcl(getUniqueName(obj.getName())));
         dobjP.get()->v().resize(obj.v().size());
         std::copy(obj.v().begin(), obj.v().end(), dobjP.get()->v().begin());
         return dobjP;
     }
     std::unique_ptr<DrawableBase> operator()(const Types::Edges &obj)
     {
-        std::unique_ptr<DrawableEdges> dobjP(new DrawableEdges(obj.getName()));
+        std::unique_ptr<DrawableEdges> dobjP(new DrawableEdges(getUniqueName(obj.getName())));
         dobjP.get()->v().resize(obj.v().size());
         std::copy(obj.v().begin(), obj.v().end(), dobjP.get()->v().begin());
         dobjP.get()->e().resize(obj.e().size());
@@ -32,7 +42,7 @@ struct Shape2drawable
     }
     std::unique_ptr<DrawableBase> operator()(const Types::Mesh &obj)
     {
-        std::unique_ptr<DrawableMesh> dobjP(new DrawableMesh(obj.getName()));
+        std::unique_ptr<DrawableMesh> dobjP(new DrawableMesh(getUniqueName(obj.getName())));
         dobjP.get()->v().resize(obj.v().size());
         std::copy(obj.v().begin(), obj.v().end(), dobjP.get()->v().begin());
         dobjP.get()->f().resize(obj.f().size());
@@ -40,7 +50,38 @@ struct Shape2drawable
         return dobjP;
     }
 };
-
+Types::Roi3d DrawablesBuffer::get3dbbox(int key)
+{
+    Types::Roi3d objsbbox;
+    if (key == -1)
+    {
+        for (const auto &o : *this)
+        {
+            Types::Roi3d bbox = o.second.get()->get3dbbox();
+            objsbbox |= bbox;
+        }
+    }
+    else
+    {
+        auto it = m_drawobjs.find(size_t(key));
+        if (it != m_drawobjs.end())
+        {
+            objsbbox = it->second.get()->get3dbbox();
+        }
+    }
+    return objsbbox;
+}
+bool DrawablesBuffer::exists(const std::string &name) const
+{
+    for (const auto &a : m_drawobjs)
+    {
+        if (name == a.second->getName())
+        {
+            return true;
+        }
+    }
+    return false;
+}
 size_t DrawablesBuffer::addShape(const Types::Shape &objv)
 {
 
@@ -52,7 +93,7 @@ size_t DrawablesBuffer::addShape(const Types::Shape &objv)
 
 bool DrawablesBuffer::removeShape(int key)
 {
-    if(key==-1)
+    if (key == -1)
         return false;
     auto it = m_drawobjs.find(key);
     if (it == m_drawobjs.end())
