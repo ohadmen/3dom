@@ -251,5 +251,9 @@ bazel-*
 .vscode
 
 #qmake
+bin*/
 .qmake.stash
 Makefile
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
