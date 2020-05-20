@@ -19,8 +19,7 @@ public:
 	DrawablesBuffer(DrawablesBuffer const &) = delete;
 	void operator=(DrawablesBuffer const &) = delete;
 
-
-
+	size_t addShape(Types::Shape&& objv);
 	size_t addShape(const Types::Shape &obj);
 	bool removeShape(int key);
 

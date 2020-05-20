@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.10.0)
+set(CMAKE_BUILD_TYPE Debug)
+
 project (zview_interface_test)
 add_executable(main zview_interface_test.cpp)
 target_include_directories(main PRIVATE ../../zview/interface/)

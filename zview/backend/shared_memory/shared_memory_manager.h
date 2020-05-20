@@ -7,15 +7,9 @@ class SharedMemoryManager : public QObject
 {
     Q_OBJECT
     CmdQueryThread* m_th;
-
-    
-    
 public:
     SharedMemoryManager(QObject* parent);
     ~SharedMemoryManager();
-signals:
-    void stop();
-public slots:
-    void cmdRecieved(const QString &cmd);
+    
     
 };

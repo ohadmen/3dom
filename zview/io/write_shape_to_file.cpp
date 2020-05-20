@@ -87,12 +87,12 @@ void io::writeShapeToFile(std::string fn, const std::vector<Types::Shape> &shape
 
     Writer w(fn);
     
-    for (const auto &objv : shapes)
-    {
+        for (const auto &objv : shapes)
+        {
 
-        std::visit(w, objv);
+            std::visit(w, objv);
 
-    }
+        }
 
     
 }

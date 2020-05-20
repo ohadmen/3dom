@@ -17,7 +17,7 @@ std::vector <Types::Shape> io::readFileList(const QStringList &files)
         if (!finfo.exists())
         {
             qWarning() << "file " << finfo.absoluteFilePath() << " does not exists";
-            continue;
+            return objlist;
         }
         
         if (finfo.suffix().toLower() == "stl")

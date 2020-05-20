@@ -6,47 +6,45 @@
 #include "zview/gui/drawables/drawable_edges.h"
 #include "zview/gui/drawables/drawable_pcl.h"
 
+std::string getUniqueName(const std::string &name)
+{
+    std::string suggestedName = name;
+    int counter = 1;
+    while (drawablesBuffer.exists(suggestedName))
+    {
+        suggestedName = name + "_" + std::to_string(counter++);
+    }
+    return suggestedName;
+}
+
 DrawablesBuffer::DrawablesBuffer()
 {
 }
+
+
 
 size_t DrawablesBuffer::size() const { return m_drawobjs.size(); }
 
 struct Shape2drawable
 {
-    static std::string getUniqueName(const std::string &name)
-    {
-        std::string suggestedName = name;
-        int counter = 1;
-        while (drawablesBuffer.exists(suggestedName))
-        {
-            suggestedName = name + "_" + std::to_string(counter++);
-        }
-        return suggestedName;
-    }
-    std::unique_ptr<DrawableBase> operator()(const Types::Pcl &obj)
+    std::unique_ptr<DrawableBase> operator()(Types::Pcl&& obj)
     {
         std::unique_ptr<DrawablePcl> dobjP(new DrawablePcl(getUniqueName(obj.getName())));
-        dobjP.get()->v().resize(obj.v().size());
-        std::copy(obj.v().begin(), obj.v().end(), dobjP.get()->v().begin());
+        dobjP.get()->v() = std::move(obj.v());
         return dobjP;
     }
-    std::unique_ptr<DrawableBase> operator()(const Types::Edges &obj)
+    std::unique_ptr<DrawableBase> operator()(Types::Edges&& obj)
     {
         std::unique_ptr<DrawableEdges> dobjP(new DrawableEdges(getUniqueName(obj.getName())));
-        dobjP.get()->v().resize(obj.v().size());
-        std::copy(obj.v().begin(), obj.v().end(), dobjP.get()->v().begin());
-        dobjP.get()->e().resize(obj.e().size());
-        std::copy(obj.e().begin(), obj.e().end(), dobjP.get()->e().begin());
+        dobjP.get()->v() = std::move(obj.v());
+        dobjP.get()->e() = std::move(obj.e());
         return dobjP;
     }
-    std::unique_ptr<DrawableBase> operator()(const Types::Mesh &obj)
+    std::unique_ptr<DrawableBase> operator()(Types::Mesh && obj)
     {
         std::unique_ptr<DrawableMesh> dobjP(new DrawableMesh(getUniqueName(obj.getName())));
-        dobjP.get()->v().resize(obj.v().size());
-        std::copy(obj.v().begin(), obj.v().end(), dobjP.get()->v().begin());
-        dobjP.get()->f().resize(obj.f().size());
-        std::copy(obj.f().begin(), obj.f().end(), dobjP.get()->f().begin());
+        dobjP.get()->v() = std::move(obj.v());
+        dobjP.get()->f() = std::move(obj.f());
         return dobjP;
     }
 };
@@ -82,13 +80,18 @@ bool DrawablesBuffer::exists(const std::string &name) const
     }
     return false;
 }
-size_t DrawablesBuffer::addShape(const Types::Shape &objv)
+size_t DrawablesBuffer::addShape(Types::Shape&& objv)
 {
-
-    m_drawobjs[m_uniqueKeyCounter] = std::visit(Shape2drawable(), objv);
+    m_drawobjs[m_uniqueKeyCounter] = std::visit(Shape2drawable(), std::move(objv));
     emit shapeAdded(QString::fromStdString(m_drawobjs[m_uniqueKeyCounter]->getName()), m_uniqueKeyCounter);
     emit updateCanvas();
     return m_uniqueKeyCounter++;
+    
+}
+size_t DrawablesBuffer::addShape(const Types::Shape &objv)
+{
+    Types::Shape objvCopy = objv;
+    return addShape(std::move(objvCopy));
 }
 
 bool DrawablesBuffer::removeShape(int key)
