@@ -14,13 +14,13 @@ public:
 		static DrawablesBuffer obj;
 		return obj;
 	}
-	using BaseTypeVector = std::map<size_t, std::unique_ptr<DrawableBase>>;
+	using BaseTypeVector = std::map<qint64, std::unique_ptr<DrawableBase>>;
 	size_t size() const;
 	DrawablesBuffer(DrawablesBuffer const &) = delete;
 	void operator=(DrawablesBuffer const &) = delete;
 
-	size_t addShape(Types::Shape&& objv);
-	size_t addShape(const Types::Shape &obj);
+	qint64 addShape(Types::Shape&& objv);
+	qint64 addShape(const Types::Shape &obj);
 	bool removeShape(int key);
 
 	bool updateVertexBuffer(size_t key, const Types::VertData *pcl, size_t n);
@@ -35,10 +35,10 @@ public:
 	Types::Roi3d get3dbbox(int handleNum=-1);
 	bool exists(const std::string& name) const;
 public slots:
-	bool setShapeVisability(size_t key, bool isvis);
+	bool setShapeVisability(qint64 key, bool isvis);
 signals:
-	void shapeAdded(QString name, size_t key);
-	void shapeRemoved(size_t key);
+	void shapeAdded(QString name, qint64 key);
+	void shapeRemoved(qint64 key);
 	void updateCanvas();
 
 private:

@@ -80,7 +80,7 @@ bool DrawablesBuffer::exists(const std::string &name) const
     }
     return false;
 }
-size_t DrawablesBuffer::addShape(Types::Shape&& objv)
+qint64 DrawablesBuffer::addShape(Types::Shape&& objv)
 {
     m_drawobjs[m_uniqueKeyCounter] = std::visit(Shape2drawable(), std::move(objv));
     emit shapeAdded(QString::fromStdString(m_drawobjs[m_uniqueKeyCounter]->getName()), m_uniqueKeyCounter);
@@ -88,7 +88,7 @@ size_t DrawablesBuffer::addShape(Types::Shape&& objv)
     return m_uniqueKeyCounter++;
     
 }
-size_t DrawablesBuffer::addShape(const Types::Shape &objv)
+qint64 DrawablesBuffer::addShape(const Types::Shape &objv)
 {
     Types::Shape objvCopy = objv;
     return addShape(std::move(objvCopy));
@@ -123,7 +123,7 @@ DrawablesBuffer::BaseTypeVector::const_iterator DrawablesBuffer::cbegin() const 
 DrawablesBuffer::BaseTypeVector::iterator DrawablesBuffer::end() { return m_drawobjs.end(); }
 DrawablesBuffer::BaseTypeVector::const_iterator DrawablesBuffer::end() const { return m_drawobjs.end(); }
 DrawablesBuffer::BaseTypeVector::const_iterator DrawablesBuffer::cend() const { return end(); }
-bool DrawablesBuffer::setShapeVisability(size_t key, bool isvis)
+bool DrawablesBuffer::setShapeVisability(qint64 key, bool isvis)
 {
     auto it = m_drawobjs.find(key);
     if (it == m_drawobjs.end())

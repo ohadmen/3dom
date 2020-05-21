@@ -11,6 +11,7 @@ MOC_DIR = $${DESTDIR}/moc
 RCC_DIR = $${DESTDIR}/rcc
 
 SOURCES += \
+    zview/interface/zview_inf_impl.cpp\
     zview/backend/shared_memory/cmd_query_thread.cpp \
     zview/backend/shared_memory/shared_memory_manager.cpp \
     zview/backend/state_machine/state_machine.cpp \
@@ -45,6 +46,7 @@ SOURCES += \
     zview/backend/vp_mat.cpp
 
 HEADERS += \
+    zview/interface/zview_inf_impl.h\
     zview/backend/shared_memory/cmd_query_thread.h \
     zview/backend/shared_memory/shared_memory_manager.h \
     zview/backend/state_machine/state_machine.h \

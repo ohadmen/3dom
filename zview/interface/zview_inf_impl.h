@@ -14,6 +14,7 @@ public:
     int addMeshColor(const char* name,size_t npoints,const void* xyzrgba,size_t nfaces,const void* indices);
     int addEdges(const char* name,size_t npoints,const float* xyz,size_t nfaces,const void* indices);
     int addEdgesColor(const char* name,size_t npoints,const void* xyzrgba,size_t nfaces,const void* indices);
+    static void initSharedMem(QSharedMemory* data,QSharedMemory* ack);
     static constexpr size_t SHARED_MEMORY_SIZE_BYTES = size_t(1) << 25 ; //~34Mbyte
     static constexpr char INTERFACE_TO_ZVIEW_SHARED_MEM_KEY[] = "zview_from_interface" ;
     static constexpr char ZVIEW_TO_INTERFACE_SHARED_MEM_KEY[] = "zview_to_interface" ;
@@ -27,8 +28,14 @@ public:
         ADD_MESH,
         UPDATE_VERTICES,
         REMOVE_SHAPE,
-        ACK_ADD,
     };
+    enum class CommandAck
+    {
+        UNKNOWN,
+        ADD_ACK,
+    };
+
+    
 
 private:
     QSharedMemory m_data;
