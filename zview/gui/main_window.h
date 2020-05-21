@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow
   void privSavePly();
   void privShowHideAxes();
   void privShowHideGrid();
-  void privSetTexture(int);
+  
 
   void privAddMenuBar();
   

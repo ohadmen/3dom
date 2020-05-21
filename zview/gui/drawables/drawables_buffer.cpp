@@ -94,7 +94,7 @@ qint64 DrawablesBuffer::addShape(const Types::Shape &objv)
     return addShape(std::move(objvCopy));
 }
 
-bool DrawablesBuffer::removeShape(int key)
+bool DrawablesBuffer::removeShape(qint64 key)
 {
     if (key == -1)
         return false;

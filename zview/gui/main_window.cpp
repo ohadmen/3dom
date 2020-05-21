@@ -17,9 +17,9 @@
 #include "zview/backend/tree_model/tree_model.h"
 #include "canvas.h"
 
-void MainWindow::privSetTexture(int)
-{
-}
+
+
+
 void MainWindow::privSavePly()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Save .ply file", QSettings().value(m_default_dir_key).toString(), "*.ply");
@@ -116,23 +116,19 @@ void MainWindow::privAddMenuBar()
         }
 
 
-        // QAction *p = new QAction("&set Texture", this);
-        // p->setShortcut(QKeySequence(tr("Ctrl+0")));
-        // QObject::connect(p, &QAction::triggered, this, [=](){float a;});
-        // top->addAction(p);
-    
-
-
-
     }
     {
 
         
         QWidget* parent = this;
         auto top = menuBar()->addMenu(tr("&Help"));
-        top->addAction(privAddAction(this,"About", [&parent](){
+        top->addAction(privAddAction(this,"About", [parent](){
             
-            QString aboutText("WIP :)");
+            QString aboutText(
+                "Zview - a general 3d view\n"
+                "Zview was created as a tool to reflect the true state of 3d point cloud/mesh data stored in a file or on the heap."
+                "Implementation was written by modern c++ and OpenGL ES, with an effort to minimize cpu load and memory signiture."
+                );
             QMessageBox::about(parent, "Zview", aboutText);
 
         }));

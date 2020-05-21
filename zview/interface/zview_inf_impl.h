@@ -15,6 +15,8 @@ public:
     int addEdges(const char* name,size_t npoints,const float* xyz,size_t nfaces,const void* indices);
     int addEdgesColor(const char* name,size_t npoints,const void* xyzrgba,size_t nfaces,const void* indices);
     static void initSharedMem(QSharedMemory* data,QSharedMemory* ack);
+    bool removeShape(int key);
+
     static constexpr size_t SHARED_MEMORY_SIZE_BYTES = size_t(1) << 25 ; //~34Mbyte
     static constexpr char INTERFACE_TO_ZVIEW_SHARED_MEM_KEY[] = "zview_from_interface" ;
     static constexpr char ZVIEW_TO_INTERFACE_SHARED_MEM_KEY[] = "zview_to_interface" ;
@@ -32,7 +34,9 @@ public:
     enum class CommandAck
     {
         UNKNOWN,
-        ADD_ACK,
+        ADD_SHAPE_ACK,
+        REMOVE_SHAPE_ACK,
+
     };
 
     
@@ -50,5 +54,5 @@ private:
     bool privWritePointsColor(size_t* offsetP, size_t npoints, const void *xyzrgba);
     bool privWriteEdges(size_t* offsetP, size_t nedges, const void *edges);
     bool privWriteFaces(size_t* offsetP, size_t nfaces, const void *faces);
-    int privGetObjKey();
+    int privGetAck(CommandAck expected);
 };

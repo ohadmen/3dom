@@ -26,6 +26,8 @@ public:
     {return m_zv->addMeshColor(obj.getName().c_str(),obj.v().size(),&obj.v()[0],obj.f().size(),&obj.f()[0]); }
 };
 
+
+
 bool ZviewIntrace::loadFile(const char *filename)
 {
     QStringList list;
@@ -56,3 +58,8 @@ bool ZviewIntrace::loadFile(const char *filename)
     {return zv->addEdges(name,npoints,xyz,nfaces,indices);}
     int ZviewIntrace::addEdgesColor(const char* name,size_t npoints,const void* xyzrgba,size_t nfaces,const void* indices)
     {return zv->addEdgesColor(name,npoints,xyzrgba,nfaces,indices);}
+
+    bool ZviewIntrace::removeShape(int key)
+    {
+        return zv->removeShape(key);
+    }

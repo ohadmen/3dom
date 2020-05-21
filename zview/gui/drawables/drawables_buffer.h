@@ -21,7 +21,7 @@ public:
 
 	qint64 addShape(Types::Shape&& objv);
 	qint64 addShape(const Types::Shape &obj);
-	bool removeShape(int key);
+	bool removeShape(qint64 key);
 
 	bool updateVertexBuffer(size_t key, const Types::VertData *pcl, size_t n);
 

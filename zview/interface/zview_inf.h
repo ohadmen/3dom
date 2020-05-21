@@ -17,4 +17,5 @@ public:
     int addEdgesColor(const char *name, size_t npoints, const void *xyzrgba, size_t nfaces, const void *indices);
 
     bool loadFile(const char *filename);
+    bool removeShape(int key);
 };

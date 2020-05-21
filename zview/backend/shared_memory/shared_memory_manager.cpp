@@ -76,9 +76,17 @@ ReadAck SharedMemoryManager::privReadData() const
     case ZviewInfImpl::Command::ADD_MESH:
     {
         qint64 key = privReadShape(cmd);
-        return ReadAck{ZviewInfImpl::CommandAck::ADD_ACK,key};
+        return ReadAck{ZviewInfImpl::CommandAck::ADD_SHAPE_ACK,key};
 
         
+    }
+    case ZviewInfImpl::Command::REMOVE_SHAPE:
+    {
+        qint64 key;
+        const char* source = static_cast<const char*>(m_data.constData())+sizeof(ZviewInfImpl::Command);
+        memcpy(&key,source,sizeof(qint64));
+        bool ok = drawablesBuffer.removeShape(key);
+        return ReadAck{ZviewInfImpl::CommandAck::REMOVE_SHAPE_ACK,qint64{ok}};
     }
     default:
         qWarning() <<"unknown command:" <<  size_t(cmd);
