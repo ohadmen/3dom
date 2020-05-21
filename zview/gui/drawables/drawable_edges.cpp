@@ -73,12 +73,12 @@ Types::Roi3d DrawableEdges::get3dbbox() const
 {
     if (m_v.size() == 0)
     {
-        static const float e = 1e-3;
+        static const float e = 1e-3f;
         return Types::Roi3d(-e, e, -e, e, -e, e);
     }
     else if (m_v.size() == 1)
     {
-        static const float e = 1e-3;
+        static const float e = 1e-3f;
         return Types::Roi3d(m_v[0].x - e, m_v[0].x + e, m_v[0].y - e, m_v[0].y + e, m_v[0].z - e, m_v[0].z + e);
     }
     else

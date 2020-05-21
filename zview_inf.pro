@@ -3,7 +3,6 @@ QT += core
 DEFINES += QT_NO_VERSION_TAGGING
 
 TEMPLATE = lib
-#CONFIG += staticlib
 CONFIG += c++17 
 QMAKE_CXXFLAGS += -std=c++17
 

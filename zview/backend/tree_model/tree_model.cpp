@@ -224,7 +224,7 @@ void TreeModel::addItem(const QString &str, size_t handleNum)
 
     QStringList list = str.simplified().split(QRegExp("\\/"), QString::SkipEmptyParts);
 
-    privAddItemRec(list, handleNum, m_rootItem);
+    privAddItemRec(list, int(handleNum), m_rootItem);
     m_treeViewP->reset();
     m_treeViewP->expand(index(rowCount() - 1, columnCount() - 1));
 }
