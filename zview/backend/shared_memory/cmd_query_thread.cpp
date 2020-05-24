@@ -29,9 +29,9 @@ void CmdQueryThread::stop()
     m_lock.release();
     while(!m_done)
     {
-        qDebug()<<"waiting to be done...";
+        //qDebug()<<"waiting to be done...";
     }
-    qDebug() << "done";
+    //qDebug() << "done";
 
 
 }

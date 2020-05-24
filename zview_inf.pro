@@ -18,6 +18,7 @@ RCC_DIR = $${DESTDIR}/rcc
 
 SOURCES += \
     zview/interface/zview_inf_impl.cpp\
+    zview/interface/zview_inf.cpp\
     zview/io/read_file_list.cpp \
     zview/io/readers/read_obj.cpp \
     zview/io/readers/read_ply.cpp \

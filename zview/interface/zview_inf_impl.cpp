@@ -43,7 +43,7 @@ void ZviewInfImpl::initSharedMem(QSharedMemory *data, QSharedMemory *ack)
     data->setKey(ZviewInfImpl::INTERFACE_TO_ZVIEW_SHARED_MEM_KEY);
     if (data->attach())
     {
-        qDebug() << "Attached to data shared memory";
+        //qDebug() << "Attached to data shared memory";
     }
     else if (!data->create(ZviewInfImpl::SHARED_MEMORY_SIZE_BYTES))
     {
@@ -53,7 +53,7 @@ void ZviewInfImpl::initSharedMem(QSharedMemory *data, QSharedMemory *ack)
     ack->setKey(ZviewInfImpl::ZVIEW_TO_INTERFACE_SHARED_MEM_KEY);
     if (ack->attach())
     {
-        qDebug() << "Attached to ack shared memory";
+        //qDebug() << "Attached to ack shared memory";
     }
     else if (!ack->create(sizeof(ZviewInfImpl::Command) + 8))
     {
@@ -296,15 +296,10 @@ void ZviewInfImpl::destroy()
     delete this;
 }
 #if defined(_MSC_VER)
-    #define EXPORT __declspec(dllexport)
-#elif defined(__GNUC__)
-    #define EXPORT __attribute__((visibility("default")))
-#else
-    #define EXPORT
-#endif
-extern "C" EXPORT ZviewInfImpl* __cdecl create_zviewinf()
+    extern "C" __declspec(dllexport) __cdecl ZviewInfImpl*  create_zviewinf()
 {
 
     return new ZviewInfImpl;
 
 }
+#endif

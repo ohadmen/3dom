@@ -27,6 +27,6 @@ make -j8 >/dev/null || make
 
 ##-----------BUILD INTERFACE EXAMPLE-----------
 cd bin 
-cmake ../examples/interface/
+cmake ../examples/interface_linux/
 echo "[-] running make (test)"
 make
