@@ -1,4 +1,10 @@
 # Zview -Generic mesh&cloud visualization tool
+## changelog version 1.0
+* official first release!
+	* ply support multi-type properties
+	* can save/load layered ply files
+	* interface over shared-memory with c++ interface
+
 
 ## changelog version 0.2
 * deprecate bzel support
@@ -15,8 +21,13 @@
 * screenshot support
 
 ## how to run
-* git submodule update --init
+### Linux
 * Install qt:
     * sudo apt install qt5-default
 * ./build.sh
 * bin/zview
+### Windows
+* Install qt https://www.qt.io/download
+* build using qt creator
+* from qt bin dir run windeployqt.exe PATH_TO_ZVIEW_GUI_EXE
+

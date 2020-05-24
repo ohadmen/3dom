@@ -20,7 +20,7 @@ QMatrix4x4 translate(const QVector3D &v)
 TrackStateZoom::TrackStateZoom(TrackStateMachine* p):TrackStateAbs(p) {}
 void TrackStateZoom::input(QWheelEvent* e)
 {
-	static const float step = 1.1;
+    static const float step = 1.1f;
 	
 	QMatrix4x4 curvview = m_machineP->getViewMatrix();
 	

@@ -6,7 +6,7 @@ TEMPLATE = lib
 CONFIG += c++17 
 QMAKE_CXXFLAGS += -std=c++17
 
-TARGET = zview_interface
+TARGET = zview_inf
 DESTDIR = ./bin
 OBJECTS_DIR = $${DESTDIR}/obj
 MOC_DIR = $${DESTDIR}/moc
@@ -17,7 +17,6 @@ RCC_DIR = $${DESTDIR}/rcc
 # Input
 
 SOURCES += \
-    zview/interface/zview_inf.cpp\
     zview/interface/zview_inf_impl.cpp\
     zview/io/read_file_list.cpp \
     zview/io/readers/read_obj.cpp \

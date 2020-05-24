@@ -81,8 +81,8 @@ void privReadStlBin(std::ifstream* ifsP, Types::Mesh* meshP)
 
 
 	m.f().resize(triCount);
-	for (size_t i = 0; i != triCount * 3; ++i)
-		m.f()[i / 3][i % 3] = i;
+    for (size_t i = 0; i != triCount * 3; ++i)
+        m.f()[i / 3][i % 3] = int32_t(i);
 
 
 

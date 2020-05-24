@@ -1,5 +1,41 @@
 #include "zview_inf_impl.h"
 #include <QtCore/QDebug>
+#include "zview/io/read_file_list.h"
+#include <iostream>
+
+class ShapeAddVisitor
+{
+    ZviewInfImpl *m_zv;
+
+public:
+    ShapeAddVisitor(ZviewInfImpl *zv) : m_zv(zv) {}
+    int operator()(const Types::Pcl &obj)
+     {return m_zv->addPointsColor(obj.getName().c_str(),obj.v().size(),&obj.v()[0]); }
+    int operator()(const Types::Edges &obj) 
+    {return m_zv->addEdgesColor(obj.getName().c_str(),obj.v().size(),&obj.v()[0],obj.e().size(),&obj.e()[0]); }
+    int operator()(const Types::Mesh &obj)
+    {return m_zv->addMeshColor(obj.getName().c_str(),obj.v().size(),&obj.v()[0],obj.f().size(),&obj.f()[0]); }
+};
+
+
+
+bool ZviewInfImpl::loadFile(const char *filename)
+{
+    QStringList list;
+    list.push_back(filename);
+    std::vector<Types::Shape> objs = io::readFileList(list);
+    if(objs.empty())
+        return false;
+    ShapeAddVisitor w(this);
+    for (const auto &objv : objs)
+    {
+
+        int retval = std::visit(w, objv);
+        if(retval==-1)
+        return false;
+    }
+    return true;
+}
 
 void ZviewInfImpl::initSharedMem(QSharedMemory *data, QSharedMemory *ack)
 {
@@ -29,10 +65,12 @@ ZviewInfImpl::ZviewInfImpl() : m_lock(ZviewInfImpl::INTERFACE_LOCK_KEY, 0, QSyst
 {
     ZviewInfImpl::initSharedMem(&m_data, &m_ack);
 }
+ZviewInfImpl::~ZviewInfImpl(){}
+
 bool ZviewInfImpl::privWriteName(size_t *offsetP, const char *name)
 {
     char *to = sharedMemData();
-    strcpy(to + *offsetP, name);
+    strcpy(to + *offsetP,name);
     *offsetP += strlen(name) + 1;
     return true;
 }
@@ -252,4 +290,15 @@ bool ZviewInfImpl::removeShape(int key)
     m_data.unlock();
     m_lock.release();
     return privGetAck(CommandAck::REMOVE_SHAPE_ACK);
+}
+void ZviewInfImpl::destroy()
+{
+    delete this;
+}
+
+extern "C" __declspec(dllexport) ZviewInfImpl* __cdecl create_zviewinf()
+{
+
+    return new ZviewInfImpl;
+
 }
