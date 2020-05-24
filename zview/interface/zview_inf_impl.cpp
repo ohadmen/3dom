@@ -295,8 +295,14 @@ void ZviewInfImpl::destroy()
 {
     delete this;
 }
-
-extern "C" __declspec(dllexport) ZviewInfImpl* __cdecl create_zviewinf()
+#if defined(_MSC_VER)
+    #define EXPORT __declspec(dllexport)
+#elif defined(__GNUC__)
+    #define EXPORT __attribute__((visibility("default")))
+#else
+    #define EXPORT
+#endif
+extern "C" EXPORT ZviewInfImpl* __cdecl create_zviewinf()
 {
 
     return new ZviewInfImpl;
