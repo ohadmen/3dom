@@ -9,9 +9,13 @@ class ZviewInfImpl: public ZviewInf
 public:
     ZviewInfImpl();
     ~ZviewInfImpl();
-    
+    bool savePly(const char* fn) override;
+    bool setCameraLookAt(float x,float y,float z) override;
+    bool setCameraPosition(float x,float y,float z) override;
+    bool updatePoints(int key,size_t npoints,const float* xyz) override;
+    bool updateColoredPoints(int key,size_t npoints,const void* xyzrgba) override;
     int addPoints(const char *name, size_t npoints, const float *xyz) override;
-    int addPointsColor(const char* name,size_t npoints,const void* xyzrgba) override;
+    int addColoredPoints(const char* name,size_t npoints,const void* xyzrgba) override;
     int addMesh(const char* name,size_t npoints,const float* xyz,size_t nfaces,const void* indices) override;
     int addMeshColor(const char* name,size_t npoints,const void* xyzrgba,size_t nfaces,const void* indices) override;
     int addEdges(const char* name,size_t npoints,const float* xyz,size_t nfaces,const void* indices) override;
@@ -20,7 +24,7 @@ public:
     bool removeShape(int key) override;
     void destroy() override;
 
-    static constexpr size_t SHARED_MEMORY_SIZE_BYTES = size_t(1) << 25 ; //~34Mbyte
+    static constexpr size_t SHARED_MEMORY_SIZE_BYTES = size_t(1) << 25 ; //~34Mbyte,to support RealSense XVGA depth buffer
     static constexpr char INTERFACE_TO_ZVIEW_SHARED_MEM_KEY[] = "zview_from_interface" ;
     static constexpr char ZVIEW_TO_INTERFACE_SHARED_MEM_KEY[] = "zview_to_interface" ;
     static constexpr char INTERFACE_LOCK_KEY[] = "zview_lock" ;
@@ -33,14 +37,21 @@ public:
         ADD_PCL,
         ADD_EDGES,
         ADD_MESH,
-        UPDATE_VERTICES,
         REMOVE_SHAPE,
+        UPDATE_PCL,
+        SAVE_PLY,
+        SET_CAM_LOOKAT,
+        SET_CAM_POS
     };
     enum class CommandAck
     {
         UNKNOWN,
         ADD_SHAPE_ACK,
         REMOVE_SHAPE_ACK,
+        UPDATE_PCL_ACK,
+        SAVE_PLY_ACK,
+        SET_CAM_LOOKAT_ACK,
+        SET_CAM_POS_ACK
 
     };
 
@@ -51,13 +62,7 @@ private:
     QSharedMemory m_ack;
     QSystemSemaphore m_lock;
 
-    char* sharedMemData();
 
-    bool privWriteCmd(const Command &cmd);
-    bool privWriteName(size_t* offsetP,const char *name);
-    bool privWritePoints(size_t* offsetP,size_t npoints, const float* xyz);
-    bool privWritePointsColor(size_t* offsetP, size_t npoints, const void *xyzrgba);
-    bool privWriteEdges(size_t* offsetP, size_t nedges, const void *edges);
-    bool privWriteFaces(size_t* offsetP, size_t nfaces, const void *faces);
     int privGetAck(CommandAck expected);
+    
 };

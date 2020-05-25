@@ -13,10 +13,13 @@ class SharedMemoryManager : public QObject
     QSharedMemory m_data;
     QSharedMemory m_ack;
 
-    const char* sharedMemData() const;
+    template<class T>
+    T privGetMemPtr(size_t offset=0)const { return reinterpret_cast<T>(static_cast<const char*>(m_data.constData())+offset); }
+
+
     ReadAck privReadData() const;
     std::string privReadName(const char* dataptr,size_t* offsetP) const;
-    qint64 privReadShape(ZviewInfImpl::Command cmd) const;
+    
 
 public:
     SharedMemoryManager(QObject* parent);

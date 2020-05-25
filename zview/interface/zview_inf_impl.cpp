@@ -1,7 +1,49 @@
 #include "zview_inf_impl.h"
 #include <QtCore/QDebug>
 #include "zview/io/read_file_list.h"
+#include "zview/common/mem_stream.h"
 #include <iostream>
+
+ZviewInfImpl::ZviewInfImpl() : m_lock(ZviewInfImpl::INTERFACE_LOCK_KEY, 0, QSystemSemaphore::Create)
+{
+    ZviewInfImpl::initSharedMem(&m_data, &m_ack);
+}
+ZviewInfImpl::~ZviewInfImpl() {}
+
+void ZviewInfImpl::destroy()
+{
+    delete this;
+}
+
+bool ZviewInfImpl::savePly(const char *fn)
+{
+    m_data.lock();
+    MemStream ms(m_data.data());
+    ms << Command::SAVE_PLY << fn;
+    m_data.unlock();
+    m_lock.release();
+    return privGetAck(CommandAck::SAVE_PLY_ACK);
+}
+bool ZviewInfImpl::setCameraLookAt(float x, float y, float z)
+{
+    m_data.lock();
+    MemStream ms(m_data.data());
+    ms << Command::SET_CAM_LOOKAT << x << y << z;
+    m_data.unlock();
+    m_lock.release();
+    return privGetAck(CommandAck::SET_CAM_LOOKAT_ACK);
+    return false;
+}
+bool ZviewInfImpl::setCameraPosition(float x, float y, float z)
+{
+    m_data.lock();
+    MemStream ms(m_data.data());
+    ms << Command::SET_CAM_POS << x << y << z;
+    m_data.unlock();
+    m_lock.release();
+    return privGetAck(CommandAck::SET_CAM_POS_ACK);
+    return false;
+}
 
 class ShapeAddVisitor
 {
@@ -10,29 +52,33 @@ class ShapeAddVisitor
 public:
     ShapeAddVisitor(ZviewInfImpl *zv) : m_zv(zv) {}
     int operator()(const Types::Pcl &obj)
-     {return m_zv->addPointsColor(obj.getName().c_str(),obj.v().size(),&obj.v()[0]); }
-    int operator()(const Types::Edges &obj) 
-    {return m_zv->addEdgesColor(obj.getName().c_str(),obj.v().size(),&obj.v()[0],obj.e().size(),&obj.e()[0]); }
+    {
+        return m_zv->addColoredPoints(obj.getName().c_str(), obj.v().size(), &obj.v()[0]);
+    }
+    int operator()(const Types::Edges &obj)
+    {
+        return m_zv->addEdgesColor(obj.getName().c_str(), obj.v().size(), &obj.v()[0], obj.e().size(), &obj.e()[0]);
+    }
     int operator()(const Types::Mesh &obj)
-    {return m_zv->addMeshColor(obj.getName().c_str(),obj.v().size(),&obj.v()[0],obj.f().size(),&obj.f()[0]); }
+    {
+        return m_zv->addMeshColor(obj.getName().c_str(), obj.v().size(), &obj.v()[0], obj.f().size(), &obj.f()[0]);
+    }
 };
-
-
 
 bool ZviewInfImpl::loadFile(const char *filename)
 {
     QStringList list;
     list.push_back(filename);
     std::vector<Types::Shape> objs = io::readFileList(list);
-    if(objs.empty())
+    if (objs.empty())
         return false;
     ShapeAddVisitor w(this);
     for (const auto &objv : objs)
     {
 
         int retval = std::visit(w, objv);
-        if(retval==-1)
-        return false;
+        if (retval == -1)
+            return false;
     }
     return true;
 }
@@ -61,95 +107,36 @@ void ZviewInfImpl::initSharedMem(QSharedMemory *data, QSharedMemory *ack)
     }
 }
 
-ZviewInfImpl::ZviewInfImpl() : m_lock(ZviewInfImpl::INTERFACE_LOCK_KEY, 0, QSystemSemaphore::Create)
+void privWritePoints(MemStream& ms, size_t nelems, const float *xyz)
 {
-    ZviewInfImpl::initSharedMem(&m_data, &m_ack);
+    ms << nelems;
+    for (size_t i = 0; i != nelems; ++i)
+    {
+        ms << xyz[i * 3 + 0]
+           << xyz[i * 3 + 1]
+           << xyz[i * 3 + 2]
+           << xyz[i * 3 + 3]
+           << 0;
+    }
 }
-ZviewInfImpl::~ZviewInfImpl(){}
-
-bool ZviewInfImpl::privWriteName(size_t *offsetP, const char *name)
+void privWritePointsColor(MemStream& ms, size_t nelems, const void *xyzrgba)
 {
-    char *to = sharedMemData();
-    strcpy(to + *offsetP,name);
-    *offsetP += strlen(name) + 1;
-    return true;
+
+    size_t sz = nelems * 4 * sizeof(float);
+    ms << nelems;
+    ms.copyFrom(xyzrgba,sz);
 }
-char *ZviewInfImpl::sharedMemData() { return static_cast<char *>(m_data.data()); }
-bool ZviewInfImpl::privWritePoints(size_t *offsetP, size_t npoints, const float *xyz)
+void privWriteEdges(MemStream& ms, size_t nelems, const void *edges)
 {
-    size_t sz = npoints * 4 * sizeof(float);
-    if (*offsetP + sz > SHARED_MEMORY_SIZE_BYTES)
-        return false;
-
-    float *to = reinterpret_cast<float *>(sharedMemData() + *offsetP);
-
-    for (size_t i = 0; i != npoints; ++i)
-    {
-        to[i * 4 + 0] = xyz[i * 3 + 0];
-        to[i * 4 + 1] = xyz[i * 3 + 1];
-        to[i * 4 + 2] = xyz[i * 3 + 2];
-        to[i * 4 + 2] = 0;
-    }
-    *offsetP += sz;
-    return true;
+    size_t sz = nelems * 2 * sizeof(int32_t);
+    ms << nelems;
+    ms.copyFrom(edges,sz);
 }
-bool ZviewInfImpl::privWritePointsColor(size_t *offsetP, size_t npoints, const void *xyzrgba)
+void privWriteFaces(MemStream& ms, size_t nelems, const void *faces)
 {
-
-    size_t sz = npoints * 4 * sizeof(float);
-    if (*offsetP + sz > SHARED_MEMORY_SIZE_BYTES)
-        return false;
-
-    {
-        char *to = sharedMemData() + *offsetP;
-        memcpy(to, &npoints, sizeof(size_t));
-        *offsetP += sizeof(size_t);
-    }
-    {
-        char *to = sharedMemData() + *offsetP;
-        memcpy(to, xyzrgba, sz);
-        *offsetP += sz;
-    }
-
-    return true;
-}
-bool ZviewInfImpl::privWriteEdges(size_t *offsetP, size_t nedges, const void *edges)
-{
-    size_t sz = nedges * 2 * sizeof(int32_t);
-    if (*offsetP + sz > SHARED_MEMORY_SIZE_BYTES)
-    {
-        return false;
-    }
-    {
-        char *to = sharedMemData() + *offsetP;
-        memcpy(to, &nedges, sizeof(size_t));
-        *offsetP += sizeof(size_t);
-    }
-    {
-        char *to = sharedMemData() + *offsetP;
-        memcpy(to, edges, sz);
-        *offsetP += sz;
-    }
-    return true;
-}
-bool ZviewInfImpl::privWriteFaces(size_t *offsetP, size_t nfaces, const void *faces)
-{
-    size_t sz = nfaces * 3 * sizeof(int32_t);
-    if (*offsetP + sz > SHARED_MEMORY_SIZE_BYTES)
-    {
-        return false;
-    }
-    {
-        char *to = sharedMemData() + *offsetP;
-        memcpy(to, &nfaces, sizeof(size_t));
-        *offsetP += sizeof(size_t);
-    }
-    {
-        char *to = sharedMemData() + *offsetP;
-        memcpy(to, faces, sz);
-        *offsetP += sz;
-    }
-    return true;
+    size_t sz = nelems * 3 * sizeof(int32_t);
+    ms << nelems;
+    ms.copyFrom(faces,sz);
 }
 
 int ZviewInfImpl::privGetAck(CommandAck expectedAck)
@@ -178,38 +165,23 @@ int ZviewInfImpl::privGetAck(CommandAck expectedAck)
     return -1;
 }
 
-bool ZviewInfImpl::privWriteCmd(const Command &cmd)
-{
-
-    char *to = sharedMemData();
-    memcpy(to, &cmd, sizeof(Command));
-    return true;
-}
 
 int ZviewInfImpl::addPoints(const char *name, size_t npoints, const float *xyz)
 {
     m_data.lock();
-    if (!privWriteCmd(Command::ADD_PCL))
-        return false;
-    size_t offset = sizeof(Command);
-    if (!privWriteName(&offset, name))
-        return false;
-    if (!privWritePoints(&offset, npoints, xyz))
-        return false;
+    MemStream ms(m_data.data());
+    ms << Command::ADD_PCL << name;
+    privWritePoints(ms, npoints, xyz);
     m_data.unlock();
     m_lock.release();
     return privGetAck(CommandAck::ADD_SHAPE_ACK);
 }
-int ZviewInfImpl::addPointsColor(const char *name, size_t npoints, const void *xyzrgba)
+int ZviewInfImpl::addColoredPoints(const char *name, size_t npoints, const void *xyzrgba)
 {
     m_data.lock();
-    if (!privWriteCmd(Command::ADD_PCL))
-        return false;
-    size_t offset;
-    if (!privWriteName(&offset, name))
-        return false;
-    if (!privWritePointsColor(&offset, npoints, xyzrgba))
-        return false;
+    MemStream ms(m_data.data());
+    ms << Command::ADD_PCL << name;
+    privWritePointsColor(ms, npoints, xyzrgba);
     m_data.unlock();
     m_lock.release();
     return privGetAck(CommandAck::ADD_SHAPE_ACK);
@@ -217,15 +189,10 @@ int ZviewInfImpl::addPointsColor(const char *name, size_t npoints, const void *x
 int ZviewInfImpl::addMesh(const char *name, size_t npoints, const float *xyz, size_t nfaces, const void *indices)
 {
     m_data.lock();
-    if (!privWriteCmd(Command::ADD_MESH))
-        return false;
-    size_t offset;
-    if (!privWriteName(&offset, name))
-        return false;
-    if (!privWritePoints(&offset, npoints, xyz))
-        return false;
-    if (!privWriteFaces(&offset, nfaces, indices))
-        return false;
+    MemStream ms(m_data.data());
+    ms << Command::ADD_MESH << name;
+    privWritePoints(ms, npoints, xyz);
+    privWriteFaces(ms, nfaces, indices);
     m_data.unlock();
     m_lock.release();
     return privGetAck(CommandAck::ADD_SHAPE_ACK);
@@ -233,15 +200,10 @@ int ZviewInfImpl::addMesh(const char *name, size_t npoints, const float *xyz, si
 int ZviewInfImpl::addMeshColor(const char *name, size_t npoints, const void *xyzrgba, size_t nfaces, const void *indices)
 {
     m_data.lock();
-    if (!privWriteCmd(Command::ADD_MESH))
-        return false;
-    size_t offset = sizeof(Command);
-    if (!privWriteName(&offset, name))
-        return false;
-    if (!privWritePointsColor(&offset, npoints, xyzrgba))
-        return false;
-    if (!privWriteFaces(&offset, nfaces, indices))
-        return false;
+    MemStream ms(m_data.data());
+    ms << Command::ADD_MESH << name;
+    privWritePointsColor(ms, npoints, xyzrgba);
+    privWriteFaces(ms, nfaces, indices);
     m_data.unlock();
     m_lock.release();
 
@@ -250,15 +212,10 @@ int ZviewInfImpl::addMeshColor(const char *name, size_t npoints, const void *xyz
 int ZviewInfImpl::addEdges(const char *name, size_t npoints, const float *xyz, size_t nedges, const void *indices)
 {
     m_data.lock();
-    if (!privWriteCmd(Command::ADD_MESH))
-        return false;
-    size_t offset;
-    if (!privWriteName(&offset, name))
-        return false;
-    if (!privWritePoints(&offset, npoints, xyz))
-        return false;
-    if (!privWriteEdges(&offset, nedges, indices))
-        return false;
+    MemStream ms(m_data.data());
+    ms << Command::ADD_MESH << name;
+    privWritePoints(ms, npoints, xyz);
+    privWriteEdges(ms, nedges, indices);
     m_data.unlock();
     m_lock.release();
     return privGetAck(CommandAck::ADD_SHAPE_ACK);
@@ -266,15 +223,10 @@ int ZviewInfImpl::addEdges(const char *name, size_t npoints, const float *xyz, s
 int ZviewInfImpl::addEdgesColor(const char *name, size_t npoints, const void *xyzrgba, size_t nedges, const void *indices)
 {
     m_data.lock();
-    if (!privWriteCmd(Command::ADD_MESH))
-        return false;
-    size_t offset;
-    if (!privWriteName(&offset, name))
-        return false;
-    if (!privWritePointsColor(&offset, npoints, xyzrgba))
-        return false;
-    if (!privWriteEdges(&offset, nedges, indices))
-        return false;
+    MemStream ms(m_data.data());
+    ms << Command::ADD_MESH << name;
+    privWritePointsColor(ms, npoints, xyzrgba);
+    privWriteEdges(ms, nedges, indices);
     m_data.unlock();
     m_lock.release();
     return privGetAck(CommandAck::ADD_SHAPE_ACK);
@@ -283,23 +235,40 @@ int ZviewInfImpl::addEdgesColor(const char *name, size_t npoints, const void *xy
 bool ZviewInfImpl::removeShape(int key)
 {
     m_data.lock();
-    if (!privWriteCmd(Command::REMOVE_SHAPE))
-        return false;
-    qint64 key64 = key;
-    memcpy(sharedMemData() + sizeof(Command), &key64, sizeof(qint64));
+    MemStream ms(m_data.data());
+    ms << Command::REMOVE_SHAPE << qint64(key);
     m_data.unlock();
     m_lock.release();
     return privGetAck(CommandAck::REMOVE_SHAPE_ACK);
 }
-void ZviewInfImpl::destroy()
+
+bool ZviewInfImpl::updatePoints(int key, size_t npoints, const float *xyz)
 {
-    delete this;
+    m_data.lock();
+    MemStream ms(m_data.data());
+    ms << Command::UPDATE_PCL << key << npoints;
+    privWritePoints(ms, npoints, xyz);
+    m_data.unlock();
+    m_lock.release();
+    return privGetAck(CommandAck::UPDATE_PCL_ACK);
 }
+bool ZviewInfImpl::updateColoredPoints(int key, size_t npoints, const void *xyzrgba)
+{
+
+    m_data.lock();
+    MemStream ms(m_data.data());
+    ms << Command::UPDATE_PCL << key << npoints;
+    privWritePointsColor(ms, npoints, xyzrgba);
+    m_data.unlock();
+    m_lock.release();
+    return privGetAck(CommandAck::UPDATE_PCL_ACK);
+}
+
+
 #if defined(_MSC_VER)
-    extern "C" __declspec(dllexport) __cdecl ZviewInfImpl*  create_zviewinf()
+extern "C" __declspec(dllexport) __cdecl ZviewInfImpl *create_zviewinf()
 {
 
     return new ZviewInfImpl;
-
 }
 #endif
