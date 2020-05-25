@@ -1,4 +1,14 @@
 # Zview -Generic mesh&cloud visualization tool
+![Zview screenshot](/res/zview256.png)
+
+## changelog version 1.1
+* full c++ support on windows/Linux
+	* add meshs,edges,points, and reading files API
+	* camera movments API
+	* save file API
+	* usage example
+
+
 ## changelog version 1.0
 * official first release!
 	* ply support multi-type properties
@@ -31,3 +41,4 @@
 * build using qt creator
 * from qt bin dir run windeployqt.exe PATH_TO_ZVIEW_GUI_EXE
 
+![Zview screenshot](/res/screenshot.png)
