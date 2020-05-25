@@ -83,8 +83,8 @@ bool DrawablesBuffer::exists(const std::string &name) const
 qint64 DrawablesBuffer::addShape(Types::Shape&& objv)
 {
     m_drawobjs[m_uniqueKeyCounter] = std::visit(Shape2drawable(), std::move(objv));
-    emit shapeAdded(QString::fromStdString(m_drawobjs[m_uniqueKeyCounter]->getName()), m_uniqueKeyCounter);
-    emit updateCanvas();
+    emit signal_shapeAdded(QString::fromStdString(m_drawobjs[m_uniqueKeyCounter]->getName()), m_uniqueKeyCounter);
+    emit signal_updateCanvas();
     return m_uniqueKeyCounter++;
     
 }
@@ -102,8 +102,8 @@ bool DrawablesBuffer::removeShape(qint64 key)
     if (it == m_drawobjs.end())
         return false;
     m_drawobjs.erase(it);
-    emit shapeRemoved(key);
-    emit updateCanvas();
+    emit signal_shapeRemoved(key);
+    emit signal_updateCanvas();
     return true;
 }
 
@@ -130,6 +130,6 @@ bool DrawablesBuffer::setShapeVisability(qint64 key, bool isvis)
         return false;
     DrawableBase *obj = it->second.get();
     obj->setActive(isvis);
-    emit updateCanvas();
+    emit signal_updateCanvas();
     return true;
 }

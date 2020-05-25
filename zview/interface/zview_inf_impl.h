@@ -10,8 +10,8 @@ public:
     ZviewInfImpl();
     ~ZviewInfImpl();
     bool savePly(const char* fn) override;
-    bool setCameraLookAt(float x,float y,float z) override;
-    bool setCameraPosition(float x,float y,float z) override;
+    
+    virtual bool setCameraLookAt(float ex,float ey,float ez,float cx,float cy,float cz,float ux,float uy,float uz) override;
     bool updatePoints(int key,size_t npoints,const float* xyz) override;
     bool updateColoredPoints(int key,size_t npoints,const void* xyzrgba) override;
     int addPoints(const char *name, size_t npoints, const float *xyz) override;
@@ -41,18 +41,6 @@ public:
         UPDATE_PCL,
         SAVE_PLY,
         SET_CAM_LOOKAT,
-        SET_CAM_POS
-    };
-    enum class CommandAck
-    {
-        UNKNOWN,
-        ADD_SHAPE_ACK,
-        REMOVE_SHAPE_ACK,
-        UPDATE_PCL_ACK,
-        SAVE_PLY_ACK,
-        SET_CAM_LOOKAT_ACK,
-        SET_CAM_POS_ACK
-
     };
 
     
@@ -63,6 +51,6 @@ private:
     QSystemSemaphore m_lock;
 
 
-    int privGetAck(CommandAck expected);
+    int privGetAck(Command expected);
     
 };

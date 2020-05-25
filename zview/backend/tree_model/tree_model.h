@@ -12,8 +12,8 @@ class TreeModel : public QAbstractItemModel
     Q_OBJECT
     std::vector<TreeItem*> sprivGetChildren(TreeItem* root);
 signals:
-    void viewLabelChanged(size_t handleNum, bool setval);
-    void focusOnObject(int key);
+    void signal_viewLabelChanged(size_t handleNum, bool setval);
+    void signal_focusOnObject(int key);
     
     
 

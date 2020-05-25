@@ -17,23 +17,12 @@
 #include "zview/backend/tree_model/tree_model.h"
 #include "canvas.h"
 
-
-
-
-void MainWindow::privSavePly()
+void MainWindow::privSavePlyCallback()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Save .ply file", QSettings().value(m_default_dir_key).toString(), "*.ply");
     if (filename.isEmpty())
         return;
-
-    std::vector<Types::Shape> shapes;
-    for (const auto &a : drawablesBuffer)
-    {
-        Types::Shape s = a.second->getShape();
-        shapes.push_back(s);
-    }
-
-    io::writeShapeToFile(filename.toStdString(), shapes);
+    savePly(filename);
 }
 void MainWindow::privShowHideAxes()
 {
@@ -62,7 +51,24 @@ void MainWindow::privloadFile()
     }
 }
 
-void MainWindow::slot_setStatus(const QString &str)
+
+void MainWindow::setCamLookAt(const QVector3D& eye,const QVector3D& center,const QVector3D& up)
+{
+    m_canvas->setCamLookAt(eye,center,up);
+}
+
+void MainWindow::savePly(const QString &filename) const
+{
+    std::vector<Types::Shape> shapes;
+    for (const auto &a : drawablesBuffer)
+    {
+        Types::Shape s = a.second->getShape();
+        shapes.push_back(s);
+    }
+
+    io::writeShapeToFile(filename.toStdString(), shapes);
+}
+void MainWindow::setStatus(const QString &str)
 {
     m_status.append(str);
     m_status.scroll(0, 1);
@@ -83,10 +89,10 @@ void MainWindow::slot_setStatus(const QString &str)
 
 //     return QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, newSize, QApplication::primaryScreen()->availableGeometry());
 // }
-template<typename Func>
-QAction* privAddAction(MainWindow* parent, const QString &str, Func ff, const QString& keySequenceStr="")
+template <typename Func>
+QAction *privAddAction(MainWindow *parent, const QString &str, Func ff, const QString &keySequenceStr = "")
 {
-    QKeySequence q= keySequenceStr==""?QKeySequence::UnknownKey:QKeySequence(keySequenceStr);
+    QKeySequence q = keySequenceStr == "" ? QKeySequence::UnknownKey : QKeySequence(keySequenceStr);
     QAction *p = new QAction("&" + str, parent);
     if (q != QKeySequence::StandardKey::UnknownKey)
         p->setShortcut(q);
@@ -97,40 +103,33 @@ void MainWindow::privAddMenuBar()
 {
     {
         auto top = menuBar()->addMenu(tr("&File"));
-        top->addAction(privAddAction(this,"Open file", &MainWindow::privloadFile, "Ctrl+o"));
-        top->addAction(privAddAction(this,"Save as ply", &MainWindow::privSavePly, "Ctrl+s"));
-        top->addAction(privAddAction(this,"screenshot to clipboard", &MainWindow::takeScreenshot, "Ctrl+p"));
-
+        top->addAction(privAddAction(this, "Open file", &MainWindow::privloadFile, "Ctrl+o"));
+        top->addAction(privAddAction(this, "Save as ply", &MainWindow::privSavePlyCallback, "Ctrl+s"));
+        top->addAction(privAddAction(this, "screenshot to clipboard", &MainWindow::takeScreenshot, "Ctrl+p"));
     }
     {
         auto top = menuBar()->addMenu(tr("&View"));
-        top->addAction(privAddAction(this,"show/hide axes", &MainWindow::privShowHideAxes, "Ctrl+a"));
-        top->addAction(privAddAction(this,"show/hide grid", &MainWindow::privShowHideGrid, "Ctrl+g"));
-        auto txtTop = top->addMenu( "Texture" );
+        top->addAction(privAddAction(this, "show/hide axes", &MainWindow::privShowHideAxes, "Ctrl+a"));
+        top->addAction(privAddAction(this, "show/hide grid", &MainWindow::privShowHideGrid, "Ctrl+g"));
+        auto txtTop = top->addMenu("Texture");
         {
-        Canvas* c = m_canvas;
-        
-        for(int i=0;i!=5;++i)
-            txtTop->addAction(privAddAction(this,"texture #"+QString::number(i), [c,i](){Params::drawablesTexture(i);c->slot_forceUpdate();}, "Ctrl+"+QString::number(i)));
+            Canvas *c = m_canvas;
 
+            for (int i = 0; i != 5; ++i)
+                txtTop->addAction(privAddAction(
+                    this, "texture #" + QString::number(i), [c, i]() {Params::drawablesTexture(i);c->forceUpdate(); }, "Ctrl+" + QString::number(i)));
         }
-
-
     }
     {
 
-        
-        QWidget* parent = this;
+        QWidget *parent = this;
         auto top = menuBar()->addMenu(tr("&Help"));
-        top->addAction(privAddAction(this,"About", [parent](){
-            
+        top->addAction(privAddAction(this, "About", [parent]() {
             QString aboutText(
                 "Zview - a general 3d view\n"
                 "Zview was created as a tool to reflect the true state of 3d point cloud/mesh data stored in a file or on the heap."
-                "Implementation was written by modern c++ and OpenGL ES, with an effort to minimize cpu load and memory signiture."
-                );
+                "Implementation was written by modern c++ and OpenGL ES, with an effort to minimize cpu load and memory signiture.");
             QMessageBox::about(parent, "Zview", aboutText);
-
         }));
     }
 }
@@ -144,11 +143,10 @@ void MainWindow::takeScreenshot()
         return;
 
     QApplication::beep();
-    QPixmap  originalPixmap = screen->grabWindow(winId());
+    QPixmap originalPixmap = screen->grabWindow(winId());
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setPixmap(originalPixmap);
-    m_canvas->slot_setStatus("image copied to clipboard");
-
+    m_canvas->setStatus("image copied to clipboard");
 }
 
 void MainWindow::dropEvent(QDropEvent *event)
@@ -162,7 +160,7 @@ void MainWindow::dropEvent(QDropEvent *event)
         QList<QUrl> urlList = mimeData->urls();
 
         // extract the local paths of the files
-        for (const auto& a: urlList)
+        for (const auto &a : urlList)
         {
             pathList.append(a.toLocalFile());
         }
@@ -212,22 +210,25 @@ MainWindow::MainWindow(QWidget *parent)
 
     showMaximized();
 
-
     privAddMenuBar();
 
     //when chaning object visiblity on the tree view - update it in the buffer
-    QObject::connect(m_treeModel, &TreeModel::viewLabelChanged, &drawablesBuffer, &DrawablesBuffer::setShapeVisability);
+    QObject::connect(m_treeModel, &TreeModel::signal_viewLabelChanged, &drawablesBuffer, &DrawablesBuffer::setShapeVisability);
     //when adding new shape to buffer, add list
-    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeAdded, m_treeModel, &TreeModel::addItem);
+    QObject::connect(&drawablesBuffer, &DrawablesBuffer::signal_shapeAdded, m_treeModel, &TreeModel::addItem);
     //when adding new shape to buffer, add list
-    QObject::connect(&drawablesBuffer, &DrawablesBuffer::shapeRemoved, m_treeModel, &TreeModel::removeItem);
+    QObject::connect(&drawablesBuffer, &DrawablesBuffer::signal_shapeRemoved, m_treeModel, &TreeModel::removeItem);
 
-    QObject::connect(&drawablesBuffer, &DrawablesBuffer::updateCanvas, m_canvas, &Canvas::slot_forceUpdate);
+    QObject::connect(&drawablesBuffer, &DrawablesBuffer::signal_updateCanvas, m_canvas, &Canvas::forceUpdate);
     //on double click in tree view - zoom to object
-    QObject::connect(m_treeModel, &TreeModel::focusOnObject, m_canvas, &Canvas::resetView);
+    QObject::connect(m_treeModel, &TreeModel::signal_focusOnObject, m_canvas, &Canvas::resetView);
 
     // QObject::connect(this, &CurieMainWin::resetView, canvas, &Canvas::resetView);
-    QObject::connect(m_canvas, &Canvas::signal_setStatus, this, &MainWindow::slot_setStatus);
+    QObject::connect(m_canvas, &Canvas::signal_setStatus, this, &MainWindow::setStatus);
+    //extrnal event: save ply
+    QObject::connect(m_smm, &SharedMemoryManager::signal_savePly, this, &MainWindow::setStatus);
+    //extrnal event: set cam pos
+    QObject::connect(m_smm, &SharedMemoryManager::signal_setCamLookAt, this, &MainWindow::setCamLookAt);
 }
 void MainWindow::readFileList(const QStringList &files)
 {

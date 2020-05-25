@@ -22,26 +22,16 @@ bool ZviewInfImpl::savePly(const char *fn)
     ms << Command::SAVE_PLY << fn;
     m_data.unlock();
     m_lock.release();
-    return privGetAck(CommandAck::SAVE_PLY_ACK);
+    return privGetAck(Command::SAVE_PLY);
 }
-bool ZviewInfImpl::setCameraLookAt(float x, float y, float z)
+bool ZviewInfImpl::setCameraLookAt(float ex,float ey,float ez,float cx,float cy,float cz,float ux,float uy,float uz) 
 {
     m_data.lock();
     MemStream ms(m_data.data());
-    ms << Command::SET_CAM_LOOKAT << x << y << z;
+    ms << Command::SET_CAM_LOOKAT << ex << ey << ez << cx<<cy<<cz<<ux<<uy<<uz;
     m_data.unlock();
     m_lock.release();
-    return privGetAck(CommandAck::SET_CAM_LOOKAT_ACK);
-    return false;
-}
-bool ZviewInfImpl::setCameraPosition(float x, float y, float z)
-{
-    m_data.lock();
-    MemStream ms(m_data.data());
-    ms << Command::SET_CAM_POS << x << y << z;
-    m_data.unlock();
-    m_lock.release();
-    return privGetAck(CommandAck::SET_CAM_POS_ACK);
+    return privGetAck(Command::SET_CAM_LOOKAT);
     return false;
 }
 
@@ -139,13 +129,13 @@ void privWriteFaces(MemStream& ms, size_t nelems, const void *faces)
     ms.copyFrom(faces,sz);
 }
 
-int ZviewInfImpl::privGetAck(CommandAck expectedAck)
+int ZviewInfImpl::privGetAck(Command expectedAck)
 {
 
     auto tic = std::chrono::high_resolution_clock::now();
     float timeElapsed;
 
-    CommandAck ack;
+    Command ack;
     do
     {
         auto toc = std::chrono::high_resolution_clock::now();
@@ -174,7 +164,7 @@ int ZviewInfImpl::addPoints(const char *name, size_t npoints, const float *xyz)
     privWritePoints(ms, npoints, xyz);
     m_data.unlock();
     m_lock.release();
-    return privGetAck(CommandAck::ADD_SHAPE_ACK);
+    return privGetAck(Command::ADD_PCL);
 }
 int ZviewInfImpl::addColoredPoints(const char *name, size_t npoints, const void *xyzrgba)
 {
@@ -184,7 +174,7 @@ int ZviewInfImpl::addColoredPoints(const char *name, size_t npoints, const void 
     privWritePointsColor(ms, npoints, xyzrgba);
     m_data.unlock();
     m_lock.release();
-    return privGetAck(CommandAck::ADD_SHAPE_ACK);
+    return privGetAck(Command::ADD_PCL);
 }
 int ZviewInfImpl::addMesh(const char *name, size_t npoints, const float *xyz, size_t nfaces, const void *indices)
 {
@@ -195,7 +185,7 @@ int ZviewInfImpl::addMesh(const char *name, size_t npoints, const float *xyz, si
     privWriteFaces(ms, nfaces, indices);
     m_data.unlock();
     m_lock.release();
-    return privGetAck(CommandAck::ADD_SHAPE_ACK);
+    return privGetAck(Command::ADD_MESH);
 }
 int ZviewInfImpl::addMeshColor(const char *name, size_t npoints, const void *xyzrgba, size_t nfaces, const void *indices)
 {
@@ -207,29 +197,29 @@ int ZviewInfImpl::addMeshColor(const char *name, size_t npoints, const void *xyz
     m_data.unlock();
     m_lock.release();
 
-    return privGetAck(CommandAck::ADD_SHAPE_ACK);
+    return privGetAck(Command::ADD_MESH);
 }
 int ZviewInfImpl::addEdges(const char *name, size_t npoints, const float *xyz, size_t nedges, const void *indices)
 {
     m_data.lock();
     MemStream ms(m_data.data());
-    ms << Command::ADD_MESH << name;
+    ms << Command::ADD_EDGES << name;
     privWritePoints(ms, npoints, xyz);
     privWriteEdges(ms, nedges, indices);
     m_data.unlock();
     m_lock.release();
-    return privGetAck(CommandAck::ADD_SHAPE_ACK);
+    return privGetAck(Command::ADD_EDGES);
 }
 int ZviewInfImpl::addEdgesColor(const char *name, size_t npoints, const void *xyzrgba, size_t nedges, const void *indices)
 {
     m_data.lock();
     MemStream ms(m_data.data());
-    ms << Command::ADD_MESH << name;
+    ms << Command::ADD_EDGES << name;
     privWritePointsColor(ms, npoints, xyzrgba);
     privWriteEdges(ms, nedges, indices);
     m_data.unlock();
     m_lock.release();
-    return privGetAck(CommandAck::ADD_SHAPE_ACK);
+    return privGetAck(Command::ADD_EDGES);
 }
 
 bool ZviewInfImpl::removeShape(int key)
@@ -239,7 +229,7 @@ bool ZviewInfImpl::removeShape(int key)
     ms << Command::REMOVE_SHAPE << qint64(key);
     m_data.unlock();
     m_lock.release();
-    return privGetAck(CommandAck::REMOVE_SHAPE_ACK);
+    return privGetAck(Command::REMOVE_SHAPE);
 }
 
 bool ZviewInfImpl::updatePoints(int key, size_t npoints, const float *xyz)
@@ -250,7 +240,7 @@ bool ZviewInfImpl::updatePoints(int key, size_t npoints, const float *xyz)
     privWritePoints(ms, npoints, xyz);
     m_data.unlock();
     m_lock.release();
-    return privGetAck(CommandAck::UPDATE_PCL_ACK);
+    return privGetAck(Command::UPDATE_PCL);
 }
 bool ZviewInfImpl::updateColoredPoints(int key, size_t npoints, const void *xyzrgba)
 {
@@ -261,7 +251,7 @@ bool ZviewInfImpl::updateColoredPoints(int key, size_t npoints, const void *xyzr
     privWritePointsColor(ms, npoints, xyzrgba);
     m_data.unlock();
     m_lock.release();
-    return privGetAck(CommandAck::UPDATE_PCL_ACK);
+    return privGetAck(Command::UPDATE_PCL);
 }
 
 

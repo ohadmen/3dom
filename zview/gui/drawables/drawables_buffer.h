@@ -37,9 +37,9 @@ public:
 public slots:
 	bool setShapeVisability(qint64 key, bool isvis);
 signals:
-	void shapeAdded(QString name, qint64 key);
-	void shapeRemoved(qint64 key);
-	void updateCanvas();
+	void signal_shapeAdded(QString name, qint64 key);
+	void signal_shapeRemoved(qint64 key);
+	void signal_updateCanvas();
 
 private:
 	BaseTypeVector m_drawobjs;

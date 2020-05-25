@@ -33,7 +33,7 @@ TreeModel::~TreeModel()
 {
     const auto index = m_treeViewP->currentIndex();
     TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
-    emit focusOnObject(item->getHandleNum());
+    emit signal_focusOnObject(item->getHandleNum());
 }
     void TreeModel::removeSelected()
 {
@@ -107,7 +107,7 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
         for (auto a : sprivGetChildren(item))
         {
             a->setChecked(checkval);
-            emit viewLabelChanged(a->getHandleNum(), a->isChecked());
+            emit signal_viewLabelChanged(a->getHandleNum(), a->isChecked());
         }
 
         emit dataChanged(createIndex(index.row(), 1), createIndex(rowCount(), columnCount()));

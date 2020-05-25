@@ -7,18 +7,27 @@ Canvas::Canvas(QWidget *parent ) : QOpenGLWidget(parent), m_stateMachine()
 
 	setMouseTracking(true);
 
-	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setStatus, this, &Canvas::slot_setStatus);
-	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_canvasUpdate, this, &Canvas::slot_forceUpdate);
+	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setStatus, this, &Canvas::setStatus);
+	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_canvasUpdate, this, &Canvas::forceUpdate);
 	
 }
 
-void Canvas::slot_setStatus(const QString &str)
+
+    void Canvas::setCamLookAt(const QVector3D& eye,const QVector3D& center,const QVector3D& up)
+	{
+		QMatrix4x4 m;
+		m.lookAt(eye,center,up);
+		m_stateMachine.setViewMatrix(m);
+		update();
+	}
+
+void Canvas::setStatus(const QString &str)
 {
 	emit signal_setStatus(str);
 }
 
 
-void Canvas::slot_forceUpdate() { update(); }
+void Canvas::forceUpdate() { update(); }
 void Canvas::resetView(int key)
 {
     static const float pi = std::acos(0)*2;

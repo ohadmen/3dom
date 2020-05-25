@@ -14,7 +14,7 @@ class MainWindow : public QMainWindow
   Q_OBJECT
   
   void privloadFile();
-  void privSavePly();
+  void privSavePlyCallback();
   void privShowHideAxes();
   void privShowHideGrid();
   
@@ -22,7 +22,11 @@ class MainWindow : public QMainWindow
   void privAddMenuBar();
   
 public slots:
-  void slot_setStatus(const QString &str);
+  void setStatus(const QString &str);
+  void savePly(const QString& fn) const;
+  
+  void setCamLookAt(const QVector3D& eye,const QVector3D& center,const QVector3D& up);
+
 
 public:
   explicit MainWindow(QWidget *parent = 0);

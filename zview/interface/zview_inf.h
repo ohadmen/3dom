@@ -5,8 +5,7 @@ class ZviewInf
 {
 public:
     virtual bool savePly(const char* fn)=0;
-    virtual bool setCameraLookAt(float x,float y,float z)=0;
-    virtual bool setCameraPosition(float x,float y,float z)=0;
+    virtual bool setCameraLookAt(float ex,float ey,float ez,float cx,float cy,float cz,float ux,float uy,float uz)=0;
     virtual bool updatePoints(int key,size_t npoints ,const float* xyz)=0;
     virtual bool updateColoredPoints(int key,size_t npoints,const void* xyzrgba)=0;
     virtual int addPoints(const char *name, size_t npoints, const float *xyz)=0;

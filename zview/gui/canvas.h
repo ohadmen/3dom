@@ -22,13 +22,15 @@ class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 public:
     explicit Canvas(QWidget *parent=0);
 	void addShape(const Types::Shape &obj);
+    
+    void setCamLookAt(const QVector3D& eye,const QVector3D& center,const QVector3D& up);
 	
 	
 	void input(QInputEvent *e);
 	
 public slots:
-	void slot_setStatus(const QString& str);
-	void slot_forceUpdate();
+	void setStatus(const QString& str);
+	void forceUpdate();
 	void resetView(int key=-1);
 	
 
