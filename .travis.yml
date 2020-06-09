@@ -1,0 +1,40 @@
+language: cpp
+os: linux
+compiler: gcc
+sudo: required
+dist: trusty
+
+
+
+addons:
+  apt:
+    packages:
+      - cmake
+      - g++-9
+
+    # coverity_scan:
+    #   project:
+    #     name: "ohad.menashe/zview"
+    #     description: "Zview: Build submitted via Travis CI"
+    #   notification_email: ohad.men@gmail.com
+    #   build_command_prepend: "cov-configure --comptype gcc --compiler gcc-4.8"
+    #   build_command:   "make VERBOSE=1"
+    #   branch_pattern: coverity_scan
+
+before_install:
+  # repo for Qt
+  - sudo apt-add-repository --yes ppa:beineri/opt-qt551-trusty
+  - sudo apt-get -qq update
+
+
+install:
+  - sudo apt-get --yes install qt5-default
+  - export CXX="g++-9"
+  - export CC="gcc-9"
+
+before_script:
+  - cmake -DCMAKE_BUILD_TYPE=Release 
+
+script:
+  - qmake zview_gui
+  - make
