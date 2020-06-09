@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/ohadmen/zview.svg?branch=master)](https://travis-ci.com/ohadmen/zview)
+
 # Zview -Generic mesh&cloud visualization tool
 ![Zview screenshot](/res/zview256.png)
 
