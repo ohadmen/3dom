@@ -18,7 +18,7 @@ bool privIsBinaryStl(std::ifstream* ifs)
 	char buff[6];
 	ifs->read(buff, 6);
 	ifs->seekg(0);
-	return std::strcmp(buff, "solid ") != 0; //if !=0 -> string are different --> binary --> return true
+    return std::string(buff)!="solid"; //if !=0 -> string are different --> binary --> return true
 }
 
 void privReadStlBin(std::ifstream* ifsP, Types::Mesh* meshP)
@@ -27,7 +27,7 @@ void privReadStlBin(std::ifstream* ifsP, Types::Mesh* meshP)
 	std::ifstream& ifs = *ifsP;
 	// get file size
 	ifs.seekg(0, std::ios::end);
-	uint32_t fileSize = ifs.tellg();
+    auto fileSize = ifs.tellg();
 	ifs.seekg(0, std::ios::beg);
 
 	if (fileSize == 0) // avoid undefined behavior 
@@ -88,7 +88,7 @@ void privReadStlBin(std::ifstream* ifsP, Types::Mesh* meshP)
 
 }
 
-void privReadStlAscii(std::ifstream* ifsP, Types::Mesh* meshP)
+[[ noreturn ]]  void privReadStlAscii(std::ifstream* ifsP, Types::Mesh* meshP)
 {
 	(void)ifsP; //silence missuse
 	(void)meshP; //silence missuse
