@@ -16,7 +16,7 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
 
     app.setApplicationName("Zview");
-    app.setApplicationVersion("1.1");
+    app.setApplicationVersion("1.2");
 
     auto list = getArgs(argc,argv);
     

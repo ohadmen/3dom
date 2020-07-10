@@ -3,6 +3,8 @@
 # Zview -Generic mesh&cloud visualization tool
 ![Zview screenshot](/res/zview256.png)
 
+## changelog version 1.2
+	* full python binding support
 ## changelog version 1.1
 * full c++ support on windows/Linux
 	* add meshs,edges,points, and reading files API
