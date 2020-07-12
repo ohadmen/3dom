@@ -20,7 +20,7 @@ if [[ $1 = "d" ]]; then
     qmake CONFIG+=debug zview_inf.pro
 else
     echo "qmake release.."
-    qmake CONFIG+=release zview_inf.pro "DEFINES+=IDE_REVISION=$GIT_COMMIT" "QTC_PREFIX=/zview_bin"
+    qmake CONFIG+=release zview_inf.pro "DEFINES+=IDE_REVISION=$GIT_COMMIT" "QTC_PREFIX=/zview_inf"
 fi
 echo "[-] running make (interface)"
 make -j8 >/dev/null || make

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=zview
+Comment=zview
+Exec=/opt/zview/zview
+Icon=/opt/zview/zview.png
+Terminal=false
+Type=Application
+Categories=Utility;Application;
