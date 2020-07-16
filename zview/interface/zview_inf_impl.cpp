@@ -105,8 +105,7 @@ void privWritePoints(MemStream& ms, size_t nelems, const float *xyz)
         ms << xyz[i * 3 + 0]
            << xyz[i * 3 + 1]
            << xyz[i * 3 + 2]
-           << xyz[i * 3 + 3]
-           << 0;
+           << uint32_t(0xb02ab5e0);
     }
 }
 void privWritePointsColor(MemStream& ms, size_t nelems, const void *xyzrgba)
@@ -236,7 +235,7 @@ bool ZviewInfImpl::updatePoints(int key, size_t npoints, const float *xyz)
 {
     m_data.lock();
     MemStream ms(m_data.data());
-    ms << Command::UPDATE_PCL << key << npoints;
+    ms << Command::UPDATE_PCL << qint64(key) << npoints;
     privWritePoints(ms, npoints, xyz);
     m_data.unlock();
     m_lock.release();
@@ -247,7 +246,7 @@ bool ZviewInfImpl::updateColoredPoints(int key, size_t npoints, const void *xyzr
 
     m_data.lock();
     MemStream ms(m_data.data());
-    ms << Command::UPDATE_PCL << key << npoints;
+    ms << Command::UPDATE_PCL << qint64(key) << npoints;
     privWritePointsColor(ms, npoints, xyzrgba);
     m_data.unlock();
     m_lock.release();

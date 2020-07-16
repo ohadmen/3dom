@@ -9,6 +9,7 @@ if [[ $1 = "d" ]]; then
 else
     echo "qmake release.."
     qmake CONFIG+=release zview_gui.pro "DEFINES+=IDE_REVISION=$GIT_COMMIT" "QTC_PREFIX=/zview_bin" 
+
 fi
 echo "[-] running make (gui)"
 make -j8 >/dev/null || make
@@ -24,4 +25,6 @@ else
 fi
 echo "[-] running make (interface)"
 make -j8 >/dev/null || make
+
+
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include "drawable_base.h"
 #include <QtCore/QString>
@@ -14,7 +14,7 @@ public:
 		static DrawablesBuffer obj;
 		return obj;
 	}
-	using BaseTypeVector = std::map<qint64, std::unique_ptr<DrawableBase>>;
+	using BaseTypeVector = std::unordered_map<qint64, std::unique_ptr<DrawableBase>>;
 	size_t size() const;
 	DrawablesBuffer(DrawablesBuffer const &) = delete;
 	void operator=(DrawablesBuffer const &) = delete;

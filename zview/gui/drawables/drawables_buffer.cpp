@@ -97,7 +97,16 @@ qint64 DrawablesBuffer::addShape(const Types::Shape &objv)
 bool DrawablesBuffer::removeShape(qint64 key)
 {
     if (key == -1)
-        return false;
+    {
+        for(auto& it:m_drawobjs)
+        {
+            emit signal_shapeRemoved(it.first);
+        }
+        m_drawobjs.clear();
+        emit signal_updateCanvas();
+        return true;
+    }
+        
     auto it = m_drawobjs.find(key);
     if (it == m_drawobjs.end())
         return false;
@@ -111,9 +120,13 @@ bool DrawablesBuffer::updateVertexBuffer(size_t key, const Types::VertData *pcl,
 {
     auto it = m_drawobjs.find(key);
     if (it == m_drawobjs.end())
+    {
+        qDebug() << "could not update vertex buffer: key " << key << "was not found";
         return false;
+    }
     DrawableBase *obj = it->second.get();
     obj->updateVertexBuffer(pcl, n);
+    emit signal_updateCanvas();
     return true;
 }
 

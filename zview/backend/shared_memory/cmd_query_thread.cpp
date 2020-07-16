@@ -27,11 +27,12 @@ void CmdQueryThread::stop()
 {
     m_stop=true;
     m_lock.release();
-    while(!m_done)
+    for(int i=0;i!=10000 || m_done;++i)
     {
-        //qDebug()<<"waiting to be done...";
+        
+        // qDebug()<<"waiting to be done...";
     }
-    //qDebug() << "done";
+    // qDebug() << "done";
 
 
 }
