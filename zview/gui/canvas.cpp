@@ -9,6 +9,7 @@ Canvas::Canvas(QWidget *parent ) : QOpenGLWidget(parent), m_stateMachine()
 
 	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_setStatus, this, &Canvas::setStatus);
 	QObject::connect(&m_stateMachine, &TrackStateMachine::signal_canvasUpdate, this, &Canvas::forceUpdate);
+	setCamLookAt({1,1,1},{0,0,0},{0,0,1});
 	
 }
 
@@ -16,7 +17,9 @@ Canvas::Canvas(QWidget *parent ) : QOpenGLWidget(parent), m_stateMachine()
     void Canvas::setCamLookAt(const QVector3D& eye,const QVector3D& center,const QVector3D& up)
 	{
 		QMatrix4x4 m;
+		
 		m.lookAt(eye,center,up);
+		
 		m_stateMachine.setViewMatrix(m);
 		update();
 	}

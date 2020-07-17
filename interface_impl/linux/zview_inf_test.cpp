@@ -18,19 +18,15 @@ int main()
 
     std::random_device rd;  //Will be used to obtain a seed for the random number engine
     std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_real_distribution<> dis(0, 10.0);
+    std::uniform_real_distribution<> dis(0, .5);
 
     int npoints = 10000;
     std::vector<float> verts(npoints * 3);
-            for (int i = 0; i != npoints; ++i)
-        {
-            verts[i] = dis(gen);
-        }
     int k = zvi->addPoints("uniform_dist", npoints, &verts[0]);
-    std::cout << "got key: " << k <<std::endl;
-    for (size_t i = 0; i != 1000000; ++i)
+    
+    for (size_t i = 0; i != 10; ++i)
     {
-        for (int i = 0; i != npoints; ++i)
+        for (int i = 0; i != verts.size(); ++i)
         {
             verts[i] = dis(gen);
         }

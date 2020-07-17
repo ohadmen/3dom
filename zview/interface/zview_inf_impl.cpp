@@ -127,7 +127,12 @@ void privWriteFaces(MemStream& ms, size_t nelems, const void *faces)
     ms << nelems;
     ms.copyFrom(faces,sz);
 }
-
+void ZviewInfImpl::privResetAck()
+{
+    m_ack.lock();
+    *static_cast<Command *>(m_ack.data()) = Command::UNKNOWN;
+    m_ack.unlock();
+}
 int ZviewInfImpl::privGetAck(Command expectedAck)
 {
 
@@ -145,8 +150,10 @@ int ZviewInfImpl::privGetAck(Command expectedAck)
         if (ack == expectedAck)
         {
             qint64 retval;
+            m_ack.lock();
             memcpy(&retval, static_cast<char *>(m_ack.data()) + sizeof(Command), sizeof(qint64));
-            *static_cast<Command *>(m_ack.data()) = Command::UNKNOWN;
+            m_ack.unlock();
+            privResetAck();
             return int(retval);
         }
 

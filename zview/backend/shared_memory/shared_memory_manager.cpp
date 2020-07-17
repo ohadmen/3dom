@@ -111,20 +111,20 @@ ReadAck SharedMemoryManager::privReadData() const
         std::string fn;
         ms >> fn;
         emit signal_savePly(QString::fromStdString(fn));
-        return ReadAck{ZviewInfImpl::Command::SAVE_PLY, qint64{0}};
+        return ReadAck{ZviewInfImpl::Command::SAVE_PLY, qint64{-1}};
     }
     case ZviewInfImpl::Command::SET_CAM_LOOKAT:
     {
         QVector3D eye, center, up;
         ms >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2] >> up[0] >> up[1] >> up[2];
         emit signal_setCamLookAt(eye, center, up);
-        return ReadAck{ZviewInfImpl::Command::SET_CAM_LOOKAT, qint64{0}};
+        return ReadAck{ZviewInfImpl::Command::SET_CAM_LOOKAT, qint64{-1}};
     }
 
     default:
         qWarning() << "unknown command:" << size_t(cmd);
     }
-    return ReadAck{ZviewInfImpl::Command::UNKNOWN, 0};
+    return ReadAck{ZviewInfImpl::Command::UNKNOWN, qint64{-1}};
 }
 
 void SharedMemoryManager::proccessSharedMemory()

@@ -52,5 +52,6 @@ private:
 
 
     int privGetAck(Command expected);
+    void privResetAck();
     
 };
