@@ -27,4 +27,5 @@ echo "[-] running make (interface)"
 make -j8 >/dev/null || make
 
 
-
+cd interface_impl/linux/
+./build.sh
