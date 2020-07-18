@@ -5,11 +5,7 @@
 #include <QThread>
 #include <QDebug>
 
-struct ReadAck
-{
-    ZviewInfImpl::Command cmd;
-    qint64 key;
-};
+
 
 std::string SharedMemoryManager::privReadName(const char *dataptr, size_t *offsetP) const
 {
@@ -41,6 +37,7 @@ qint64 privReadShape(ConstMemStream &ms, ZviewInfImpl::Command cmd)
     {
         Types::Pcl obj(name);
         obj.v() = std::move(pcl);
+
         return drawablesBuffer.addShape(std::move(obj));
     }
 
@@ -73,7 +70,7 @@ qint64 privReadShape(ConstMemStream &ms, ZviewInfImpl::Command cmd)
     }
 }
 
-ReadAck SharedMemoryManager::privReadData() const
+ZviewInfImpl::ReadAck SharedMemoryManager::privReadData() const
 {
     ConstMemStream ms(m_data.constData());
     ZviewInfImpl::Command cmd;
@@ -86,7 +83,7 @@ ReadAck SharedMemoryManager::privReadData() const
     case ZviewInfImpl::Command::ADD_MESH:
     {
         qint64 key = privReadShape(ms, cmd);
-        return ReadAck{cmd, key};
+        return ZviewInfImpl::ReadAck{cmd, key};
     }
     case ZviewInfImpl::Command::UPDATE_PCL:
     {
@@ -97,43 +94,43 @@ ReadAck SharedMemoryManager::privReadData() const
 
         const Types::VertData *v = ms.getMemPtr<const Types::VertData *>();
         bool ok = drawablesBuffer.updateVertexBuffer(key, v, npoints);
-        return ReadAck{ZviewInfImpl::Command::UPDATE_PCL, qint64{ok}};
+        return ZviewInfImpl::ReadAck{ZviewInfImpl::Command::UPDATE_PCL, qint64{ok}};
     }
     case ZviewInfImpl::Command::REMOVE_SHAPE:
     {
         qint64 key;
         ms >> key;
         bool ok = drawablesBuffer.removeShape(key);
-        return ReadAck{ZviewInfImpl::Command::REMOVE_SHAPE, qint64{ok}};
+        return ZviewInfImpl::ReadAck{ZviewInfImpl::Command::REMOVE_SHAPE, qint64{ok}};
     }
     case ZviewInfImpl::Command::SAVE_PLY:
     {
         std::string fn;
         ms >> fn;
         emit signal_savePly(QString::fromStdString(fn));
-        return ReadAck{ZviewInfImpl::Command::SAVE_PLY, qint64{-1}};
+        return ZviewInfImpl::ReadAck{ZviewInfImpl::Command::SAVE_PLY, qint64{-1}};
     }
     case ZviewInfImpl::Command::SET_CAM_LOOKAT:
     {
         QVector3D eye, center, up;
         ms >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2] >> up[0] >> up[1] >> up[2];
         emit signal_setCamLookAt(eye, center, up);
-        return ReadAck{ZviewInfImpl::Command::SET_CAM_LOOKAT, qint64{-1}};
+        return ZviewInfImpl::ReadAck{ZviewInfImpl::Command::SET_CAM_LOOKAT, qint64{-1}};
     }
 
     default:
         qWarning() << "unknown command:" << size_t(cmd);
     }
-    return ReadAck{ZviewInfImpl::Command::UNKNOWN, qint64{-1}};
+    return ZviewInfImpl::ReadAck{ZviewInfImpl::Command::UNKNOWN, qint64{-1}};
 }
 
 void SharedMemoryManager::proccessSharedMemory()
 {
     m_data.lock();
-    ReadAck ack = privReadData();
+    ZviewInfImpl::ReadAck ack = privReadData();
     m_data.unlock();
     m_ack.lock();
-    *static_cast<ReadAck *>(m_ack.data()) = ack;
+    *static_cast<ZviewInfImpl::ReadAck *>(m_ack.data()) = ack;
     m_ack.unlock();
 }
 

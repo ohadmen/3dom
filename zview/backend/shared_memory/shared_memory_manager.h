@@ -4,7 +4,7 @@
 #include "zview/gui/drawables/drawables_buffer.h"
 #include "zview/interface/zview_inf_impl.h"
 class CmdQueryThread;
-struct ReadAck;
+
 class SharedMemoryManager : public QObject
 {
     Q_OBJECT
@@ -17,7 +17,7 @@ class SharedMemoryManager : public QObject
     T privGetMemPtr(size_t offset=0)const { return reinterpret_cast<T>(static_cast<const char*>(m_data.constData())+offset); }
 
 
-    ReadAck privReadData() const;
+    ZviewInfImpl::ReadAck privReadData() const;
     std::string privReadName(const char* dataptr,size_t* offsetP) const;
     
 

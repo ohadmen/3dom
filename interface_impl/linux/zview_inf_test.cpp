@@ -24,7 +24,7 @@ int main()
     std::vector<float> verts(npoints * 3);
     int k = zvi->addPoints("uniform_dist", npoints, &verts[0]);
     
-    for (size_t i = 0; i != 10; ++i)
+    for (size_t i = 0; i != 10000; ++i)
     {
         for (int i = 0; i != verts.size(); ++i)
         {

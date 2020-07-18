@@ -42,6 +42,11 @@ public:
         SAVE_PLY,
         SET_CAM_LOOKAT,
     };
+    struct ReadAck
+{
+    ZviewInfImpl::Command cmd;
+    qint64 key;
+};
 
     
 

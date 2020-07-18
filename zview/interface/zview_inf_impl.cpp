@@ -130,7 +130,7 @@ void privWriteFaces(MemStream& ms, size_t nelems, const void *faces)
 void ZviewInfImpl::privResetAck()
 {
     m_ack.lock();
-    *static_cast<Command *>(m_ack.data()) = Command::UNKNOWN;
+    *static_cast<ZviewInfImpl::ReadAck*>(m_ack.data()) = ZviewInfImpl::ReadAck{Command::UNKNOWN,-1};
     m_ack.unlock();
 }
 int ZviewInfImpl::privGetAck(Command expectedAck)
@@ -139,22 +139,18 @@ int ZviewInfImpl::privGetAck(Command expectedAck)
     auto tic = std::chrono::high_resolution_clock::now();
     float timeElapsed;
 
-    Command ack;
+    ZviewInfImpl::ReadAck ack;
     do
     {
         auto toc = std::chrono::high_resolution_clock::now();
         timeElapsed = std::chrono::duration_cast<std::chrono::seconds>(toc - tic).count();
         m_ack.lock();
-        memcpy(&ack, m_ack.data(), sizeof(Command));
+        memcpy(&ack, m_ack.data(), sizeof(ZviewInfImpl::ReadAck));
         m_ack.unlock();
-        if (ack == expectedAck)
+        if (ack.cmd == expectedAck)
         {
-            qint64 retval;
-            m_ack.lock();
-            memcpy(&retval, static_cast<char *>(m_ack.data()) + sizeof(Command), sizeof(qint64));
-            m_ack.unlock();
             privResetAck();
-            return int(retval);
+            return int(ack.key);
         }
 
     } while (timeElapsed < 1);
@@ -242,7 +238,7 @@ bool ZviewInfImpl::updatePoints(int key, size_t npoints, const float *xyz)
 {
     m_data.lock();
     MemStream ms(m_data.data());
-    ms << Command::UPDATE_PCL << qint64(key) << npoints;
+    ms << Command::UPDATE_PCL << qint64(key);
     privWritePoints(ms, npoints, xyz);
     m_data.unlock();
     m_lock.release();
@@ -253,7 +249,7 @@ bool ZviewInfImpl::updateColoredPoints(int key, size_t npoints, const void *xyzr
 
     m_data.lock();
     MemStream ms(m_data.data());
-    ms << Command::UPDATE_PCL << qint64(key) << npoints;
+    ms << Command::UPDATE_PCL << qint64(key);
     privWritePointsColor(ms, npoints, xyzrgba);
     m_data.unlock();
     m_lock.release();
