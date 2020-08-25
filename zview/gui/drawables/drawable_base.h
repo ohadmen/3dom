@@ -22,7 +22,7 @@ public:
 	virtual const std::string& getName() const=0;
 
 
-	bool updateVertexBuffer(const Types::VertData* data,size_t n);
+	virtual bool updateVertexBuffer(const Types::VertData* data,size_t n);
 
 protected:
 	
@@ -30,7 +30,7 @@ protected:
     bool m_active;
 	QOpenGLShaderProgram m_meshShader;
 	QOpenGLBuffer m_vBuff; //vertices 3xn
-
+	
 	void privInitShader(const QString &shaderName);
 
 };

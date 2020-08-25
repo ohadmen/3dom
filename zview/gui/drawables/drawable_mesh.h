@@ -17,5 +17,8 @@ Types::Shape getShape() const override;
 	Types::Roi3d get3dbbox()const;
 	const std::string& getName() const;
 
+	//until we can get all the operation done directly in GPU - copy data to local memory
+	bool updateVertexBuffer(const Types::VertData* data,size_t n) override;
+
 };
 

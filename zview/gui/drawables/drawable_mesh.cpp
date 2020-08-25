@@ -136,3 +136,10 @@ QVector3D DrawableMesh::picking(const QVector3D &p, const QVector3D &n) const
 	return pt;
 }
 Types::Roi3d DrawableMesh::get3dbbox() const {return Types::Mesh::get3dbbox();}
+
+
+bool DrawableMesh::updateVertexBuffer(const Types::VertData* data,size_t n)
+{
+	std::copy(data,data+n,m_v.begin());
+	return DrawableBase::updateVertexBuffer(data,n);
+}

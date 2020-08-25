@@ -44,6 +44,14 @@ public:
         memcpy(getMemPtr<char*>(), ptr, nBytes);
         m_byteCounter +=nBytes;
     }
+    template<class T>
+    void writeConstant(const T& val, size_t count)
+    {
+        T* p=getMemPtr<T*>();
+        std::fill(p,p+count,val);
+        m_byteCounter += count*sizeof(T);
+            
+    }
 
     template <class T>
     friend MemStream& operator<<(MemStream &mem, const T &val);

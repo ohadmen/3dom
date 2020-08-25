@@ -115,3 +115,8 @@ QVector3D DrawablePcl::picking(const QVector3D& p, const QVector3D& n) const
 	return closestPoint;
 
 }
+bool DrawablePcl::updateVertexBuffer(const Types::VertData* data,size_t n)
+{
+	std::copy(data,data+n,m_v.begin());
+	return DrawableBase::updateVertexBuffer(data,n);
+}

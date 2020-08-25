@@ -126,3 +126,11 @@ QVector3D DrawableEdges::picking(const QVector3D &p1, const QVector3D &n1) const
     }
     return closestPoint;
 }
+
+
+
+bool DrawableEdges::updateVertexBuffer(const Types::VertData* data,size_t n)
+{
+	std::copy(data,data+n,m_v.begin());
+	return DrawableBase::updateVertexBuffer(data,n);
+}
