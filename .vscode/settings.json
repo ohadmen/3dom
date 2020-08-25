@@ -92,7 +92,9 @@
         "compare": "cpp",
         "concepts": "cpp",
         "ranges": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "forward_list": "cpp",
+        "typeindex": "cpp"
     },
     "files.exclude": {
         "bazel-*": true
