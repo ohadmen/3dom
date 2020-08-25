@@ -8,3 +8,4 @@ target_include_directories(zview_bindings PRIVATE ../../zview/interface)
 
 find_library(ZVIEW_LIBRARY zview_inf HINTS ../../bin)
 target_link_libraries(zview_bindings PUBLIC ${ZVIEW_LIBRARY})
+

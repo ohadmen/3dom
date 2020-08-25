@@ -2,7 +2,7 @@
 #include <pybind11/pybind11.h>
 #include "zview_inf.h"
 #include <iostream>
-
+namespace py = pybind11;
 class ZviewInfWrapper
 {
     ZviewInf* m_zvi;
@@ -26,7 +26,7 @@ public:
     bool setCameraLookAt(float ex, float ey, float ez, float cx, float cy, float cz, float ux, float uy, float uz) { return m_zvi->setCameraLookAt(ex, ey, ez, cx, cy, cz, ux, uy, uz); }
     bool updatePoints(int key, size_t npoints, const float *xyz) { return m_zvi->updatePoints(key, npoints, xyz); }
     bool updateColoredPoints(int key, size_t npoints, const void *xyzrgba) { return m_zvi->updateColoredPoints(key, npoints, xyzrgba); }
-    int addPoints(const char *name, size_t npoints, const float *xyz) { return m_zvi->addPoints(name, npoints, xyz); }
+    int addPoints(const char *name, size_t npoints, const std::vector<float>& xyz) { return m_zvi->addPoints(name, npoints, &xyz[0]); }
     int addColoredPoints(const char *name, size_t npoints, const void *xyzrgba) { return m_zvi->addColoredPoints(name, npoints, xyzrgba); }
     int addMesh(const char *name, size_t npoints, const float *xyz, size_t nfaces, const void *indices) { return m_zvi->addMesh(name, npoints, xyz, nfaces, indices); }
     int addMeshColor(const char *name, size_t npoints, const void *xyzrgba, size_t nfaces, const void *indices) { return m_zvi->addMeshColor(name, npoints, xyzrgba, nfaces, indices); }
@@ -36,7 +36,7 @@ public:
     bool removeShape(int key) { return m_zvi->removeShape(key); }
 };
 
-namespace py = pybind11;
+
 
 PYBIND11_MODULE(zview_bindings, m)
 {
