@@ -38,7 +38,7 @@ public:
 
 
 
-PYBIND11_MODULE(zview_bindings, m)
+PYBIND11_MODULE(pyzview, m)
 {
     py::class_<ZviewInfWrapper>(m, "interface")
         .def(py::init())
