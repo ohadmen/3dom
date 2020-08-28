@@ -3,6 +3,10 @@
 # Zview -Generic mesh&cloud visualization tool
 ![Zview screenshot](/res/zview256.png)
 
+## changelog version 1.3
+	* interface bugfix
+	* point picking with nan points
+
 ## changelog version 1.2
 	* full python binding support
 ## changelog version 1.1

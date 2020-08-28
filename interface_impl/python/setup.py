@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages, Extension
 
-extensions = [Extension("pyzview",
+extensions = [Extension("pyzview.zview",
                        ["pyzview.cpp"],
                        include_dirs=["../../zview/interface"],
                        # runtime_library_dirs = ["/home/ohad/dev/zview/bin/"],

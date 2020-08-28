@@ -90,6 +90,10 @@ Types::Roi3d DrawablePcl::get3dbbox() const
 }
 
 
+bool isnan(const QVector3D& v)
+{
+	return (v[0]!=v[0]) | (v[1]!=v[1]) | (v[2]!=v[2]);
+}
 
 QVector3D DrawablePcl::picking(const QVector3D& p, const QVector3D& n) const
 {
@@ -100,7 +104,9 @@ QVector3D DrawablePcl::picking(const QVector3D& p, const QVector3D& n) const
 	QVector3D closestPoint(inf,inf,inf);
 	for(const auto& pt:m_v)
 	{
-		auto pt_ = QVector3D(pt);
+		QVector3D pt_(pt);
+		if(isnan(pt))
+			continue;
 		float d = QVector3D::dotProduct(n,pt_-p);
 		if(d<0)//behind camera
 			continue;

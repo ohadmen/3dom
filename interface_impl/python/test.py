@@ -8,5 +8,5 @@ print("2")
 # zv.loadFile("../../models/horse.stl")
 
 pts = np.random.randint(-100,100,size=[100,4]).astype(np.float32)/100
-zv.addColoredPoints("pytestC",pts)
+zv.addColoredPoints("pytestX",pts)
 print("3")
