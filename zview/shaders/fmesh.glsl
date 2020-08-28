@@ -10,7 +10,7 @@ uniform vec3 u_lightDir;
 varying vec4 v_xyz;
 varying vec4 v_rgb;
 varying vec3 v_eyeDir;
-
+varying float v_z;
 
 //! [0]
 void main()

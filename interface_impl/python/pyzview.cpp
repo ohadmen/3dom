@@ -79,6 +79,7 @@ public:
         float* up = arr2ptr(u);
         return m_zvi->setCameraLookAt(ep[0],ep[1],ep[2],cp[0],cp[1],cp[2],up[0],up[1],up[2]);
     }
+
 };
 
 

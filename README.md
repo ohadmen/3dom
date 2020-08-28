@@ -3,6 +3,12 @@
 # Zview -Generic mesh&cloud visualization tool
 ![Zview screenshot](/res/zview256.png)
 
+## changelog version 1.31
+	* depthmap shader
+	* remove objects from python
+	* camera control from python
+
+
 ## changelog version 1.3
 	* interface bugfix
 	* point picking with nan points
