@@ -10,6 +10,7 @@ uniform vec3 u_lightDir;
 varying vec4 v_xyz;
 varying vec4 v_rgb;
 varying vec3 v_eyeDir;
+varying float v_z;
 
 //! [0]
 void main()
@@ -52,6 +53,10 @@ void main()
   	    spec = pow(spec, 8.0) * specularFactor2;
   		color += spec * specularColor2;
   		gl_FragColor = min(color, vec4(1.0));
+	}
+	else if(u_txt==5)
+	{
+		gl_FragColor = vec4(v_z,v_z,v_z,1.0); 
 	}
 	else
 	{

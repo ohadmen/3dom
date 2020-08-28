@@ -21,6 +21,7 @@ void main()
 
     v_xyz = a_xyz;
     v_col=a_rgb;
+    
 	
 }
 //! [0]

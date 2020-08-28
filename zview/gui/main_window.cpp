@@ -115,7 +115,7 @@ void MainWindow::privAddMenuBar()
         {
             Canvas *c = m_canvas;
 
-            for (int i = 0; i != 5; ++i)
+            for (int i = 0; i != 6; ++i)
                 txtTop->addAction(privAddAction(
                     this, "texture #" + QString::number(i), [c, i]() {Params::drawablesTexture(i);c->forceUpdate(); }, "Ctrl+" + QString::number(i)));
         }

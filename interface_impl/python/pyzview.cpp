@@ -61,7 +61,6 @@ public:
     }
 
     bool savePly(const char *fn) { return m_zvi->savePly(fn); }
-    bool setCameraLookAt(float ex, float ey, float ez, float cx, float cy, float cz, float ux, float uy, float uz) { return m_zvi->setCameraLookAt(ex, ey, ez, cx, cy, cz, ux, uy, uz); }
     int addPoints(const char *name, const py::array_t<float>& xyz) {dataChk(xyz,3); return m_zvi->addPoints(name, getrows(xyz), arr2ptr(xyz)); }
     int addColoredPoints(const char *name, py::array_t<float>&xyzrgba) {dataChk(xyzrgba,4); return m_zvi->addColoredPoints(name, getrows(xyzrgba), arr2ptr(xyzrgba)); }
     bool updatePoints(int key, py::array_t<float>&xyz) {dataChk(xyz,3);  return m_zvi->updatePoints(key,getrows(xyz), arr2ptr(xyz)); }
@@ -73,6 +72,13 @@ public:
     // int addEdgesColor(const char *name, size_t npoints, const void *xyzrgba, size_t nfaces, const void *indices) { return m_zvi->addEdgesColor(name, npoints, xyzrgba, nfaces, indices); }
     bool loadFile(const char *filename) {        return m_zvi->loadFile(filename);          }
     bool removeShape(int key) { return m_zvi->removeShape(key); }
+    bool setCameraLookAt(py::array_t<float>& e,py::array_t<float>& c,py::array_t<float>& u)
+    {
+        float* ep = arr2ptr(e);
+        float* cp = arr2ptr(c);
+        float* up = arr2ptr(u);
+        return m_zvi->setCameraLookAt(ep[0],ep[1],ep[2],cp[0],cp[1],cp[2],up[0],up[1],up[2]);
+    }
 };
 
 
@@ -91,6 +97,7 @@ PYBIND11_MODULE(pyzview, m)
         // .def("addMeshColor", &ZviewInfWrapper::addMeshColor)
         // .def("addEdges", &ZviewInfWrapper::addEdges)
         // .def("addEdgesColor", &ZviewInfWrapper::addEdgesColor)
+        .def("addColoredPoints", &ZviewInfWrapper::addColoredPoints)
         .def("loadFile", &ZviewInfWrapper::loadFile)
         .def("removeShape", &ZviewInfWrapper::removeShape);
 }

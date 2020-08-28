@@ -12,6 +12,7 @@ attribute vec4 a_rgb;
 varying vec4 v_xyz;
 varying vec4 v_rgb;
 varying vec3 v_eyeDir;
+varying float v_z;
 
 
 //! [0]
@@ -22,6 +23,7 @@ void main()
 	v_xyz = a_xyz;
     v_rgb = a_rgb;
 	v_eyeDir  = -1.0 * normalize(vec3(mvp_matrix[0]));
+    v_z = gl_Position.z;
 
 
 }

@@ -69,6 +69,11 @@ void main()
   		color += spec * specularColor2;
   		gl_FragColor = min(color, vec4(1.0));
 	}
+	else if(u_txt==5)
+	{
+		gl_FragColor = vec4(v_z,v_z,v_z,1.0); 
+	}
+
 	else
 	{
 		vec3 base3 = vec3(0.99, 0.96, 0.89);
