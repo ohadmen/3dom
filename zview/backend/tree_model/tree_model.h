@@ -36,7 +36,8 @@ public slots:
     void removeItem(size_t handleNum);
     QTreeView* getTreeView();
 
-    void removeSelected();
+    // void removeSelected();
+    std::vector<qint64> getSelected() ;
     void focusSelected();
     
 

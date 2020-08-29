@@ -9,7 +9,7 @@ constexpr int TITLE_COL  = 2;
 constexpr int HANDLENUM_COLUMN  = 3;
 
 TreeModel::TreeModel(QWidget *parent)
-    : QAbstractItemModel(parent), m_rootItem(new TreeItem("", -1, nullptr)), m_treeViewP(new TreeViewSignaled(parent))
+    : QAbstractItemModel(parent), m_rootItem(new TreeItem("", -2, nullptr)), m_treeViewP(new TreeViewSignaled(parent))
 {
      m_headerString = QStringList({"","#", "Layer name", "v"});
     m_treeViewP->setModel(this);
@@ -35,27 +35,48 @@ TreeModel::~TreeModel()
     TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
     emit signal_focusOnObject(item->getHandleNum());
 }
-    void TreeModel::removeSelected()
-{
-    const auto index = m_treeViewP->currentIndex();
-    TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
     
-    //get a list of all children
-    std::vector<TreeItem *> children = sprivGetChildren(item);
+    
+    std::vector<qint64> TreeModel::getSelected() 
+    {
+        std::vector<qint64> selected;
+        const auto index = m_treeViewP->currentIndex();
+        TreeItem* item = static_cast<TreeItem *>(index.internalPointer());
+        if(!item)
+            return selected;
+        std::vector<TreeItem *> children = sprivGetChildren(item);
         for(auto& a:children)
         {
-            //remove the corresponding shape from the buffer
-            drawablesBuffer.removeShape(a->getHandleNum());
-            //delete the object (top parent will be removed)
+            qint64 k = a->getHandleNum();
+            if(k >=0)
+                selected.push_back(k);
 
         }
-    drawablesBuffer.removeShape(item->getHandleNum());
-    item->parent()->removeChild(item);
 
-    emit dataChanged(createIndex(0, 1), createIndex(rowCount(), columnCount()));
-    m_treeViewP->parentWidget()->setFocus();
+        return selected;
 
-}
+    }
+//     void TreeModel::removeSelected()
+// {
+//     const auto index = m_treeViewP->currentIndex();
+//     TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+    
+//     //get a list of all children
+//     std::vector<TreeItem *> children = sprivGetChildren(item);
+//         for(auto& a:children)
+//         {
+//             //remove the corresponding shape from the buffer
+//             drawablesBuffer.removeShape(a->getHandleNum());
+//             //delete the object (top parent will be removed)
+
+//         }
+//     drawablesBuffer.removeShape(item->getHandleNum());
+//     item->parent()->removeChild(item);
+
+//     emit dataChanged(createIndex(0, 1), createIndex(rowCount(), columnCount()));
+//     m_treeViewP->parentWidget()->setFocus();
+
+// }
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
@@ -147,14 +168,14 @@ QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
     if (!hasIndex(row, column, parent))
         return QModelIndex();
 
-    TreeItem *m_parentItem;
+    TreeItem *parentItem;
 
     if (!parent.isValid())
-        m_parentItem = m_rootItem;
+        parentItem = m_rootItem;
     else
-        m_parentItem = static_cast<TreeItem *>(parent.internalPointer());
+        parentItem = static_cast<TreeItem *>(parent.internalPointer());
 
-    TreeItem *childItem = m_parentItem->child(row);
+    TreeItem *childItem = parentItem->child(row);
     if (childItem)
         return createIndex(row, column, childItem);
     else
@@ -169,26 +190,27 @@ QModelIndex TreeModel::parent(const QModelIndex &index) const
     TreeItem *childItem = static_cast<TreeItem *>(index.internalPointer());
     if (!childItem)
         return QModelIndex();
-    TreeItem *m_parentItem = childItem->parent();
-
-    if (m_parentItem == m_rootItem)
+    TreeItem *parentItem = childItem->parent();
+       if (!parentItem)
+        return QModelIndex();
+    if (parentItem == m_rootItem)
         return QModelIndex();
 
-    return createIndex(m_parentItem->row(), 0, m_parentItem);
+    return createIndex(parentItem->row(), 0, parentItem);
 }
 
 int TreeModel::rowCount(const QModelIndex &parent) const
 {
-    TreeItem *m_parentItem;
+    TreeItem *parentItem;
     if (parent.column() > 0)
         return 0;
 
     if (!parent.isValid())
-        m_parentItem = m_rootItem;
+        parentItem = m_rootItem;
     else
-        m_parentItem = static_cast<TreeItem *>(parent.internalPointer());
+        parentItem = static_cast<TreeItem *>(parent.internalPointer());
 
-    auto r = m_parentItem->childCount();
+    auto r = parentItem->childCount();
     return r;
 }
 
@@ -214,6 +236,7 @@ void privAddItemRec(const QStringList &list, int handleNum, TreeItem *parent)
         //handle num is for actual object
         int treeHandle = listm1.empty() ? handleNum : -1;
         child = new TreeItem(cur, treeHandle, parent);
+
         parent->appendChild(child);
     }
     privAddItemRec(listm1, handleNum, child);
@@ -228,25 +251,52 @@ void TreeModel::addItem(const QString &str, size_t handleNum)
     m_treeViewP->reset();
     m_treeViewP->expand(index(rowCount() - 1, columnCount() - 1));
 }
+
+bool hasHandle(TreeItem * a)
+{
+    if(a->getHandleNum() !=-1)
+        return true;
+    for(auto child:*a)
+    {
+        if(hasHandle(child))
+            return true;
+    }
+    return false;
+}
 void TreeModel::removeItem(size_t handleNum)
 {
     //go over all tree and locate object with handlenum
     std::vector<TreeItem *> flatList = sprivGetChildren(m_rootItem);
-    std::for_each(flatList.begin(), flatList.end(), [&handleNum](TreeItem *a) {
+    for(auto& a:flatList)
+     {
         if (a->getHandleNum() == int(handleNum))
         {
             if (a->childCount() == 0)
             {
                 //leaf node - remove
                 a->parent()->removeChild(a);
+                
             }
             else
             {
-                //has childeren - just set handleNum to -i
+                //has children - just set handleNum to -i
                 a->setHandleNum(-1);
             }
         }
-    });
+    }
+    // remove trees that has no children with handle num
+    flatList = sprivGetChildren(m_rootItem);
+    for(auto& a:flatList)
+    {
+        if( !hasHandle(a))
+        {
+            a->parent()->removeChild(a);
+        }
+            
+    }
+    m_treeViewP->reset();
+    m_treeViewP->parentWidget()->setFocus();
+
     
 }
 

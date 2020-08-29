@@ -48,6 +48,7 @@ void Canvas::resetView(int key)
 
 	m_stateMachine.setViewMatrix(vm);
 	m_axes.setScale(1/s);
+	update();
 	
 }
 

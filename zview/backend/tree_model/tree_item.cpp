@@ -23,6 +23,7 @@ void TreeItem::appendChild(TreeItem* item)
 void TreeItem::removeChild(TreeItem* itm)
 {
     m_childItems.removeOne(itm);
+
 }
 
 

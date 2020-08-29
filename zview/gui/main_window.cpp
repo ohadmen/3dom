@@ -242,7 +242,13 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
     if (e->key() == Qt::Key::Key_Delete && e->modifiers() == Qt::KeyboardModifier::NoModifier)
     {
-        m_treeModel->removeSelected();
+        auto selectedKeys =  m_treeModel->getSelected();
+        for(auto& k:selectedKeys)
+        {
+            
+            drawablesBuffer.removeShape(k);
+        }
+        
     }
     m_canvas->input(e);
 }
