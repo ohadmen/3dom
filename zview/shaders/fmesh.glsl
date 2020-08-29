@@ -47,7 +47,7 @@ void main()
 	{
 			vec3 ec_pos=vec3(v_xyz[0],v_xyz[1],v_xyz[2]);
 			vec3 ec_normal = normalize(cross(dFdx(ec_pos),dFdy(ec_pos)));
-			gl_FragColor = vec4((1.0+ec_normal)*0.5,1.0);
+			gl_FragColor = vec4((1.0-ec_normal)*0.5,1.0);
 			
 			
 	}

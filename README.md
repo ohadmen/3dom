@@ -3,6 +3,14 @@
 # Zview -Generic mesh&cloud visualization tool
 ![Zview screenshot](/res/zview256.png)
 
+
+## changelog version 1.32
+	* fix normal direction
+	* support for mesh vis through python
+	* fix thread hang bug
+
+
+
 ## changelog version 1.31
 	* depthmap shader
 	* remove objects from python

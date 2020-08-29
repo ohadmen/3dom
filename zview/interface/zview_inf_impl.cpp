@@ -47,11 +47,11 @@ public:
     }
     int operator()(const Types::Edges &obj)
     {
-        return m_zv->addEdgesColor(obj.getName().c_str(), obj.v().size(), &obj.v()[0], obj.e().size(), &obj.e()[0]);
+        return m_zv->addColoredEdges(obj.getName().c_str(), obj.v().size(), &obj.v()[0], obj.e().size(), &obj.e()[0]);
     }
     int operator()(const Types::Mesh &obj)
     {
-        return m_zv->addMeshColor(obj.getName().c_str(), obj.v().size(), &obj.v()[0], obj.f().size(), &obj.f()[0]);
+        return m_zv->addColoredMesh(obj.getName().c_str(), obj.v().size(), &obj.v()[0], obj.f().size(), &obj.f()[0]);
     }
 };
 
@@ -203,7 +203,7 @@ int ZviewInfImpl::addMesh(const char *name, size_t npoints, const float *xyz, si
     m_lock.release();
     return privGetAck(Command::ADD_MESH);
 }
-int ZviewInfImpl::addMeshColor(const char *name, size_t npoints, const void *xyzrgba, size_t nfaces, const void *indices)
+int ZviewInfImpl::addColoredMesh(const char *name, size_t npoints, const void *xyzrgba, size_t nfaces, const void *indices)
 {
     m_data.lock();
     MemStream ms(m_data.data());
@@ -226,7 +226,7 @@ int ZviewInfImpl::addEdges(const char *name, size_t npoints, const float *xyz, s
     m_lock.release();
     return privGetAck(Command::ADD_EDGES);
 }
-int ZviewInfImpl::addEdgesColor(const char *name, size_t npoints, const void *xyzrgba, size_t nedges, const void *indices)
+int ZviewInfImpl::addColoredEdges(const char *name, size_t npoints, const void *xyzrgba, size_t nedges, const void *indices)
 {
     m_data.lock();
     MemStream ms(m_data.data());

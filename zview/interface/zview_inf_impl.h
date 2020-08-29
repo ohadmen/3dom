@@ -17,9 +17,9 @@ public:
     int addPoints(const char *name, size_t npoints, const float *xyz) override;
     int addColoredPoints(const char* name,size_t npoints,const void* xyzrgba) override;
     int addMesh(const char* name,size_t npoints,const float* xyz,size_t nfaces,const void* indices) override;
-    int addMeshColor(const char* name,size_t npoints,const void* xyzrgba,size_t nfaces,const void* indices) override;
+    int addColoredMesh(const char* name,size_t npoints,const void* xyzrgba,size_t nfaces,const void* indices) override;
     int addEdges(const char* name,size_t npoints,const float* xyz,size_t nfaces,const void* indices) override;
-    int addEdgesColor(const char* name,size_t npoints,const void* xyzrgba,size_t nfaces,const void* indices) override;
+    int addColoredEdges(const char* name,size_t npoints,const void* xyzrgba,size_t nfaces,const void* indices) override;
     bool loadFile(const char *filename) override;
     bool removeShape(int key) override;
     void destroy() override;
