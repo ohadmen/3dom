@@ -3,6 +3,7 @@
 #include <vector>
 #include <array>
 #include <variant>
+#include <cmath>
 
 namespace Types
 {
@@ -77,6 +78,24 @@ using EdgeIndx = std::array<int32_t, 2>;
 
 class Pcl
 {
+
+	static std::array<QVector3D,2> nanminmax(const std::vector<Types::VertData>& v)
+	{
+		QVector3D mmin(std::numeric_limits<float>::max(),std::numeric_limits<float>::max(),std::numeric_limits<float>::max());
+		QVector3D mmax(std::numeric_limits<float>::min(),std::numeric_limits<float>::min(),std::numeric_limits<float>::min());
+		for(const auto& a:v)
+		{
+			float aa[] = {a.x,a.y,a.z};
+			for(int i=0;i!=3;++i)
+			{
+				if(std::isnan(aa[i]))
+					continue;
+				mmin[i]=std::min(mmin[i],aa[i]);
+				mmax[i]=std::max(mmax[i],aa[i]);
+			}
+		}
+		return {mmin,mmax};
+	}
 protected:
 	std::string m_name;
 	std::vector<Types::VertData> m_v;
@@ -101,11 +120,9 @@ public:
 			return Types::Roi3d(m_v[0].x - e, m_v[0].x + e, m_v[0].y - e, m_v[0].y + e, m_v[0].z - e, m_v[0].z + e);
 		}
 		else
-		{
-			auto xmm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData &a, const Types::VertData &b) { return a.x < b.x; });
-			auto ymm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData &a, const Types::VertData &b) { return a.y < b.y; });
-			auto zmm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData &a, const Types::VertData &b) { return a.z < b.z; });
-			return Types::Roi3d(xmm.first->x, xmm.second->x, ymm.first->y, ymm.second->y, zmm.first->z, zmm.second->z);
+		{	
+			auto [mmin,mmax] = nanminmax(m_v);
+			return Types::Roi3d(mmin[0],mmax[0],mmin[1],mmax[1],mmin[2],mmax[2]);
 		}
 	}
 };

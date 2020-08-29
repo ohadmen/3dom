@@ -80,14 +80,7 @@ void DrawablePcl::paintGL(const QMatrix4x4& mvp)
 }
 
 
-Types::Roi3d DrawablePcl::get3dbbox() const
-{
-	auto xmm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData& a, const Types::VertData& b) {return a.x < b.x; });
-	auto ymm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData& a, const Types::VertData& b) {return a.y < b.y; });
-	auto zmm = std::minmax_element(m_v.begin(), m_v.end(), [](const Types::VertData& a, const Types::VertData& b) {return a.z < b.z; });
-	Types::Roi3d q(xmm.first->x, xmm.second->x, ymm.first->y, ymm.second->y, zmm.first->z, zmm.second->z);
-	return q;
-}
+Types::Roi3d DrawablePcl::get3dbbox() const {return Types::Pcl::get3dbbox();}
 
 
 bool isnan(const QVector3D& v)
