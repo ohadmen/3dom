@@ -25,8 +25,8 @@ void main()
 	else if(u_txt==2)
 	{
 		vec3 lightColor=vec3(1,1,1);
-		float ambientFactor = 0.2;
-		float diffuseFactor =0.3;
+		float ambientFactor = 0.3;
+		float diffuseFactor =0.5;
 		float specFactor = 0.7;
 		//calc normal
 		vec3 ec_pos=v_xyz.xyz;
@@ -48,8 +48,7 @@ void main()
 			vec3 ec_pos=vec3(v_xyz[0],v_xyz[1],v_xyz[2]);
 			vec3 ec_normal = normalize(cross(dFdx(ec_pos),dFdy(ec_pos)));
 			gl_FragColor = vec4((1.0-ec_normal)*0.5,v_rgb.w);
-			
-			
+		
 	}
 	else if(u_txt==4)
 	{
