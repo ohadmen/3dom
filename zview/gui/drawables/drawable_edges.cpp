@@ -90,14 +90,14 @@ Types::Roi3d DrawableEdges::get3dbbox() const
     }
 }
 
-QVector3D DrawableEdges::picking(const QVector3D &p1, const QVector3D &n1) const
+Types::VertData DrawableEdges::picking(const QVector3D &p1, const QVector3D &n1) const
 {
     static const float pi = std::acos(0.0)*2;
     static const float angularthresholt = std::tan(2.0 * pi / 180.0);
     static const float inf = std::numeric_limits<float>::infinity();
 
     float closestDistance = inf;
-    QVector3D closestPoint(inf, inf, inf);
+    Types::VertData closestPoint(inf, inf, inf,0,0,0);
     for (const auto &i : m_e)
     {
         const QVector3D &p2 = m_v[i[0]];
@@ -122,7 +122,7 @@ QVector3D DrawableEdges::picking(const QVector3D &p1, const QVector3D &n1) const
         if (a / d > angularthresholt)
             continue;
         closestDistance = d;
-        closestPoint = pl2;
+        closestPoint = {pl2,QVector4D(p1)};
     }
     return closestPoint;
 }

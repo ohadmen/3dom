@@ -7,7 +7,7 @@
 
 #include <sstream>
 
-QVector3D TrackStateMachine::pickClosestObject(const QPointF &xy) const
+Types::VertData TrackStateMachine::pickClosestObject(const QPointF &xy) const
 {
     static const float inf = std::numeric_limits<float>::infinity();
     QMatrix4x4 mat = getViewMatrix();
@@ -15,7 +15,7 @@ QVector3D TrackStateMachine::pickClosestObject(const QPointF &xy) const
     auto ray = m_vpmat.xy2ray(xy);
     QVector2D pcam(mat * (ray.first + ray.second));
     float minLen = inf;
-    QVector3D pt(inf, inf, inf);
+    Types::VertData pt(inf, inf, inf,0,0,0);
 
     for (const auto &o : drawablesBuffer)
     {
@@ -23,8 +23,8 @@ QVector3D TrackStateMachine::pickClosestObject(const QPointF &xy) const
             continue;
         if(o.second->getName()==TrackStateMeasureDistance::measure_distance_object_name)
             continue;
-        QVector3D x = o.second.get()->picking(ray.first, ray.second);
-        QVector2D xcam(mat * x);
+        Types::VertData x = o.second.get()->picking(ray.first, ray.second);
+        QVector2D xcam(mat * QVector3D(x));
         float xcamLen = (xcam - pcam).length();
         if (minLen > xcamLen)
         {

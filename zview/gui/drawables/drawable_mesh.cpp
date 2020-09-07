@@ -68,13 +68,13 @@ void DrawableMesh::paintGL(const QMatrix4x4 &mvp)
 	m_meshShader.disableAttributeArray(vc);
 }
 
-std::pair<float, QVector3D> sprivRayTriangleIntersection(const QVector3D &rp, const QVector3D &rn, const QVector3D &v0, const QVector3D &v1, const QVector3D &v2)
+std::pair<float, Types::VertData> sprivRayTriangleIntersection(const QVector3D &rp, const QVector3D &rn, const Types::VertData &v0, const Types::VertData &v1, const Types::VertData &v2)
 {
-
-	static const auto inf = std::make_pair(std::numeric_limits<float>::infinity(), QVector3D());
-
-	QVector3D u = v1 - v0;
-	QVector3D v = v2 - v0;
+	
+	static const auto inf = std::make_pair(std::numeric_limits<float>::infinity(), Types::VertData());
+	QVector3D v0_(v0);
+	QVector3D u = v1 - v0_;
+	QVector3D v = v2 - v0_;
 	QVector3D n = QVector3D::crossProduct(u, v).normalized();
 	if (n.lengthSquared() == 0) // triangle is degenerate
 		return inf;				// do not deal with this case
@@ -98,7 +98,7 @@ std::pair<float, QVector3D> sprivRayTriangleIntersection(const QVector3D &rp, co
 	float uu = QVector3D::dotProduct(u, u);
 	float uv = QVector3D::dotProduct(u, v);
 	float vv = QVector3D::dotProduct(v, v);
-	QVector3D w = pt - v0;
+	QVector3D w = pt - v0_;
 	float wu = QVector3D::dotProduct(w, u);
 	float wv = QVector3D::dotProduct(w, v);
 	float d = uv * uv - uu * vv;
@@ -115,14 +115,20 @@ std::pair<float, QVector3D> sprivRayTriangleIntersection(const QVector3D &rp, co
 	{
 		return inf;
 	}
-	return std::make_pair(r, pt);
+	std::array<float,3> dist {(pt-v0_).length(),(pt-v1).length(),(pt-v2).length()};
+	float m = *std::max_element(dist.begin(),dist.end());
+	std::for_each(dist.begin(),dist.end(),[&m](float& v){v=m-v;});
+	float distSum = std::accumulate(dist.begin(),dist.end(),0.0f);
+	std::for_each(dist.begin(),dist.end(),[&distSum](float& v){v=v/distSum;});
+	QVector4D col = QVector4D(v0)*dist[0]+QVector4D(v1)*dist[1]+QVector4D(v2)*dist[2];
+	return std::make_pair(r, Types::VertData{pt,col});
 }
 
-QVector3D DrawableMesh::picking(const QVector3D &p, const QVector3D &n) const
+Types::VertData DrawableMesh::picking(const QVector3D &p, const QVector3D &n) const
 {
 	float r = std::numeric_limits<float>::infinity();
 	static const float inf = std::numeric_limits<float>::infinity();
-	QVector3D pt(inf, inf, inf);
+	Types::VertData pt(inf, inf, inf,0,0,0);
 	for (const auto &i : m_f)
 	{
 		auto rp = sprivRayTriangleIntersection(p, n, m_v[i[0]], m_v[i[1]], m_v[i[2]]);

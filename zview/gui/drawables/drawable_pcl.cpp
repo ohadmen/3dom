@@ -88,13 +88,13 @@ bool isnan(const QVector3D& v)
 	return (v[0]!=v[0]) | (v[1]!=v[1]) | (v[2]!=v[2]);
 }
 
-QVector3D DrawablePcl::picking(const QVector3D& p, const QVector3D& n) const
+Types::VertData DrawablePcl::picking(const QVector3D& p, const QVector3D& n) const
 {
     static const float pi = std::acos(0)*2;
     static const float angularthresholt = std::tan(2.0*pi/180.0);
     constexpr float inf = std::numeric_limits<float>::infinity();
 	float closestDistance = inf;
-	QVector3D closestPoint(inf,inf,inf);
+	Types::VertData closestPoint(inf,inf,inf,0,0,0);
 	for(const auto& pt:m_v)
 	{
 		QVector3D pt_(pt);
@@ -109,7 +109,7 @@ QVector3D DrawablePcl::picking(const QVector3D& p, const QVector3D& n) const
 		if(a/d>angularthresholt)
 			continue;
 		closestDistance = d;
-		closestPoint = pt_;
+		closestPoint = pt;
 	}
 	return closestPoint;
 

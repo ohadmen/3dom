@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include "track_state_abs.h"
+#include "zview/common/common_types.h"
 
 //----------------------state machine----------------------//
 class TrackStateMachine : public QObject
@@ -38,7 +39,7 @@ class TrackStateMachine : public QObject
     }
 
 public:
-    QVector3D pickClosestObject(const QPointF &xy) const;
+    Types::VertData pickClosestObject(const QPointF &xy) const;
 
     template <class T>
     void setCurrentState()

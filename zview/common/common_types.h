@@ -1,5 +1,6 @@
 #pragma once
 #include <QtGui/QVector3D>
+#include <QtGui/QVector4D>
 #include <vector>
 #include <array>
 #include <variant>
@@ -55,12 +56,15 @@ struct VertData
 
 	VertData() : x(0), y(0), z(0), r(0), g(0), b(0), a(255) {}
 	VertData(float x_, float y_, float z_, uint8_t r_ = 0, uint8_t g_ = 0, uint8_t b_ = 0, uint8_t a_ = 255) : x(x_), y(y_), z(z_), r(r_), g(g_), b(b_), a(a_) {}
+	VertData(const QVector3D& xyz, const QVector4D& rgba):x(xyz[0]),y(xyz[1]),z(xyz[2]),r(rgba.x()),g(rgba.y()),b(rgba.z()),a(rgba.w()){}
 
 	operator QVector3D() const { return QVector3D(x, y, z); }
+	operator QVector4D() const { return QVector4D(r, g, b,a); }
 	bool operator!=(const VertData &rhs) const
 	{
 		return x != rhs.x || y != rhs.y || z != rhs.z;
 	}
+	float operator[](int i){return i==0? x: i==1? y:i==2?z:y==3?r:y==4?g:y==5?b:y==6? a:std::numeric_limits<float>::quiet_NaN();}
 	bool operator<(const VertData &rhs) const
 	{
 		if (x != rhs.x)

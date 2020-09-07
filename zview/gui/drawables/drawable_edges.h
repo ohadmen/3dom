@@ -13,7 +13,7 @@ Types::Shape getShape() const override;
     void initializeGL();
     void paintGL(const QMatrix4x4& mvp);
     Types::Roi3d get3dbbox() const;
-    QVector3D picking(const QVector3D& p, const QVector3D& n) const;
+    Types::VertData picking(const QVector3D& p, const QVector3D& n) const;
     const std::string& getName() const;
 
     //until we can get all the operation done directly in GPU - copy data to local memory

@@ -6,10 +6,10 @@
 #include <sstream>
 #include <iomanip>
 
-std::string strginFromQVector3d(const QVector3D& x)
+std::string stringFromVertData(const Types::VertData& x)
 {
     std::stringstream ss;
-    ss <<"[" << std::setw(7) << std::setprecision(3) << x.x() << ", " << x.y() << ", " << x.z() << "]";
+    ss <<"[" << std::setw(7) << std::setprecision(3) << x.x << ", " << x.y << ", " << x.z << " | " << int(x.r) <<"," << int(x.g) << "," << int(x.b) << "," << int(x.a) << "]";
     return ss.str();
 
 }
@@ -17,7 +17,7 @@ std::string strginFromQVector3d(const QVector3D& x)
 TrackStateRetarget::TrackStateRetarget(TrackStateMachine* machine) :TrackStateAbs(machine) {}
 void TrackStateRetarget::input(const QPointF& xy)
 {
-    QVector3D x = m_machineP->pickClosestObject(xy);
+    Types::VertData x = m_machineP->pickClosestObject(xy);
 	if (std::isinf(x[0]))
 		return;
 	//drawableBasicShapes.insert({ p,p + n * 100 }, "view ray", { 0,1,0 });
@@ -35,6 +35,6 @@ void TrackStateRetarget::input(const QPointF& xy)
 	m_machineP->setViewMatrix(vm_new);
     m_machineP->canvasUpdate();
 
-    m_machineP->setStatus(strginFromQVector3d(x));
+    m_machineP->setStatus(stringFromVertData(x));
     
 }
