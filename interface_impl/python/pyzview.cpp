@@ -65,7 +65,7 @@ public:
         m_zvi = nullptr;
         
     }
-
+    int getLastKeyStroke(){return m_zvi->getLastKeyStroke();}
     bool savePly(const char *fn) { return m_zvi->savePly(fn); }
     int addPoints(const char *name, const py::array_t<float>& xyz) {dataChk(xyz,3); return m_zvi->addPoints(name, getrows(xyz), arr2ptr(xyz)); }
     int addColoredPoints(const char *name, py::array_t<float>&xyzrgba) {dataChk(xyzrgba,4); return m_zvi->addColoredPoints(name, getrows(xyzrgba), arr2ptr(xyzrgba)); }
@@ -95,6 +95,7 @@ PYBIND11_MODULE(pyzview, m)
 {
     py::class_<ZviewInfWrapper>(m, "interface")
         .def(py::init())
+        .def("getLastKeyStroke", &ZviewInfWrapper::getLastKeyStroke)
         .def("savePly", &ZviewInfWrapper::savePly)
         .def("setCameraLookAt", &ZviewInfWrapper::setCameraLookAt)
         .def("updatePoints", &ZviewInfWrapper::updatePoints)
@@ -107,4 +108,5 @@ PYBIND11_MODULE(pyzview, m)
         .def("addColoredEdges", &ZviewInfWrapper::addColoredEdges)
         .def("loadFile", &ZviewInfWrapper::loadFile)
         .def("removeShape", &ZviewInfWrapper::removeShape);
+        
 }

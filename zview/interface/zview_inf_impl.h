@@ -9,6 +9,7 @@ class ZviewInfImpl: public ZviewInf
 public:
     ZviewInfImpl();
     ~ZviewInfImpl();
+    int getLastKeyStroke() override;
     bool savePly(const char* fn) override;
     
     virtual bool setCameraLookAt(float ex,float ey,float ez,float cx,float cy,float cz,float ux,float uy,float uz) override;
@@ -24,7 +25,7 @@ public:
     bool removeShape(int key) override;
     void destroy() override;
 
-    static constexpr size_t SHARED_MEMORY_SIZE_BYTES = size_t(1) << 25 ; //~34Mbyte,to support RealSense XVGA depth buffer
+    static constexpr size_t SHARED_MEMORY_SIZE_BYTES = size_t(1) << 26 ; //64Mbyte,to support RealSense XVGA depth buffer
     static constexpr char INTERFACE_TO_ZVIEW_SHARED_MEM_KEY[] = "zview_from_interface" ;
     static constexpr char ZVIEW_TO_INTERFACE_SHARED_MEM_KEY[] = "zview_to_interface" ;
     static constexpr char INTERFACE_LOCK_KEY[] = "zview_lock" ;
@@ -41,6 +42,7 @@ public:
         UPDATE_PCL,
         SAVE_PLY,
         SET_CAM_LOOKAT,
+        GET_LAST_KEYSTROKE,
     };
     struct ReadAck
 {

@@ -85,6 +85,11 @@ ZviewInfImpl::ReadAck SharedMemoryManager::privReadData() const
         qint64 key = privReadShape(ms, cmd);
         return ZviewInfImpl::ReadAck{cmd, key};
     }
+    case ZviewInfImpl::Command::GET_LAST_KEYSTROKE:
+    {
+        int key = emit signal_getLastKeyStroke(true);
+        return ZviewInfImpl::ReadAck{cmd, key};
+    }
     case ZviewInfImpl::Command::UPDATE_PCL:
     {
 

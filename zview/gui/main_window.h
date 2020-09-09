@@ -22,6 +22,7 @@ class MainWindow : public QMainWindow
   void privAddMenuBar();
   
 public slots:
+  int getLastKeyStroke(bool reset);
   void setStatus(const QString &str);
   void savePly(const QString& fn) const;
   
@@ -43,4 +44,5 @@ private:
   TreeModel* m_treeModel;
   SharedMemoryManager* m_smm;
   const QString m_default_dir_key="default_dir";
+  int m_lastKeyStroke;
 };

@@ -175,7 +175,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 }
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent),m_lastKeyStroke{-1}
 {
     setWindowIcon(QIcon(":zview256.png"));
 
@@ -229,6 +229,8 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(m_smm, &SharedMemoryManager::signal_savePly, this, &MainWindow::setStatus);
     //extrnal event: set cam pos
     QObject::connect(m_smm, &SharedMemoryManager::signal_setCamLookAt, this, &MainWindow::setCamLookAt);
+    //get last pressed key
+    QObject::connect(m_smm, &SharedMemoryManager::signal_getLastKeyStroke, this, &MainWindow::getLastKeyStroke);
 }
 void MainWindow::readFileList(const QStringList &files)
 {
@@ -251,5 +253,16 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         
     }
     m_canvas->input(e);
+    m_lastKeyStroke = e->key();
 }
 void MainWindow::keyReleaseEvent(QKeyEvent *e) { m_canvas->input(e); }
+
+int MainWindow::getLastKeyStroke(bool reset)
+{
+    int ret = m_lastKeyStroke;
+    if(reset)
+    {
+        m_lastKeyStroke=-1;
+    }
+    return ret;
+}

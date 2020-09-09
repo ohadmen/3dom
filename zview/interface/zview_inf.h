@@ -4,6 +4,7 @@
 class ZviewInf
 {
 public:
+    virtual int getLastKeyStroke()=0;
     virtual bool savePly(const char* fn)=0;
     virtual bool setCameraLookAt(float ex,float ey,float ez,float cx,float cy,float cz,float ux,float uy,float uz)=0;
     virtual bool updatePoints(int key,size_t npoints ,const float* xyz)=0;

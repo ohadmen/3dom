@@ -15,6 +15,17 @@ void ZviewInfImpl::destroy()
     delete this;
 }
 
+int ZviewInfImpl::getLastKeyStroke()
+{
+    m_data.lock();
+    MemStream ms(m_data.data());
+    ms << Command::GET_LAST_KEYSTROKE;
+    m_data.unlock();
+    m_lock.release();
+    return privGetAck(Command::GET_LAST_KEYSTROKE);
+
+}
+
 bool ZviewInfImpl::savePly(const char *fn)
 {
     m_data.lock();

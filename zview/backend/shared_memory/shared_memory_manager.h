@@ -30,6 +30,7 @@ signals:
     void signal_savePly(const QString& str) const;
     
     void signal_setCamLookAt(const QVector3D& eye,const QVector3D& center,const QVector3D& up) const;
+    int signal_getLastKeyStroke(bool reset) const;
 
     
     
