@@ -1,4 +1,5 @@
 
+
 QT += core gui  widgets
 TEMPLATE=app
 CONFIG += c++17 
@@ -10,6 +11,19 @@ DESTDIR = ./bin
 OBJECTS_DIR = $${DESTDIR}/obj
 MOC_DIR = $${DESTDIR}/moc
 RCC_DIR = $${DESTDIR}/rcc
+
+win32:createdir.commands += $(CHK_DIR_EXISTS) $$OBJECTS_DIR(DESTDIR) & $(MKDIR) $$shell_path(DESTDIR)
+linux:createdir.commands += $$shell_path(DESTDIR) & $(MKDIR) $$shell_path(DESTDIR)
+
+win32:createdir.commands += $(CHK_DIR_EXISTS) $$OBJECTS_DIR(OBJECTS_DIR) & $(MKDIR) $$shell_path(OBJECTS_DIR)
+linux:createdir.commands += $$shell_path(OBJECTS_DIR) & $(MKDIR) $$shell_path(OBJECTS_DIR)
+
+win32:createdir.commands += $(CHK_DIR_EXISTS) $$OBJECTS_DIR(MOC_DIR) & $(MKDIR) $$shell_path(MOC_DIR)
+linux:createdir.commands += $$shell_path(MOC_DIR) & $(MKDIR) $$shell_path(MOC_DIR)
+
+win32:createdir.commands += $(CHK_DIR_EXISTS) $$OBJECTS_DIR(RCC_DIR) & $(MKDIR) $$shell_path(RCC_DIR)
+linux:createdir.commands += $$shell_path(RCC_DIR) & $(MKDIR) $$shell_path(RCC_DIR)
+
 
 SOURCES += \
     zview/interface/zview_inf_impl.cpp\
@@ -81,10 +95,13 @@ HEADERS += \
     zview/io/readers/read_stl.h \
     zview/io/write_shape_to_file.h \
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+## Default rules for deployment.
+#qnx: target.path = /tmp/$${TARGET}/bin
+#else: unix:!android: target.path = /opt/$${TARGET}/bin
+#!isEmpty(target.path): INSTALLS += target
+
+
+
 
 RESOURCES += \
     zview/shaders/shaders.qrc\
