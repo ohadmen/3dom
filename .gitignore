@@ -256,5 +256,5 @@ moc_*.cpp
 moc_*.h
 qrc_*.cpp
 Makefile.*
-snap
+
 *.snap

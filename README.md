@@ -59,7 +59,9 @@
 ### Linux
 * Install qt:
     * sudo apt install qt5-default
-* ./build.sh
+* ./configure
+* make
+* make install
 * bin/zview
 ### Windows
 * Install qt https://www.qt.io/download
