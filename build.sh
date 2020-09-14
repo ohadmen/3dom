@@ -12,7 +12,7 @@ else
 
 fi
 echo "[-] running make"
-make -j8 >/dev/null || make
+make -j1 >/dev/null || make
 
 cd interface_impl/linux/
 ./build.sh

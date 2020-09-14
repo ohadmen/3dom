@@ -12,17 +12,20 @@ OBJECTS_DIR = $${DESTDIR}/obj
 MOC_DIR = $${DESTDIR}/moc
 RCC_DIR = $${DESTDIR}/rcc
 
-win32:createdir.commands += $(CHK_DIR_EXISTS) $$OBJECTS_DIR(DESTDIR) & $(MKDIR) $$shell_path(DESTDIR)
-linux:createdir.commands += $$shell_path(DESTDIR) & $(MKDIR) $$shell_path(DESTDIR)
+exists(!$$OBJECTS_DIR)
+{
+QMAKE_POST_LINK += $$quote(mkdir -p $$OBJECTS_DIR )
+}
+exists(!$$MOC_DIR)
+{
+QMAKE_POST_LINK += $$quote(mkdir -p $$MOC_DIR )
+}
 
-win32:createdir.commands += $(CHK_DIR_EXISTS) $$OBJECTS_DIR(OBJECTS_DIR) & $(MKDIR) $$shell_path(OBJECTS_DIR)
-linux:createdir.commands += $$shell_path(OBJECTS_DIR) & $(MKDIR) $$shell_path(OBJECTS_DIR)
+exists(!$$RCC_DIR)
+{
+QMAKE_POST_LINK += $$quote(mkdir -p $$RCC_DIR )
+}
 
-win32:createdir.commands += $(CHK_DIR_EXISTS) $$OBJECTS_DIR(MOC_DIR) & $(MKDIR) $$shell_path(MOC_DIR)
-linux:createdir.commands += $$shell_path(MOC_DIR) & $(MKDIR) $$shell_path(MOC_DIR)
-
-win32:createdir.commands += $(CHK_DIR_EXISTS) $$OBJECTS_DIR(RCC_DIR) & $(MKDIR) $$shell_path(RCC_DIR)
-linux:createdir.commands += $$shell_path(RCC_DIR) & $(MKDIR) $$shell_path(RCC_DIR)
 
 
 
