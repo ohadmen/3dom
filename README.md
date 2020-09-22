@@ -59,6 +59,11 @@
 ### Linux
 * Install qt:
     * sudo apt install qt5-default
+    * If needed:
+	* sudo apt-get update && sudo apt-get install libgl1-mesa-dev
+	* sudo rm /usr/lib/x86_64-linux-gnu/libGL.so 
+	* sudo ln -s /usr/lib/libGL.so.1 /usr/lib/x86_64-linux-gnu/libGL.so 
+
 * ./configure
 * make
 * make install
