@@ -63,6 +63,9 @@
 	* sudo apt-get update && sudo apt-get install libgl1-mesa-dev
 	* sudo rm /usr/lib/x86_64-linux-gnu/libGL.so 
 	* sudo ln -s /usr/lib/libGL.so.1 /usr/lib/x86_64-linux-gnu/libGL.so 
+  * for python dependencies:
+  	* sudo apt-get install python-pybind11
+	
 
 * ./configure
 * make
