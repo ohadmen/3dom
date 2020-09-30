@@ -25,12 +25,12 @@ void main()
 	else if(u_txt==2)
 	{
 		
-		float specularFactor =0.8;
+		float specularFactor =0.5;
 		vec3 ec_pos=v_xyz.xyz;
 		vec3 ec_normal = normalize(cross(dFdx(ec_pos),dFdy(ec_pos)));
-		
-		float spec = max(dot(ec_normal, u_lightDir), 0.0)*specularFactor/2.0+
-					 max(dot(ec_normal, -u_lightDir), 0.0)*specularFactor/2.0+
+		float v = abs(dot(ec_normal, u_lightDir));
+		float spec = max(v, 0.0)*specularFactor/2.0+
+					 max(-v, 0.0)*specularFactor/2.0+
 					 (1.0-specularFactor);
 		gl_FragColor = vec4(vec3(v_rgb*spec),1.0); 
 		
