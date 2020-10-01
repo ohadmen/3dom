@@ -58,7 +58,7 @@
 ## how to run
 ### Linux
 * Install qt:
-    * sudo apt install qt5-default
+    * sudo apt install qt5-default build-essential
     * If needed:
 	* sudo apt-get update && sudo apt-get install libgl1-mesa-dev
 	* sudo rm /usr/lib/x86_64-linux-gnu/libGL.so 
