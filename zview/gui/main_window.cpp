@@ -126,9 +126,11 @@ void MainWindow::privAddMenuBar()
         auto top = menuBar()->addMenu(tr("&Help"));
         top->addAction(privAddAction(this, "About", [parent]() {
             QString aboutText(
-                "Zview - a general 3d view (version 1.33)\n"
+                "Zview - a general 3d view (version 1.5)\n"
                 "Zview was created as a tool to reflect the true state of 3d point cloud/mesh data stored in a file or on the heap."
-                "Implementation was written by modern c++ and OpenGL ES, with an effort to minimize cpu load and memory signiture.");
+                "Implementation was written by modern c++ and OpenGL ES, with an effort to minimize cpu load and memory signiture."
+                "App can open a layered ply file - a ply file that contains multiple ply files, with hirarchical layer names."
+                "In addition, app support c++, Python, Matlab(WIP), and gdb(WIP) APIs to directly inject point clouds through inter-process communication");
             QMessageBox::about(parent, "Zview", aboutText);
         }));
     }
