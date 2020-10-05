@@ -3,7 +3,7 @@
 # Zview -Generic mesh&cloud visualization tool
 ![Zview screenshot](/res/zview256.png)
 
-## changelog version 1.5
+## changelog version 1.4
 	* debian packge support
 	* expose keyboard interface through dll
 
