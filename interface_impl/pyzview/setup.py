@@ -15,11 +15,9 @@ setup(
      author_email="ohad.men@gmail.com",
      description="zview python inferface",
      long_description=long_description,
-     long_description_content_type="zview - a general pcl/mesh viewer",
      url="https://github.com/ohadmen/zview/tree/master/interface_impl/pyzview",
      packages=find_packages(),
      ext_modules=[module],
-     
      classifiers=[
          "Programming Language :: Python :: 3",
          "License :: OSI Approved :: MIT License",

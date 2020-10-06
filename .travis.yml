@@ -31,3 +31,4 @@ install:
 script:
   - qmake zview_gui.pro
   - make
+
