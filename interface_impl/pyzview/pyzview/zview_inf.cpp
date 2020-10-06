@@ -1,7 +1,6 @@
-
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include "zview_inf.h"
+#include <zview_inf.h>
 #include <iostream>
 
 namespace py = pybind11;
@@ -91,7 +90,7 @@ public:
 
 
 
-PYBIND11_MODULE(pyzview, m)
+PYBIND11_MODULE(zview_module, m)
 {
     py::class_<ZviewInfWrapper>(m, "interface")
         .def(py::init())

@@ -7,10 +7,17 @@ taget_base=zview-$ver
 
 target_dir=$taget_base/opt/zview
 mkdir -p $target_dir
-cp -P ../../bin/libzview_inf.so* $target_dir
 cp ../../bin/zview $target_dir
-cp ../../zview/interface/zview_inf.h $target_dir
 cp ../zview.png $target_dir
+
+
+target_dir=$taget_base/usr/lib/x86_64-linux-gnu
+mkdir -p $target_dir
+cp -P ../../bin/libzview_inf.so* $target_dir
+
+target_dir=$taget_base/usr/include/
+mkdir -p $target_dir
+cp ../../zview/interface/zview_inf.h $target_dir
 
 target_dir=$taget_base/usr/share/applications/
 mkdir -p $target_dir
