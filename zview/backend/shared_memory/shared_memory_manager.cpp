@@ -85,6 +85,21 @@ ZviewInfImpl::ReadAck SharedMemoryManager::privReadData() const
         qint64 key = privReadShape(ms, cmd);
         return ZviewInfImpl::ReadAck{cmd, key};
     }
+    case ZviewInfImpl::Command::GET_HNUM_FROM_HSTR:
+    {
+        std::string name;
+        ms >> name;
+        qint64 key = -1;
+        for(auto& obj:drawablesBuffer)
+        {
+            if(obj.second.get()->getName()==name)
+            {
+                key = obj.first;
+                break;
+            }
+        }
+        return ZviewInfImpl::ReadAck{cmd, key};
+    }
     case ZviewInfImpl::Command::GET_LAST_KEYSTROKE:
     {
         int key = emit signal_getLastKeyStroke(true);

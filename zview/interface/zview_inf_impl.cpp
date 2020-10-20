@@ -281,6 +281,19 @@ bool ZviewInfImpl::updateColoredPoints(int key, size_t npoints, const void *xyzr
     return privGetAck(Command::UPDATE_PCL);
 }
 
+
+int ZviewInfImpl::getHandleNumFromString(const char* name)
+{
+
+    m_data.lock();
+    MemStream ms(m_data.data());
+    ms << Command::GET_HNUM_FROM_HSTR << name;
+    m_data.unlock();
+    m_lock.release();
+    return privGetAck(Command::GET_HNUM_FROM_HSTR);
+}
+
+
 #if defined(_MSC_VER)
 extern "C" __declspec(dllexport) __cdecl ZviewInfImpl *create_zviewinf()
 {

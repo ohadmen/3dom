@@ -24,6 +24,7 @@ public:
     bool loadFile(const char *filename) override;
     bool removeShape(int key) override;
     void destroy() override;
+    int getHandleNumFromString(const char* name) override;
 
     static constexpr size_t SHARED_MEMORY_SIZE_BYTES = size_t(1) << 26 ; //64Mbyte,to support RealSense XVGA depth buffer
     static constexpr char INTERFACE_TO_ZVIEW_SHARED_MEM_KEY[] = "zview_from_interface" ;
@@ -43,6 +44,7 @@ public:
         SAVE_PLY,
         SET_CAM_LOOKAT,
         GET_LAST_KEYSTROKE,
+        GET_HNUM_FROM_HSTR,
     };
     struct ReadAck
 {

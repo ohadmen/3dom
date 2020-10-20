@@ -1,5 +1,11 @@
-ver=1.4
 #! /bin/bash
+#Versdion should be change in:
+# *here@8
+# *here@37
+# *README.md
+# *zview/gui/main_window.cpp@129
+
+ver=1.41 
 rm -rf pack
 mkdir pack 
 cd pack
@@ -28,7 +34,7 @@ target_dir=$taget_base/DEBIAN
 mkdir -p $target_dir
 control_file=$target_dir/control
 echo "Source: zview" >> $control_file
-echo "Version: 1.5" >> $control_file
+echo "Version: 1.41" >> $control_file
 echo "Section: visualization" >> $control_file
 echo "Priority: optional" >> $control_file
 echo "Maintainer: Ohad <ohad.men@gmail.com>" >> $control_file
@@ -39,7 +45,7 @@ echo "Package: zview" >> $control_file
 echo "Architecture: amd64" >> $control_file
 echo "Depends: qt5-default" >> $control_file
 echo "Description: Generic mesh&cloud visualization tool" >> $control_file
-echo " Zview - a general 3d view (version 1.5)" >> $control_file
+echo " Zview - a general 3d view (version 1.41)" >> $control_file
 echo " Zview was created as a tool to reflect the true state of 3d point cloud/mesh data stored in a file or on the heap." >> $control_file
 echo " Implementation was written by modern c++ and OpenGL ES, with an effort to minimize cpu load and memory signiture." >> $control_file
 echo " App can open a layered ply file - a ply file that contains multiple ply files, with hirarchical layer names." >> $control_file

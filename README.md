@@ -3,6 +3,9 @@
 # Zview -Generic mesh&cloud visualization tool
 ![Zview screenshot](/res/zview256.png)
 
+## changelog version 1.41
+	* get handlenum from string
+
 ## changelog version 1.4
 	* debian packge support
 	* expose keyboard interface through dll
