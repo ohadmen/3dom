@@ -25,6 +25,8 @@ DrawableBase::~DrawableBase(){}
 bool DrawableBase::updateVertexBuffer(const Types::VertData* data,size_t n)
 {
     size_t nbytes = n*sizeof(Types::VertData);
+    if(m_vBuff.size()<int(n))
+        return false;
     m_vBuff.bind();
     auto ptr = m_vBuff.mapRange(0, int(nbytes), QOpenGLBuffer::RangeInvalidateBuffer | QOpenGLBuffer::RangeWrite);
     if(!ptr)

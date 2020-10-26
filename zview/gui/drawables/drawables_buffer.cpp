@@ -125,9 +125,10 @@ bool DrawablesBuffer::updateVertexBuffer(size_t key, const Types::VertData *pcl,
         return false;
     }
     DrawableBase *obj = it->second.get();
-    obj->updateVertexBuffer(pcl, n);
-    emit signal_updateCanvas();
-    return true;
+    bool ok = obj->updateVertexBuffer(pcl, n);
+    if(ok)
+        emit signal_updateCanvas();
+    return ok;
 }
 
 DrawablesBuffer::BaseTypeVector::iterator DrawablesBuffer::begin() { return m_drawobjs.begin(); }
