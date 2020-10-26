@@ -34,7 +34,7 @@ target_dir=$taget_base/DEBIAN
 mkdir -p $target_dir
 control_file=$target_dir/control
 echo "Source: zview" >> $control_file
-echo "Version: 1.41" >> $control_file
+echo "Version: 1.45" >> $control_file
 echo "Section: visualization" >> $control_file
 echo "Priority: optional" >> $control_file
 echo "Maintainer: Ohad <ohad.men@gmail.com>" >> $control_file
