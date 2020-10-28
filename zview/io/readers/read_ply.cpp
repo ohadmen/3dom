@@ -34,6 +34,15 @@ namespace
                 ss.read((char *)(&v[i]), sizeof(float) * 3);
             return v;
         };
+        //edge
+        map["edgepropertyintvertex1propertyintvertex2"] =
+            [](std::ifstream &ss, size_t count) -> ElemData {
+            std::vector<Types::EdgeIndx> v(count);
+            for (size_t i = 0; i != count; ++i)
+                ss.read((char *)&v[i], 2 * sizeof(int32_t));
+            return v;
+        };
+
 
         //face
         map["facepropertylistucharintvertex_indices"] =
@@ -46,7 +55,7 @@ namespace
                 ss.read((char *)&listsz, 1);
                 if (listsz != 3)
                     throw std::runtime_error("support only tri meshes");
-                ss.read((char *)&v[i], 3 * sizeof(uint32_t));
+                ss.read((char *)&v[i], 3 * sizeof(int32_t));
             }
 
             return v;
