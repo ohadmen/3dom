@@ -8,6 +8,12 @@
 ### precompiled binaries
 * Download and install the precompiled .deb/.exe  file from the release section (https://github.com/ohadmen/zview/releases/latest)
 
+## extentions:
+* Python: ```pip install pyzview``` (https://github.com/ohadmen/pyzview)
+* Matlab: [WIP]
+* GDB [WIP]
+
+
 ## Screenshots
 ![Zview screenshot](/res/screenshot.png)
 
