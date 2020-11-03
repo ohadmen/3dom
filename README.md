@@ -7,8 +7,12 @@
 ## how to run
 ### precompiled binaries
 * Download and install the precompiled .deb/.exe  file from the release section (https://github.com/ohadmen/zview/releases/latest)
-### Compile from source
-#### Linux
+
+## Screenshots
+![Zview screenshot](/res/screenshot.png)
+
+## Compile from source
+### Linux
 * Install qt:
     * sudo apt install qt5-default build-essential
     * If needed:
@@ -23,12 +27,10 @@
 * make
 * make install
 * bin/zview
-#### Windows
+### Windows
 * Install qt https://www.qt.io/download
 * build using qt creator
 * from qt bin dir run windeployqt.exe PATH_TO_ZVIEW_GUI_EXE
-
-![Zview screenshot](/res/screenshot.png)
 
 ## changelog version 1.45
 	* guard in case of updating with larger # of point
