@@ -10,7 +10,7 @@
 
 ## extentions:
 * Python: ```pip install pyzview``` (https://github.com/ohadmen/pyzview)
-* Matlab: [WIP]
+* Matlab: https://github.com/ohadmen/mexzview
 * GDB [WIP]
 
 
