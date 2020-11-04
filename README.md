@@ -5,6 +5,19 @@
 
 
 ## how to run
+### precompiled binaries
+* Download and install the precompiled .deb/.exe  file from the release section (https://github.com/ohadmen/zview/releases/latest)
+
+## extentions:
+* Python: ```pip install pyzview``` (https://github.com/ohadmen/pyzview)
+* Matlab: [WIP]
+* GDB [WIP]
+
+
+## Screenshots
+![Zview screenshot](/res/screenshot.png)
+
+## Compile from source
 ### Linux
 * Install qt:
     * sudo apt install qt5-default build-essential
@@ -31,8 +44,6 @@
 	* cross platform support
 	* dead thread bugfix
 	* update points bugfix
-
-
 ## changelog version 1.45
 	* guard in case of updating with larger # of point
 
