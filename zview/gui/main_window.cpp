@@ -131,7 +131,7 @@ void MainWindow::privAddMenuBar()
         //*res/deb maker
         top->addAction(privAddAction(this, "About", [parent]() {
             QString aboutText(
-                "Zview - a general 3d view (version 1.45)\n"
+                "Zview - a general 3d view (version 1.46)\n"
                 "Zview was created as a tool to reflect the true state of 3d point cloud/mesh data stored in a file or on the heap."
                 "Implementation was written by modern c++ and OpenGL ES, with an effort to minimize cpu load and memory signiture."
                 "App can open a layered ply file - a ply file that contains multiple ply files, with hirarchical layer names."

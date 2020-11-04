@@ -7,7 +7,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Zview"
-#define MyAppVersion "1.45"
+#define MyAppVersion "1.46"
 #define MyAppPublisher "Ohad Menashe"
 #define MyAppURL "https://github.com/ohadmen/zview"
 #define MyAppExeName "zview.exe"
