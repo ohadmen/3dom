@@ -1,5 +1,5 @@
 #include "drawable_common.h"
-
+#include  <stdexcept>
 void DrawableCommon::initShadar(QOpenGLShaderProgram* shader,const QString& shaderName)
 {
     if (!shader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v" + shaderName+".glsl"))

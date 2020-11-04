@@ -294,10 +294,3 @@ int ZviewInfImpl::getHandleNumFromString(const char* name)
 }
 
 
-#if defined(_MSC_VER)
-extern "C" __declspec(dllexport) __cdecl ZviewInfImpl *create_zviewinf()
-{
-
-    return new ZviewInfImpl;
-}
-#endif

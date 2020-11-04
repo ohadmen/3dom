@@ -24,14 +24,19 @@ DrawableBase::~DrawableBase(){}
 
 bool DrawableBase::updateVertexBuffer(const Types::VertData* data,size_t n)
 {
-    size_t nbytes = n*sizeof(Types::VertData);
-    if(m_vBuff.size()<int(n))
-        return false;
     m_vBuff.bind();
+    size_t nbytes = n*sizeof(Types::VertData);
+    int vbufsz = m_vBuff.size();
+    if(vbufsz<int(n))
+        return false;
+
     auto ptr = m_vBuff.mapRange(0, int(nbytes), QOpenGLBuffer::RangeInvalidateBuffer | QOpenGLBuffer::RangeWrite);
     if(!ptr)
-    return false;
-        memcpy(ptr, data,  nbytes);
+    {
+        qDebug() << "DrawableBase::updateVertexBuffer mapRange returned a nan pointer";
+        return false;
+    }
+    memcpy(ptr, data,  nbytes);
     m_vBuff.unmap();
     m_vBuff.release();
     return true;

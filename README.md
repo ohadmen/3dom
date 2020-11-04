@@ -38,6 +38,12 @@
 * build using qt creator
 * from qt bin dir run windeployqt.exe PATH_TO_ZVIEW_GUI_EXE
 
+![Zview screenshot](/res/screenshot.png)
+
+## changelog version 1.46
+	* cross platform support
+	* dead thread bugfix
+	* update points bugfix
 ## changelog version 1.45
 	* guard in case of updating with larger # of point
 

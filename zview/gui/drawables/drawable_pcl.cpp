@@ -85,7 +85,7 @@ Types::Roi3d DrawablePcl::get3dbbox() const {return Types::Pcl::get3dbbox();}
 
 bool isnan(const QVector3D& v)
 {
-	return (v[0]!=v[0]) | (v[1]!=v[1]) | (v[2]!=v[2]);
+    return std::isnan(v[0]) | std::isnan(v[1]) | std::isnan(v[2]);
 }
 
 Types::VertData DrawablePcl::picking(const QVector3D& p, const QVector3D& n) const
@@ -98,7 +98,7 @@ Types::VertData DrawablePcl::picking(const QVector3D& p, const QVector3D& n) con
 	for(const auto& pt:m_v)
 	{
 		QVector3D pt_(pt);
-		if(isnan(pt))
+        if(isnan(pt_))
 			continue;
 		float d = QVector3D::dotProduct(n,pt_-p);
 		if(d<0)//behind camera

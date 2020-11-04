@@ -7,7 +7,7 @@ CONFIG += c++17
 QMAKE_CXXFLAGS += -std=c++17
 
 TARGET = zview_inf
-DESTDIR = ./bin
+DESTDIR = ./build
 OBJECTS_DIR = $${DESTDIR}/obj
 MOC_DIR = $${DESTDIR}/moc
 RCC_DIR = $${DESTDIR}/rcc
