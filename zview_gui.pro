@@ -2,30 +2,16 @@
 
 QT += core gui  widgets
 TEMPLATE=app
-CONFIG += c++17 
-QMAKE_CXXFLAGS += -std=c++17
+CONFIG += c++17
+
+
 win32:RC_ICONS = res/zview.ico
 
 TARGET = zview
-DESTDIR = ./bin
+DESTDIR = ./build
 OBJECTS_DIR = $${DESTDIR}/obj
 MOC_DIR = $${DESTDIR}/moc
 RCC_DIR = $${DESTDIR}/rcc
-
-
-exists(!$$OBJECTS_DIR)
-{
-QMAKE_POST_LINK += $$quote(mkdir -p $$OBJECTS_DIR )
-}
-exists(!$$MOC_DIR)
-{
-QMAKE_POST_LINK += $$quote(mkdir -p $$MOC_DIR )
-}
-
-exists(!$$RCC_DIR)
-{
-QMAKE_POST_LINK += $$quote(mkdir -p $$RCC_DIR )
-}
 
 
 

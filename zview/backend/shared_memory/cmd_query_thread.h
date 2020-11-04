@@ -16,6 +16,7 @@ class CmdQueryThread : public QThread
 
 public:
     CmdQueryThread(QObject *parent);
+    ~CmdQueryThread();
 void stop()    ;
 signals:
     void dataReady();
