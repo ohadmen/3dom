@@ -35,10 +35,10 @@ void CmdQueryThread::stop()
     m_lock.release();
     for(int i=0;i!=10000 && !m_done;++i)
     {
-        
+        sleep(1);
         // qDebug()<<"waiting to be done...";
     }
-    // qDebug() << "done";
+     //qDebug() << "done";
 
 
 }

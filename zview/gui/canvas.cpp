@@ -58,10 +58,13 @@ void Canvas::initializeGL()
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
 	glEnable(GL_LINE_SMOOTH);
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glBlendEquation(GL_FUNC_ADD);
+
 
 	m_backdrop.initializeGL();
 	m_axes.initializeGL();
@@ -70,7 +73,7 @@ void Canvas::initializeGL()
 
 void Canvas::paintGL()
 {
-	glEnable(GL_DEPTH_TEST);
+
 	QMatrix4x4 vp = m_stateMachine.getVPmatrix();
 	m_backdrop.paintGL();
 	if(Params::viewAxes())

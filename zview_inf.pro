@@ -4,7 +4,7 @@ DEFINES += QT_NO_VERSION_TAGGING
 
 TEMPLATE = lib
 CONFIG += c++17 
-QMAKE_CXXFLAGS += -std=c++17
+unix:QMAKE_CXXFLAGS += -std=c++17
 
 TARGET = zview_inf
 DESTDIR = ./build

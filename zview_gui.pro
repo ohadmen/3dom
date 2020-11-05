@@ -3,8 +3,7 @@
 QT += core gui  widgets
 TEMPLATE=app
 CONFIG += c++17
-QMAKE_CXXFLAGS += -std=c++17
-
+unix:QMAKE_CXXFLAGS += -std=c++17
 win32:RC_ICONS = res/zview.ico
 
 TARGET = zview

@@ -116,6 +116,10 @@ Types::VertData DrawablePcl::picking(const QVector3D& p, const QVector3D& n) con
 }
 bool DrawablePcl::updateVertexBuffer(const Types::VertData* data,size_t n)
 {
+    if(n>m_v.size())
+    {
+        return false;
+    }
 	std::copy(data,data+n,m_v.begin());
 	return DrawableBase::updateVertexBuffer(data,n);
 }
