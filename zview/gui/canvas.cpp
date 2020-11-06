@@ -57,7 +57,7 @@ void Canvas::initializeGL()
 	initializeOpenGLFunctions();
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
-	glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST); //draw object back tp front
 	glEnable(GL_LINE_SMOOTH);
 
 
