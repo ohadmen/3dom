@@ -122,21 +122,31 @@ void MainWindow::privAddMenuBar()
     }
     {
 
-        QWidget *parent = this;
+        //QWidget *parent = this;
         auto top = menuBar()->addMenu(tr("&Help"));
-        //version update:
-        //*here
-        //*zview_main.cpp
-        //*changelog
-        //*res/deb maker
-        top->addAction(privAddAction(this, "About", [parent]() {
+        top->addAction(privAddAction(this, "About", []() {
+
+
+
             QString aboutText(
-                "Zview - a general 3d view (version 1.46)\n"
-                "Zview was created as a tool to reflect the true state of 3d point cloud/mesh data stored in a file or on the heap."
-                "Implementation was written by modern c++ and OpenGL ES, with an effort to minimize cpu load and memory signiture."
-                "App can open a layered ply file - a ply file that contains multiple ply files, with hirarchical layer names."
-                "In addition, app support c++, Python, Matlab(WIP), and gdb(WIP) APIs to directly inject point clouds through inter-process communication");
-            QMessageBox::about(parent, "Zview", aboutText);
+                "<b>Zview - a general 3d view (version 1.46)\n</b><br>"
+                "Zview was created as a tool to reflect the true state of 3d point cloud/mesh data stored in a file or on the heap.<br>"
+                "Implementation was written by modern c++ and OpenGL ES, with an effort to minimize cpu load and memory signiture.<br>"
+                "App can open a layered ply file - a ply file that contains multiple ply files, with hirarchical layer names.<br>"
+                "In addition, app support c++, Python, Matlab(WIP), and gdb(WIP) APIs to directly inject point clouds through inter-process communication<br>"
+                "Extentions:"
+                 "<ul>"
+                "<li>Matlab: <a href=\"https://github.com/ohadmen/mexzview\">https://github.com/ohadmen/mexzview</a></li>"
+                "<li>Pyhon: <a href=\"https://github.com/ohadmen/pyzview\">https://github.com/ohadmen/pyzview</a></li>"
+                        "</ul>"
+                        );
+            QMessageBox msgBox;
+            msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
+            msgBox.setText(aboutText);
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.exec();
+
+
         }));
     }
 }
