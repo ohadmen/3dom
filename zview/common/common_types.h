@@ -86,14 +86,14 @@ class Pcl
 	static std::array<QVector3D,2> nanminmax(const std::vector<Types::VertData>& v)
 	{
 		QVector3D mmin(std::numeric_limits<float>::max(),std::numeric_limits<float>::max(),std::numeric_limits<float>::max());
-		QVector3D mmax(std::numeric_limits<float>::min(),std::numeric_limits<float>::min(),std::numeric_limits<float>::min());
+		QVector3D mmax(std::numeric_limits<float>::lowest(),std::numeric_limits<float>::lowest(),std::numeric_limits<float>::lowest());
 		for(const auto& a:v)
 		{
 			float aa[] = {a.x,a.y,a.z};
 			for(int i=0;i!=3;++i)
 			{
-				if(std::isnan(aa[i]))
-					continue;
+				if(std::isnan(aa[i]) )
+					break;
 				mmin[i]=std::min(mmin[i],aa[i]);
 				mmax[i]=std::max(mmax[i],aa[i]);
 			}
